@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pagamento - SGIE Eventos</title>
+
+    <link rel="stylesheet" href="pagamento.css">
+</head>
+
+<body class="pagamento-page">
+
+    <!-- NAVBAR -->
+    <nav class="pay-navbar">
+        <div class="pay-navbar-container">
+
+            <a href="../index.html" class="pay-brand">
+                SGIE
+                <span>EVENTOS</span>
+            </a>
+
+            <ul class="nav-links pay-nav-links"></ul>
+
+            <div class="nav-user pay-nav-user" id="nav-user-area"></div>
+
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="pagamento-container">
+
+        <header class="pagamento-header">
+            <h1>Pagamento</h1>
+        </header>
+
+        <div id="mensagem-alerta" class="pay-alert" style="display: none;"></div>
+
+        <div class="pagamento-layout">
+
+            <!-- COLUNA ESQUERDA -->
+            <section class="pagamento-coluna-principal">
+
+                <!-- DADOS DO PARTICIPANTE -->
+                <article class="pay-card">
+
+                    <div class="pay-card-header">
+                        <span class="pay-section-icon">♙</span>
+
+                        <div>
+                            <h2>Dados do Participante</h2>
+                            <p>Registro institucional recuperado via sessão federada acadêmica.</p>
+                        </div>
+                    </div>
+
+                    <div class="pay-participante">
+
+                        <div class="pay-participante-identificacao">
+
+                            <div class="pay-avatar" id="participante-avatar">
+                                --
+                            </div>
+
+                            <div class="pay-participante-info">
+                                <div class="pay-nome-status">
+                                    <strong id="participante-nome">
+                                        Carregando participante...
+                                    </strong>
+
+                                    <span class="pay-status-identificacao">
+                                        ✓ Identificação Verificada
+                                    </span>
+                                </div>
+
+                                <span id="participante-email">
+                                    --
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="pay-grid-dados">
+
+                            <div class="pay-field">
+                                <label for="participante-cpf">
+                                    Documento Identificador (CPF)
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="participante-cpf"
+                                    value="Não informado"
+                                    readonly
+                                >
+                            </div>
+
+                            <div class="pay-field">
+                                <label for="tipo-credenciamento">
+                                    Tipo de Credenciamento
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="tipo-credenciamento"
+                                    value="Participante / Ouvinte"
+                                    readonly
+                                >
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <!-- QUANTIDADE DE INGRESSOS -->
+                <article class="pay-card pay-card-ingressos">
+
+                    <div class="pay-card-header pay-header-ingressos">
+
+                        <div>
+                            <h2>Número de Ingressos</h2>
+                            <p>Selecione o número de ingressos que deseja comprar.</p>
+                        </div>
+
+                        <div class="pay-quantity-control">
+
+                            <button
+                                type="button"
+                                id="btn-diminuir"
+                                aria-label="Diminuir quantidade"
+                            >
+                                −
+                            </button>
+
+                            <span id="quantidade-ingressos">1</span>
+
+                            <button
+                                type="button"
+                                id="btn-aumentar"
+                                aria-label="Aumentar quantidade"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="pay-separator"></div>
+
+                    <!-- FORMA DE PAGAMENTO -->
+                    <div class="pay-forma-pagamento">
+
+                        <div>
+                            <h2>Forma de Pagamento</h2>
+                            <p>Selecione a forma de pagamento.</p>
+                        </div>
+
+                        <div class="pay-select-wrapper">
+
+                            <select id="forma-pagamento">
+                                <option value="">Forma de pagamento</option>
+                                <option value="pix">PIX</option>
+                                <option value="cartao">Cartão de crédito</option>
+                                <option value="boleto">Boleto bancário</option>
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="area-detalhes-pagamento"
+                        class="pay-detalhes-pagamento"
+                        style="display: none;"
+                    >
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- COLUNA DIREITA: RESUMO -->
+            <aside class="pagamento-coluna-resumo">
+
+                <article class="pay-summary-card">
+
+                    <div class="pay-summary-header">
+                        <span>RESUMO DO PEDIDO</span>
+                        <div class="pay-summary-decoration"></div>
+                    </div>
+
+                    <div class="pay-summary-content">
+
+                        <h2 id="resumo-evento">
+                            Carregando evento...
+                        </h2>
+
+                        <div class="pay-summary-row">
+                            <span>Valor</span>
+                            <strong id="resumo-valor">R$ 0,00</strong>
+                        </div>
+
+                        <div class="pay-summary-row">
+                            <span>Ingressos</span>
+                            <strong id="resumo-quantidade">1</strong>
+                        </div>
+
+                        <div class="pay-summary-row">
+                            <span>Forma de Pagamento</span>
+                            <strong id="resumo-forma">Pix</strong>
+                        </div>
+
+                        <div class="pay-summary-row pay-summary-total">
+                            <span>Total</span>
+                            <strong id="resumo-total">R$ 0,00</strong>
+                        </div>
+
+                        <label class="pay-terms">
+
+                            <input
+                                type="checkbox"
+                                id="aceite-termos"
+                            >
+
+                            <span>
+                                Li e aceito os
+                                <a href="#" id="link-termos">
+                                    Termos
+                                </a>
+                            </span>
+
+                        </label>
+
+                        <button
+                            type="button"
+                            id="btn-ir-pagamento"
+                            class="pay-button-primary"
+                            disabled
+                        >
+                            Ir para Pagamento
+                            <span>→</span>
+                        </button>
+
+                    </div>
+
+                </article>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="pay-footer">
+        <p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../config.js"></script>
+    <script src="../api.js"></script>
+    <script src="pagamento.js"></script>
+
+</body>
+</html>
