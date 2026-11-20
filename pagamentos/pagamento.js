@@ -1,11 +1,12 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
+
     // =========================================
     // AUTENTICAÇÃO E NAVEGAÇÃO
     // =========================================
 
     if (!isAuthenticated()) {
-        window.location.href = resolveAppUrl('usuarios/login.html');
+        window.location.href = resolveAppUrl('usuarios/login/login.html');
         return;
     }
 
@@ -28,20 +29,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         email: document.getElementById('participante-email'),
         cpf: document.getElementById('participante-cpf'),
 
-        quantidade: document.getElementById('quantidade-ingressos'),
-        diminuir: document.getElementById('btn-diminuir'),
-        aumentar: document.getElementById('btn-aumentar'),
-
         forma: document.getElementById('forma-pagamento'),
         detalhes: document.getElementById('area-detalhes-pagamento'),
 
         evento: document.getElementById('resumo-evento'),
         valor: document.getElementById('resumo-valor'),
-        resumoQuantidade: document.getElementById('resumo-quantidade'),
         resumoForma: document.getElementById('resumo-forma'),
         total: document.getElementById('resumo-total'),
 
-        termos: document.getElementById('aceite-termos'),
         botaoPagamento: document.getElementById('btn-ir-pagamento')
     };
 
@@ -53,8 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let inscricaoAtual = null;
     let participanteAtual = null;
 
-    let quantidadeIngressos = 1;
-    let valorUnitario = 0;
+    let valorInscricao = 0;
 
     // =========================================
     // FORMATAÇÃO
@@ -88,8 +82,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             '<': '&lt;',
             '>': '&gt;',
             '"': '&quot;',
-            "'": '&#039;'
+            "'": '&#39;'
         })[caractere]);
+    }
+
+    function obterIdRelacionado(valor) {
+        if (valor && typeof valor === 'object') {
+            return valor.id ?? valor.pk ?? valor;
+        }
+
+        return valor;
     }
 
     // =========================================
@@ -97,6 +99,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
 
     function exibirMensagem(mensagem, tipo = 'danger') {
+        if (!elementos.alerta) return;
+
         elementos.alerta.innerHTML = '';
 
         const alerta = document.createElement('div');
@@ -113,6 +117,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function limparMensagem() {
+        if (!elementos.alerta) return;
+
         elementos.alerta.innerHTML = '';
         elementos.alerta.style.display = 'none';
     }
@@ -122,6 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
 
     async function carregarDados() {
+
         if (!eventoId || !inscricaoId) {
             throw new Error(
                 'Não foi possível identificar o evento ou a inscrição.'
@@ -136,15 +143,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             ]);
 
         if (!resEvento.ok) {
-            throw new Error('Não foi possível carregar os dados do evento.');
+            throw new Error(
+                'Não foi possível carregar os dados do evento.'
+            );
         }
 
         if (!resParticipante.ok) {
-            throw new Error('Não foi possível carregar seus dados cadastrais.');
+            throw new Error(
+                'Não foi possível carregar seus dados cadastrais.'
+            );
         }
 
         if (!resInscricao.ok) {
-            throw new Error('Não foi possível localizar sua inscrição.');
+            throw new Error(
+                'Não foi possível localizar sua inscrição.'
+            );
         }
 
         eventoAtual = await resEvento.json();
@@ -153,9 +166,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Verificar se a inscrição corresponde ao evento informado.
 
-        if (String(inscricaoAtual.evento) !== String(eventoId)) {
-            throw new Error('A inscrição não corresponde ao evento informado.');
+        const eventoDaInscricao = obterIdRelacionado(
+            inscricaoAtual.evento ?? inscricaoAtual.evento_id
+        );
+
+        if (String(eventoDaInscricao) !== String(eventoId)) {
+            throw new Error(
+                'A inscrição não corresponde ao evento informado.'
+            );
         }
+
+        // Verificar situação da inscrição.
 
         if (inscricaoAtual.status !== 'pendente_pagamento') {
             throw new Error(
@@ -163,22 +184,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             );
         }
 
+        // Verificar se o evento é gratuito.
+
         if (eventoAtual.e_gratuito) {
             throw new Error(
                 'Este evento é gratuito e não necessita de pagamento.'
             );
         }
 
-        valorUnitario = Number(eventoAtual.preco);
+        valorInscricao = Number(eventoAtual.preco);
 
-        if (!Number.isFinite(valorUnitario) || valorUnitario <= 0) {
-            throw new Error('O valor de inscrição deste evento é inválido.');
+        if (
+            !Number.isFinite(valorInscricao) ||
+            valorInscricao <= 0
+        ) {
+            throw new Error(
+                'O valor de inscrição deste evento é inválido.'
+            );
         }
 
         preencherParticipante();
         preencherResumo();
-
-        elementos.botaoPagamento.disabled = true;
     }
 
     // =========================================
@@ -186,10 +212,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
 
     function preencherParticipante() {
+
         const nome = participanteAtual.nome_completo || 'Participante';
 
         elementos.nome.textContent = nome;
-        elementos.email.textContent = participanteAtual.email || '—';
+
+        elementos.email.textContent =
+            participanteAtual.email || '—';
 
         elementos.avatar.textContent = obterIniciais(nome);
 
@@ -200,24 +229,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================
-    // RESUMO DO PEDIDO
+    // RESUMO DA INSCRIÇÃO
     // =========================================
 
     function preencherResumo() {
-        elementos.evento.textContent = eventoAtual.nome;
 
-        atualizarResumo();
+        elementos.evento.textContent =
+            eventoAtual.nome || 'Evento';
+
+        const valorFormatado = formatarMoeda(valorInscricao);
+
+        elementos.valor.textContent = valorFormatado;
+        elementos.total.textContent = valorFormatado;
+
+        atualizarFormaPagamento();
     }
 
-    function atualizarResumo() {
-        const total = valorUnitario * quantidadeIngressos;
+    // =========================================
+    // FORMA DE PAGAMENTO
+    // =========================================
 
-        elementos.valor.textContent = formatarMoeda(valorUnitario);
-
-        elementos.quantidade.textContent = quantidadeIngressos;
-        elementos.resumoQuantidade.textContent = quantidadeIngressos;
-
-        elementos.total.textContent = formatarMoeda(total);
+    function atualizarFormaPagamento() {
 
         const formas = {
             pix: 'PIX',
@@ -225,33 +257,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             boleto: 'Boleto bancário'
         };
 
-        elementos.resumoForma.textContent =
-            formas[elementos.forma.value] || 'Não selecionado';
+        const metodo = elementos.forma.value;
 
-        validarFormulario();
+        elementos.resumoForma.textContent =
+            formas[metodo] || 'Não selecionada';
     }
 
-    // =========================================
-    // QUANTIDADE DE INGRESSOS
-    // =========================================
-
-    elementos.diminuir.addEventListener('click', () => {
-        if (quantidadeIngressos > 1) {
-            quantidadeIngressos--;
-            atualizarResumo();
-        }
-    });
-
-    elementos.aumentar.addEventListener('click', () => {
-        quantidadeIngressos++;
-        atualizarResumo();
-    });
-
-    // =========================================
-    // FORMA DE PAGAMENTO
-    // =========================================
-
     elementos.forma.addEventListener('change', () => {
+
         const metodo = elementos.forma.value;
 
         elementos.detalhes.innerHTML = '';
@@ -264,11 +277,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         if (mensagens[metodo]) {
+
+            const nomeMetodo =
+                elementos.forma.options[
+                    elementos.forma.selectedIndex
+                ].text;
+
             elementos.detalhes.innerHTML = `
                 <div class="pay-method-notice">
-                    <strong>${escaparHTML(
-                        elementos.forma.options[elementos.forma.selectedIndex].text
-                    )}</strong>
+                    <strong>${escaparHTML(nomeMetodo)}</strong>
                     <p>${escaparHTML(mensagens[metodo])}</p>
                 </div>
             `;
@@ -276,54 +293,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             elementos.detalhes.style.display = 'block';
         }
 
-        atualizarResumo();
+        atualizarFormaPagamento();
     });
 
     // =========================================
-    // ACEITE DOS TERMOS
+    // PAGAMENTO
     // =========================================
 
-    elementos.termos.addEventListener('change', validarFormulario);
+    // O botão permanece desabilitado porque ainda não existe
+    // integração financeira para processar a transação.
 
-    function validarFormulario() {
-        const formaSelecionada = Boolean(elementos.forma.value);
-        const termosAceitos = elementos.termos.checked;
-
-        elementos.botaoPagamento.disabled = !(
-            formaSelecionada &&
-            termosAceitos &&
-            inscricaoAtual &&
-            inscricaoAtual.status === 'pendente_pagamento'
-        );
-    }
-
-    // =========================================
-    // AVANÇAR PARA PAGAMENTO
-    // =========================================
+    elementos.botaoPagamento.disabled = true;
 
     elementos.botaoPagamento.addEventListener('click', () => {
-        limparMensagem();
-
-        if (!elementos.forma.value) {
-            exibirMensagem(
-                'Selecione uma forma de pagamento.',
-                'danger'
-            );
-            return;
-        }
-
-        if (!elementos.termos.checked) {
-            exibirMensagem(
-                'É necessário aceitar os termos para continuar.',
-                'danger'
-            );
-            return;
-        }
 
         exibirMensagem(
-            'A seleção foi registrada na interface. O processamento financeiro ainda não está disponível no backend do SGIE.',
+            'O processamento financeiro ainda não está disponível no SGIE. Nenhum pagamento foi realizado.',
             'info'
         );
+
     });
 
     // =========================================
@@ -331,15 +319,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
 
     try {
+
         await carregarDados();
 
     } catch (error) {
+
         console.error('Erro ao inicializar pagamento:', error);
 
         exibirMensagem(
-            error.message || 'Não foi possível carregar a página de pagamento.'
+            error.message ||
+            'Não foi possível carregar a página de pagamento.'
         );
 
         elementos.botaoPagamento.disabled = true;
     }
+
 });

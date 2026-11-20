@@ -363,47 +363,25 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-
     margin-bottom: 20px;
 }
 
 .pagamento-page .pay-quantity-control {
     display: flex;
     align-items: center;
-    gap: 15px;
-}
-
-.pagamento-page .pay-quantity-control button {
-    width: 28px;
-    height: 28px;
-
-    display: flex;
-    align-items: center;
     justify-content: center;
 
-    border: none;
-    border-radius: 6px;
+    min-width: 42px;
+    min-height: 36px;
+    padding: 0 12px;
 
+    border-radius: 8px;
     background: #e9fbf3;
-    color: var(--pay-primary-dark);
-
-    font-size: 19px;
-    font-weight: 700;
-
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.pagamento-page .pay-quantity-control button:hover {
-    background: #d2f5e5;
 }
 
 .pagamento-page .pay-quantity-control span {
-    min-width: 12px;
-    text-align: center;
-
-    color: var(--pay-text);
-    font-size: 13px;
+    color: var(--pay-primary-dark);
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -1187,4 +1165,57 @@
         -webkit-print-color-adjust: exact;
     }
 
+}
+
+/* =========================================
+   ACESSIBILIDADE E INTERAÇÃO
+========================================= */
+
+.pagamento-page button:focus-visible,
+.pagamento-page select:focus-visible,
+.pagamento-page input:focus-visible,
+.pagamento-page a:focus-visible {
+    outline: 2px solid var(--pay-primary-dark);
+    outline-offset: 3px;
+}
+
+.pagamento-page .pay-terms a:hover {
+    text-decoration: underline;
+}
+
+.pagamento-page .pay-select-wrapper select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.pagamento-page .pay-method-notice {
+    line-height: 1.6;
+}
+
+@media (max-width: 360px) {
+    .pagamento-page .pay-card {
+        padding: 13px;
+    }
+
+    .pagamento-page .pay-summary-content {
+        padding: 14px;
+    }
+
+    .pagamento-page .pay-header-ingressos {
+        gap: 10px;
+    }
+}
+
+
+.pagamento-page .pay-payment-unavailable {
+    margin-top: 14px;
+    color: var(--pay-muted, #667085);
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.pagamento-page .pay-button-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
 }

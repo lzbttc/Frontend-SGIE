@@ -51,7 +51,7 @@
 
                         <div>
                             <h2>Dados do Participante</h2>
-                            <p>Registro institucional recuperado via sessão federada acadêmica.</p>
+                            <p>Confira os dados do participante vinculado à inscrição.</p>
                         </div>
                     </div>
 
@@ -70,13 +70,11 @@
                                     </strong>
 
                                     <span class="pay-status-identificacao">
-                                        ✓ Identificação Verificada
+                                        Dados cadastrais
                                     </span>
                                 </div>
 
-                                <span id="participante-email">
-                                    --
-                                </span>
+                                <span id="participante-email">--</span>
                             </div>
 
                         </div>
@@ -104,7 +102,7 @@
                                 <input
                                     type="text"
                                     id="tipo-credenciamento"
-                                    value="Participante / Ouvinte"
+                                    value="Conforme inscrição"
                                     readonly
                                 >
                             </div>
@@ -115,60 +113,24 @@
 
                 </article>
 
-                <!-- QUANTIDADE DE INGRESSOS -->
-                <article class="pay-card pay-card-ingressos">
+                <!-- FORMA DE PAGAMENTO -->
+                <article class="pay-card">
 
-                    <div class="pay-card-header pay-header-ingressos">
-
-                        <div>
-                            <h2>Número de Ingressos</h2>
-                            <p>Selecione o número de ingressos que deseja comprar.</p>
-                        </div>
-
-                        <div class="pay-quantity-control">
-
-                            <button
-                                type="button"
-                                id="btn-diminuir"
-                                aria-label="Diminuir quantidade"
-                            >
-                                −
-                            </button>
-
-                            <span id="quantidade-ingressos">1</span>
-
-                            <button
-                                type="button"
-                                id="btn-aumentar"
-                                aria-label="Aumentar quantidade"
-                            >
-                                +
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div class="pay-separator"></div>
-
-                    <!-- FORMA DE PAGAMENTO -->
-                    <div class="pay-forma-pagamento">
-
+                    <div class="pay-card-header">
                         <div>
                             <h2>Forma de Pagamento</h2>
-                            <p>Selecione a forma de pagamento.</p>
+                            <p>Selecione a modalidade desejada.</p>
                         </div>
+                    </div>
 
-                        <div class="pay-select-wrapper">
+                    <div class="pay-select-wrapper">
 
-                            <select id="forma-pagamento">
-                                <option value="">Forma de pagamento</option>
-                                <option value="pix">PIX</option>
-                                <option value="cartao">Cartão de crédito</option>
-                                <option value="boleto">Boleto bancário</option>
-                            </select>
-
-                        </div>
+                        <select id="forma-pagamento">
+                            <option value="">Forma de pagamento</option>
+                            <option value="pix">PIX</option>
+                            <option value="cartao">Cartão de crédito</option>
+                            <option value="boleto">Boleto bancário</option>
+                        </select>
 
                     </div>
 
@@ -176,7 +138,15 @@
                         id="area-detalhes-pagamento"
                         class="pay-detalhes-pagamento"
                         style="display: none;"
-                    >
+                    ></div>
+
+                    <div class="pay-method-notice">
+                        <strong>Informação importante</strong>
+                        <p>
+                            A integração com o serviço financeiro ainda não está
+                            disponível. Por isso, nenhuma cobrança ou transação
+                            será realizada nesta página.
+                        </p>
                     </div>
 
                 </article>
@@ -189,7 +159,7 @@
                 <article class="pay-summary-card">
 
                     <div class="pay-summary-header">
-                        <span>RESUMO DO PEDIDO</span>
+                        <span>RESUMO DA INSCRIÇÃO</span>
                         <div class="pay-summary-decoration"></div>
                     </div>
 
@@ -200,40 +170,19 @@
                         </h2>
 
                         <div class="pay-summary-row">
-                            <span>Valor</span>
+                            <span>Valor da inscrição</span>
                             <strong id="resumo-valor">R$ 0,00</strong>
                         </div>
 
                         <div class="pay-summary-row">
-                            <span>Ingressos</span>
-                            <strong id="resumo-quantidade">1</strong>
-                        </div>
-
-                        <div class="pay-summary-row">
-                            <span>Forma de Pagamento</span>
-                            <strong id="resumo-forma">Pix</strong>
+                            <span>Forma de pagamento</span>
+                            <strong id="resumo-forma">Não selecionada</strong>
                         </div>
 
                         <div class="pay-summary-row pay-summary-total">
-                            <span>Total</span>
+                            <span>Valor informado</span>
                             <strong id="resumo-total">R$ 0,00</strong>
                         </div>
-
-                        <label class="pay-terms">
-
-                            <input
-                                type="checkbox"
-                                id="aceite-termos"
-                            >
-
-                            <span>
-                                Li e aceito os
-                                <a href="#" id="link-termos">
-                                    Termos
-                                </a>
-                            </span>
-
-                        </label>
 
                         <button
                             type="button"
@@ -241,9 +190,13 @@
                             class="pay-button-primary"
                             disabled
                         >
-                            Ir para Pagamento
-                            <span>→</span>
+                            Pagamento indisponível
                         </button>
+
+                        <p class="pay-payment-unavailable">
+                            A conclusão do pagamento será liberada após a
+                            integração do serviço financeiro ao SGIE.
+                        </p>
 
                     </div>
 

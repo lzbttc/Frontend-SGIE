@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+
     // Submissão do Formulário
     const form = document.getElementById('form-realizar-inscricao');
     const btnSubmit = document.getElementById('btn-submit-inscricao');
@@ -258,10 +259,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             clearAlert('mensagem-alerta');
 
+            // Verifica comprovante obrigatório
             if (evento && evento.necessita_comprovante) {
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    showAlert('mensagem-alerta', 'Por favor, anexe o comprovante exigido para este evento.', 'warning');
-                    if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth' });
+                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                    showAlert(
+                        'mensagem-alerta',
+                        'Por favor, anexe o comprovante exigido para este evento.',
+                        'warning'
+                    );
+
+                    if (dropzone) {
+                        dropzone.scrollIntoView({ behavior: 'smooth' });
+                    }
+
                     return;
                 }
             }
@@ -273,15 +283,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formData.append('comprovante', fileInput.files[0]);
             }
 
-            const adicionaisVal = textareaAdicionais ? textareaAdicionais.value.trim() : '';
+            const adicionaisVal = textareaAdicionais
+                ? textareaAdicionais.value.trim()
+                : '';
+
             if (adicionaisVal) {
-                formData.append('dados_adicionais', JSON.stringify({ necessidades_especiais: adicionaisVal }));
+                formData.append(
+                    'dados_adicionais',
+                    JSON.stringify({
+                        necessidades_especiais: adicionaisVal
+                    })
+                );
             }
 
             try {
                 if (btnSubmit) {
                     btnSubmit.disabled = true;
                     btnSubmit.style.opacity = '0.7';
+                    btnSubmit.textContent = 'Processando inscrição...';
                 }
 
                 const res = await apiFetch('/inscricoes/', {
@@ -292,36 +311,142 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await res.json().catch(() => ({}));
 
                 if (res.ok) {
+                    // Identificador retornado pelo backend
+                    const inscricaoId = data.id || data.inscricao_id;
+
+                    // Inscrição em lista de espera
                     if (data.status === 'lista_espera') {
-                        showAlert('mensagem-alerta', 'As vagas principais estão preenchidas. Você foi incluído na Lista de Espera!', 'info');
-                    } else if (data.status === 'pendente_pagamento') {
-                        showAlert('mensagem-alerta', 'Inscrição registrada! Aguardando confirmação do pagamento.', 'info');
-                    } else {
-                        showAlert('mensagem-alerta', 'Inscrição realizada e confirmada com sucesso!', 'success');
+                        showAlert(
+                            'mensagem-alerta',
+                            'As vagas principais estão preenchidas. Você foi incluído na Lista de Espera!',
+                            'info'
+                        );
+
+                        setTimeout(() => {
+                            window.location.href = resolveAppUrl(
+                                'inscricao/minhas-inscricoes/index.html'
+                            );
+                        }, 1500);
+
+                        return;
                     }
 
+                    // Inscrição aguardando pagamento
+                    if (data.status === 'pendente_pagamento') {
+                        // Não direciona sem o identificador da inscrição
+                        if (!inscricaoId) {
+                            showAlert(
+                                'mensagem-alerta',
+                                'Sua inscrição foi registrada, mas o servidor não retornou o identificador necessário para acessar o pagamento. Consulte Minhas Inscrições.',
+                                'warning'
+                            );
+
+                            if (btnSubmit) {
+                                btnSubmit.disabled = false;
+                                btnSubmit.style.opacity = '1';
+                                btnSubmit.textContent = 'Confirmar e Realizar Inscrição';
+                            }
+
+                            return;
+                        }
+
+                        showAlert(
+                            'mensagem-alerta',
+                            'Inscrição registrada! Você será direcionado para a tela de pagamento.',
+                            'info'
+                        );
+
+                        setTimeout(() => {
+                            const params = new URLSearchParams({
+                                evento: String(eventoId),
+                                inscricao: String(inscricaoId)
+                            });
+
+                            window.location.href = resolveAppUrl(
+                                `pagamentos/pagamento.html?${params.toString()}`
+                            );
+                        }, 1500);
+
+                        return;
+                    }
+
+                    // Inscrição confirmada
+                    if (data.status === 'confirmada') {
+                        showAlert(
+                            'mensagem-alerta',
+                            'Inscrição realizada e confirmada com sucesso!',
+                            'success'
+                        );
+
+                        setTimeout(() => {
+                            if (inscricaoId) {
+                                window.location.href = resolveAppUrl(
+                                    `pagamentos/comprovante.html?inscricao=${encodeURIComponent(inscricaoId)}`
+                                );
+                            } else {
+                                window.location.href = resolveAppUrl(
+                                    'inscricao/minhas-inscricoes/index.html'
+                                );
+                            }
+                        }, 1500);
+
+                        return;
+                    }
+
+                    // Outros status
+                    showAlert(
+                        'mensagem-alerta',
+                        'Inscrição registrada com sucesso!',
+                        'success'
+                    );
+
                     setTimeout(() => {
-                        window.location.href = resolveAppUrl('inscricao/minhas-inscricoes/index.html');
+                        window.location.href = resolveAppUrl(
+                            'inscricao/minhas-inscricoes/index.html'
+                        );
                     }, 1500);
+
                 } else {
                     let msg = 'Não foi possível concluir a inscrição.';
-                    if (data.detail) msg = data.detail;
-                    else if (data.non_field_errors) msg = data.non_field_errors.join(' ');
-                    else if (typeof data === 'object') {
-                        const erros = Object.entries(data).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`);
-                        if (erros.length > 0) msg = erros.join(' | ');
+
+                    if (data.detail) {
+                        msg = data.detail;
+                    } else if (data.non_field_errors) {
+                        msg = Array.isArray(data.non_field_errors)
+                            ? data.non_field_errors.join(' ')
+                            : data.non_field_errors;
+                    } else if (typeof data === 'object') {
+                        const erros = Object.entries(data).map(([k, v]) => {
+                            return `${k}: ${Array.isArray(v) ? v.join(', ') : v}`;
+                        });
+
+                        if (erros.length > 0) {
+                            msg = erros.join(' | ');
+                        }
                     }
+
                     showAlert('mensagem-alerta', msg, 'danger');
+
                     if (btnSubmit) {
                         btnSubmit.disabled = false;
                         btnSubmit.style.opacity = '1';
+                        btnSubmit.textContent = 'Confirmar e Realizar Inscrição';
                     }
                 }
+
             } catch (err) {
-                showAlert('mensagem-alerta', 'Erro de comunicação com o servidor do SGIE.', 'danger');
+                console.error('Erro ao realizar inscrição:', err);
+
+                showAlert(
+                    'mensagem-alerta',
+                    'Erro de comunicação com o servidor do SGIE.',
+                    'danger'
+                );
+
                 if (btnSubmit) {
                     btnSubmit.disabled = false;
                     btnSubmit.style.opacity = '1';
+                    btnSubmit.textContent = 'Confirmar e Realizar Inscrição';
                 }
             }
         });

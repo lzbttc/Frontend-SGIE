@@ -32,7 +32,12 @@ function getAppRoot() {
     if (typeof window === 'undefined') return './';
 
     const path = window.location.pathname;
-    const modulos = ['/usuarios/', '/eventos/', '/inscricao/'];
+    const modulos = [
+    '/usuarios/',
+    '/eventos/',
+    '/inscricao/',
+    '/pagamentos/'
+    ];
 
     for (const modulo of modulos) {
         const index = path.indexOf(modulo);
