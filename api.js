@@ -30,25 +30,31 @@ const USER_KEY = 'sgie_user';
 
 function getAppRoot() {
     if (typeof window === 'undefined') return './';
-
     const path = window.location.pathname;
-    const modulos = ['/usuarios/', '/eventos/', '/inscricao/'];
+    const modulos = [
+        '/usuarios/',
+        '/eventos/',
+        '/inscricao/',
+        '/pagamento/'
+    ];
 
     for (const modulo of modulos) {
         const index = path.indexOf(modulo);
-
         if (index !== -1) {
             const caminho = path.slice(index + 1);
             const partes = caminho.split('/').filter(Boolean);
-
-            if (partes.length > 0 && partes[partes.length - 1].includes('.')) {
+            if (
+                partes.length > 0 &&
+                partes[partes.length - 1].includes('.')
+            ) {
                 partes.pop();
             }
 
-            return partes.length > 0 ? '../'.repeat(partes.length) : './';
+            return partes.length > 0
+                ? '../'.repeat(partes.length)
+                : './';
         }
     }
-
     return './';
 }
 
