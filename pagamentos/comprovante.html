@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Comprovante - SGIE Eventos</title>
+
+    <link rel="stylesheet" href="pagamento.css">
+</head>
+
+<body class="comprovante-page">
+
+    <!-- NAVBAR -->
+    <nav class="pay-navbar">
+        <div class="pay-navbar-container">
+
+            <a href="../index.html" class="pay-brand">
+                SGIE
+                <span>EVENTOS</span>
+            </a>
+
+            <ul class="nav-links pay-nav-links"></ul>
+
+            <div class="nav-user pay-nav-user" id="nav-user-area"></div>
+
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO -->
+    <main class="comprovante-container">
+
+        <header class="comprovante-header">
+            <h1>Comprovante</h1>
+            <p>Confira os dados da sua inscrição.</p>
+        </header>
+
+        <div id="comprovante-alerta" style="display: none;"></div>
+
+        <!-- DOCUMENTO -->
+        <section class="comprovante-documento" id="comprovante-documento">
+
+            <div class="comprovante-sucesso">
+
+                <div class="comprovante-icone">
+                    ✓
+                </div>
+
+                <h2>Inscrição confirmada!</h2>
+
+                <p>
+                    Obrigado por participar.
+                    Sua inscrição foi registrada com sucesso.
+                </p>
+
+            </div>
+
+            <div class="comprovante-recibo">
+
+                <div class="comprovante-recibo-header">
+
+                    <div>
+                        <span class="comprovante-etiqueta">
+                            SGIE EVENTOS
+                        </span>
+
+                        <h2>Recibo de Inscrição</h2>
+                    </div>
+
+                    <span class="comprovante-status">
+                        Confirmada
+                    </span>
+
+                </div>
+
+                <div class="comprovante-codigo">
+                    <span>CÓDIGO DA INSCRIÇÃO</span>
+                    <strong id="comprovante-codigo">—</strong>
+                </div>
+
+                <!-- PARTICIPANTE -->
+                <div class="comprovante-secao">
+
+                    <h3>Dados do Participante</h3>
+
+                    <div class="comprovante-dados">
+
+                        <div>
+                            <span>Nome completo</span>
+                            <strong id="comprovante-nome">—</strong>
+                        </div>
+
+                        <div>
+                            <span>CPF</span>
+                            <strong id="comprovante-cpf">—</strong>
+                        </div>
+
+                        <div>
+                            <span>E-mail</span>
+                            <strong id="comprovante-email">—</strong>
+                        </div>
+
+                        <div>
+                            <span>Tipo de credenciamento</span>
+                            <strong id="comprovante-credenciamento">Participante</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- EVENTO -->
+                <div class="comprovante-secao">
+
+                    <h3>Dados do Evento</h3>
+
+                    <div class="comprovante-dados">
+
+                        <div class="comprovante-dado-completo">
+                            <span>Evento</span>
+                            <strong id="comprovante-evento">—</strong>
+                        </div>
+
+                        <div>
+                            <span>Data</span>
+                            <strong id="comprovante-data-evento">—</strong>
+                        </div>
+
+                        <div>
+                            <span>Horário</span>
+                            <strong id="comprovante-horario">—</strong>
+                        </div>
+
+                        <div class="comprovante-dado-completo">
+                            <span>Local</span>
+                            <strong id="comprovante-local">—</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PAGAMENTO -->
+                <div class="comprovante-secao">
+
+                    <h3>Resumo Financeiro</h3>
+
+                    <div class="comprovante-financeiro">
+
+                        <div>
+                            <span>Valor da inscrição</span>
+                            <strong id="comprovante-valor">—</strong>
+                        </div>
+
+                        <div>
+                            <span>Situação financeira</span>
+                            <strong id="comprovante-financeiro-status">
+                                Não informado
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <p class="comprovante-observacao">
+                        Este documento confirma o registro da inscrição.
+                        A confirmação financeira depende dos registros
+                        específicos de pagamento.
+                    </p>
+
+                </div>
+
+                <div class="comprovante-rodape-documento">
+                    <span>SGIE — Sistema de Gestão de Inscrições e Eventos</span>
+                    <span id="comprovante-data-emissao">—</span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- AÇÕES -->
+        <div class="comprovante-acoes" id="comprovante-acoes">
+
+            <button
+                type="button"
+                class="comprovante-btn-primary"
+                id="btn-imprimir"
+            >
+                Imprimir comprovante
+            </button>
+
+            <a
+                href="../inscricao/minhas-inscricoes.html"
+                class="comprovante-btn-secondary"
+            >
+                Voltar para minhas inscrições
+            </a>
+
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="pay-footer">
+        <p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../config.js"></script>
+    <script src="../api.js"></script>
+    <script src="comprovante.js"></script>
+
+</body>
+</html>

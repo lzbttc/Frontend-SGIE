@@ -1,0 +1,1190 @@
+
+/* =========================================
+   SGIE - MÓDULO DE PAGAMENTO
+   Estilos exclusivos desta área
+========================================= */
+
+.pagamento-page {
+    --pay-primary: #00b779;
+    --pay-primary-dark: #009b66;
+    --pay-background: #f6f8fb;
+    --pay-surface: #ffffff;
+    --pay-text: #172033;
+    --pay-muted: #718096;
+    --pay-field: #f0f1ff;
+    --pay-border: #e5e9f0;
+    --pay-radius: 12px;
+
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+
+    background: var(--pay-background);
+    color: var(--pay-text);
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================================
+   NAVBAR
+========================================= */
+
+.pagamento-page .pay-navbar {
+    width: 100%;
+    min-height: 62px;
+
+    background: #fff3c4;
+    border-bottom: 1px solid #f0e6bd;
+}
+
+.pagamento-page .pay-navbar-container {
+    width: min(1200px, calc(100% - 48px));
+    min-height: 62px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.pagamento-page .pay-brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+
+    color: #172033;
+    font-size: 20px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.pagamento-page .pay-brand span {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* Links inseridos pelo api.js */
+
+.pagamento-page .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagamento-page .nav-links a {
+    color: #172033;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.pagamento-page .nav-links a:hover {
+    color: var(--pay-primary-dark);
+}
+
+.pagamento-page .nav-user {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.pagamento-page .nav-user .user-greeting {
+    color: #172033;
+}
+
+/* Botões da navegação */
+
+.pagamento-page .nav-user .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 7px 12px;
+    border-radius: 7px;
+
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.pagamento-page .nav-user .btn-primary {
+    color: white;
+    background: var(--pay-primary);
+    border: 1px solid var(--pay-primary);
+}
+
+.pagamento-page .nav-user .btn-outline {
+    color: #172033;
+    background: transparent;
+    border: 1px solid var(--pay-border);
+}
+
+.pagamento-page .nav-user .btn-danger {
+    color: #dc2626;
+    background: transparent;
+    border: none;
+}
+
+/* =========================================
+   CONTEÚDO PRINCIPAL
+========================================= */
+
+.pagamento-page .pagamento-container {
+    width: min(1200px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 42px 0 60px;
+
+    flex: 1;
+}
+
+.pagamento-page .pagamento-header {
+    margin-bottom: 26px;
+}
+
+.pagamento-page .pagamento-header h1 {
+    margin: 0;
+
+    color: var(--pay-text);
+    font-size: 30px;
+    font-weight: 750;
+    letter-spacing: -1px;
+}
+
+/* =========================================
+   LAYOUT DE DUAS COLUNAS
+========================================= */
+
+.pagamento-page .pagamento-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: start;
+    gap: 28px;
+}
+
+.pagamento-page .pagamento-coluna-principal {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pagamento-page .pagamento-coluna-resumo {
+    position: sticky;
+    top: 24px;
+}
+
+/* =========================================
+   CARTÕES
+========================================= */
+
+.pagamento-page .pay-card {
+    padding: 20px;
+    background: var(--pay-surface);
+
+    border: 1px solid #edf0f5;
+    border-radius: var(--pay-radius);
+
+    box-shadow: 0 3px 12px rgba(25, 35, 55, 0.025);
+}
+
+.pagamento-page .pay-card-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 16px;
+}
+
+.pagamento-page .pay-section-icon {
+    color: var(--pay-primary-dark);
+    font-size: 18px;
+}
+
+.pagamento-page .pay-card-header h2,
+.pagamento-page .pay-forma-pagamento h2 {
+    margin: 0 0 3px;
+
+    color: var(--pay-text);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.pagamento-page .pay-card-header p,
+.pagamento-page .pay-forma-pagamento p {
+    margin: 0;
+
+    color: var(--pay-muted);
+    font-size: 11px;
+}
+
+/* =========================================
+   DADOS DO PARTICIPANTE
+========================================= */
+
+.pagamento-page .pay-participante {
+    padding: 14px;
+    border-radius: 9px;
+    background: #f1f2ff;
+}
+
+.pagamento-page .pay-participante-identificacao {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 15px;
+}
+
+.pagamento-page .pay-avatar {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: var(--pay-primary);
+    color: white;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.pagamento-page .pay-participante-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.pagamento-page .pay-nome-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pagamento-page .pay-nome-status strong {
+    font-size: 13px;
+}
+
+.pagamento-page .pay-status-identificacao {
+    padding: 3px 7px;
+
+    border-radius: 20px;
+    background: #d7f8e7;
+    color: #008c5a;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.pagamento-page .pay-participante-info > span {
+    color: var(--pay-muted);
+    font-size: 10px;
+    overflow-wrap: anywhere;
+}
+
+.pagamento-page .pay-grid-dados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* =========================================
+   CAMPOS
+========================================= */
+
+.pagamento-page .pay-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.pagamento-page .pay-field label {
+    color: #526078;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.pagamento-page .pay-field input {
+    width: 100%;
+    min-height: 38px;
+    box-sizing: border-box;
+
+    padding: 0 10px;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    background: var(--pay-field);
+    color: var(--pay-text);
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pagamento-page .pay-field input:focus {
+    outline: none;
+    border-color: var(--pay-primary);
+}
+
+.pagamento-page .pay-field input[readonly] {
+    cursor: default;
+}
+
+/* =========================================
+   QUANTIDADE DE INGRESSOS
+========================================= */
+
+.pagamento-page .pay-card-ingressos {
+    padding: 20px;
+}
+
+.pagamento-page .pay-header-ingressos {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-bottom: 20px;
+}
+
+.pagamento-page .pay-quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.pagamento-page .pay-quantity-control button {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #e9fbf3;
+    color: var(--pay-primary-dark);
+
+    font-size: 19px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.pagamento-page .pay-quantity-control button:hover {
+    background: #d2f5e5;
+}
+
+.pagamento-page .pay-quantity-control span {
+    min-width: 12px;
+    text-align: center;
+
+    color: var(--pay-text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.pagamento-page .pay-separator {
+    height: 1px;
+    margin-bottom: 20px;
+    background: var(--pay-border);
+}
+
+/* =========================================
+   FORMA DE PAGAMENTO
+========================================= */
+
+.pagamento-page .pay-forma-pagamento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.pagamento-page .pay-select-wrapper select {
+    min-width: 170px;
+    min-height: 38px;
+
+    padding: 0 30px 0 12px;
+
+    border: 1px solid transparent;
+    border-radius: 7px;
+
+    background: var(--pay-field);
+    color: #536078;
+
+    font-family: inherit;
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+.pagamento-page .pay-select-wrapper select:focus {
+    outline: none;
+    border-color: var(--pay-primary);
+}
+
+/* Área futura para detalhes do método */
+
+.pagamento-page .pay-detalhes-pagamento {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--pay-border);
+}
+
+/* =========================================
+   RESUMO DO PEDIDO
+========================================= */
+
+.pagamento-page .pay-summary-card {
+    overflow: hidden;
+
+    background: var(--pay-surface);
+    border: 1px solid #edf0f5;
+    border-radius: var(--pay-radius);
+
+    box-shadow: 0 4px 14px rgba(25, 35, 55, 0.05);
+}
+
+.pagamento-page .pay-summary-header {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 52px;
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+
+    background: var(--pay-primary);
+    color: white;
+}
+
+.pagamento-page .pay-summary-header > span {
+    position: relative;
+    z-index: 1;
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+}
+
+.pagamento-page .pay-summary-decoration {
+    position: absolute;
+    right: 25px;
+    top: -20px;
+
+    width: 75px;
+    height: 75px;
+
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 50%;
+}
+
+.pagamento-page .pay-summary-content {
+    padding: 18px;
+}
+
+.pagamento-page .pay-summary-content > h2 {
+    margin: 0 0 17px;
+
+    color: var(--pay-text);
+    font-size: 14px;
+    font-weight: 700;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pagamento-page .pay-summary-row {
+    min-height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    border-bottom: 1px solid var(--pay-border);
+
+    font-size: 11px;
+}
+
+.pagamento-page .pay-summary-row span {
+    color: var(--pay-muted);
+}
+
+.pagamento-page .pay-summary-row strong {
+    color: #44516a;
+    font-weight: 600;
+    text-align: right;
+}
+
+.pagamento-page .pay-summary-total {
+    margin-top: 2px;
+    border-bottom: none;
+}
+
+.pagamento-page .pay-summary-total span,
+.pagamento-page .pay-summary-total strong {
+    color: var(--pay-text);
+    font-weight: 800;
+}
+
+/* =========================================
+   TERMOS
+========================================= */
+
+.pagamento-page .pay-terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+
+    margin: 14px 0;
+
+    color: #526078;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.pagamento-page .pay-terms input {
+    margin: 1px 0 0;
+    accent-color: var(--pay-primary);
+    cursor: pointer;
+}
+
+.pagamento-page .pay-terms a {
+    color: var(--pay-primary-dark);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* =========================================
+   BOTÃO PRINCIPAL
+========================================= */
+
+.pagamento-page .pay-button-primary {
+    width: 100%;
+    min-height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 0 15px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: var(--pay-primary);
+    color: white;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+}
+
+.pagamento-page .pay-button-primary:hover:not(:disabled) {
+    background: var(--pay-primary-dark);
+}
+
+.pagamento-page .pay-button-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   ALERTAS
+========================================= */
+
+.pagamento-page .pay-alert {
+    margin-bottom: 20px;
+}
+
+.pagamento-page .pay-alert .alert {
+    padding: 13px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.pagamento-page .pay-alert .alert-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.pagamento-page .pay-alert .alert-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* =========================================
+   RODAPÉ
+========================================= */
+
+.pagamento-page .pay-footer {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 20px;
+    box-sizing: border-box;
+
+    background: white;
+    border-top: 1px solid var(--pay-border);
+}
+
+.pagamento-page .pay-footer p {
+    margin: 0;
+
+    color: #718096;
+    font-size: 10px;
+    text-align: center;
+}
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 900px) {
+
+    .pagamento-page .pagamento-layout {
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 18px;
+    }
+
+    .pagamento-page .pay-navbar-container {
+        width: calc(100% - 32px);
+        gap: 12px;
+    }
+
+    .pagamento-page .nav-links {
+        gap: 12px;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .pagamento-page .pagamento-container {
+        width: calc(100% - 32px);
+        padding: 28px 0 40px;
+    }
+
+    .pagamento-page .pagamento-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .pagamento-page .pagamento-coluna-resumo {
+        position: static;
+        grid-row: 1;
+    }
+
+    .pagamento-page .pay-navbar-container {
+        flex-wrap: wrap;
+        padding: 12px 0;
+    }
+
+    .pagamento-page .nav-links {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .pagamento-page .nav-user {
+        margin-left: auto;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .pagamento-page .pagamento-header h1 {
+        font-size: 25px;
+    }
+
+    .pagamento-page .pay-card {
+        padding: 15px;
+    }
+
+    .pagamento-page .pay-grid-dados {
+        grid-template-columns: 1fr;
+    }
+
+    .pagamento-page .pay-header-ingressos,
+    .pagamento-page .pay-forma-pagamento {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pagamento-page .pay-select-wrapper,
+    .pagamento-page .pay-select-wrapper select {
+        width: 100%;
+    }
+
+    .pagamento-page .pay-nome-status {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+}
+
+
+/* =========================================
+   MENSAGENS E MÉTODOS DE PAGAMENTO
+========================================= */
+
+.pagamento-page .pay-alert-message {
+    padding: 14px 16px;
+    border-radius: 9px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.pagamento-page .pay-alert-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.pagamento-page .pay-alert-success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.pagamento-page .pay-alert-info {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.pagamento-page .pay-method-notice {
+    padding: 14px;
+    border-radius: 9px;
+    background: #f0f1ff;
+    border: 1px solid #e0e3ff;
+}
+
+.pagamento-page .pay-method-notice strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--pay-text);
+    font-size: 12px;
+}
+
+.pagamento-page .pay-method-notice p {
+    margin: 0;
+    color: var(--pay-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   SGIE - COMPROVANTE
+========================================= */
+
+.comprovante-page {
+    --pay-primary: #00b779;
+    --pay-primary-dark: #009b66;
+    --pay-background: #f6f8fb;
+    --pay-surface: #ffffff;
+    --pay-text: #172033;
+    --pay-muted: #718096;
+    --pay-border: #e5e9f0;
+
+    min-height: 100vh;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    background: var(--pay-background);
+    color: var(--pay-text);
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* CONTEÚDO */
+
+.comprovante-page .comprovante-container {
+    width: min(850px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 38px 0 55px;
+    flex: 1;
+}
+
+.comprovante-page .comprovante-header {
+    margin-bottom: 24px;
+}
+
+.comprovante-page .comprovante-header h1 {
+    margin: 0 0 7px;
+    font-size: 28px;
+}
+
+.comprovante-page .comprovante-header p {
+    margin: 0;
+    color: var(--pay-muted);
+    font-size: 13px;
+}
+
+/* DOCUMENTO */
+
+.comprovante-page .comprovante-documento {
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--pay-border);
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(25, 35, 55, 0.04);
+}
+
+/* CONFIRMAÇÃO */
+
+.comprovante-page .comprovante-sucesso {
+    padding: 30px 20px;
+    text-align: center;
+    background: #edfff6;
+    border-bottom: 1px solid #d8f5e6;
+}
+
+.comprovante-page .comprovante-icone {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: var(--pay-primary);
+    color: white;
+
+    font-size: 27px;
+    font-weight: 700;
+}
+
+.comprovante-page .comprovante-sucesso h2 {
+    margin: 0 0 8px;
+    color: #087c51;
+    font-size: 21px;
+}
+
+.comprovante-page .comprovante-sucesso p {
+    margin: 0;
+    color: #587568;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* RECIBO */
+
+.comprovante-page .comprovante-recibo {
+    padding: 28px 32px;
+}
+
+.comprovante-page .comprovante-recibo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.comprovante-page .comprovante-etiqueta {
+    color: var(--pay-primary-dark);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.comprovante-page .comprovante-recibo-header h2 {
+    margin: 6px 0 0;
+    font-size: 20px;
+}
+
+.comprovante-page .comprovante-status {
+    padding: 7px 12px;
+    border-radius: 30px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* CÓDIGO */
+
+.comprovante-page .comprovante-codigo {
+    padding: 14px;
+    margin-bottom: 24px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    border-radius: 9px;
+    background: #f0f1ff;
+}
+
+.comprovante-page .comprovante-codigo span {
+    color: var(--pay-muted);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.comprovante-page .comprovante-codigo strong {
+    font-size: 16px;
+    letter-spacing: .5px;
+}
+
+/* SEÇÕES */
+
+.comprovante-page .comprovante-secao {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--pay-border);
+}
+
+.comprovante-page .comprovante-secao h3 {
+    margin: 0 0 16px;
+    font-size: 14px;
+}
+
+.comprovante-page .comprovante-dados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 24px;
+}
+
+.comprovante-page .comprovante-dados > div,
+.comprovante-page .comprovante-financeiro > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.comprovante-page .comprovante-dados span,
+.comprovante-page .comprovante-financeiro span {
+    color: var(--pay-muted);
+    font-size: 10px;
+}
+
+.comprovante-page .comprovante-dados strong,
+.comprovante-page .comprovante-financeiro strong {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.comprovante-page .comprovante-dado-completo {
+    grid-column: 1 / -1;
+}
+
+/* FINANCEIRO */
+
+.comprovante-page .comprovante-financeiro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.comprovante-page .comprovante-observacao {
+    margin: 18px 0 0;
+    padding: 12px;
+
+    border-radius: 7px;
+    background: #f8fafc;
+
+    color: var(--pay-muted);
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+/* RODAPÉ DO RECIBO */
+
+.comprovante-page .comprovante-rodape-documento {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding-top: 20px;
+
+    color: var(--pay-muted);
+    font-size: 9px;
+}
+
+/* BOTÕES */
+
+.comprovante-page .comprovante-acoes {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.comprovante-page .comprovante-btn-primary,
+.comprovante-page .comprovante-btn-secondary {
+    min-height: 42px;
+    padding: 0 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.comprovante-page .comprovante-btn-primary {
+    border: 1px solid var(--pay-primary);
+    background: var(--pay-primary);
+    color: white;
+}
+
+.comprovante-page .comprovante-btn-primary:hover {
+    background: var(--pay-primary-dark);
+}
+
+.comprovante-page .comprovante-btn-secondary {
+    border: 1px solid var(--pay-border);
+    background: white;
+    color: var(--pay-text);
+}
+
+/* RODAPÉ */
+
+.comprovante-page .pay-footer {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 20px;
+    background: white;
+    border-top: 1px solid var(--pay-border);
+}
+
+.comprovante-page .pay-footer p {
+    margin: 0;
+    color: var(--pay-muted);
+    font-size: 10px;
+    text-align: center;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 600px) {
+
+    .comprovante-page .comprovante-container {
+        width: calc(100% - 28px);
+        padding: 25px 0 35px;
+    }
+
+    .comprovante-page .comprovante-recibo {
+        padding: 20px 16px;
+    }
+
+    .comprovante-page .comprovante-dados,
+    .comprovante-page .comprovante-financeiro {
+        grid-template-columns: 1fr;
+    }
+
+    .comprovante-page .comprovante-dado-completo {
+        grid-column: auto;
+    }
+
+    .comprovante-page .comprovante-acoes {
+        flex-direction: column;
+    }
+
+    .comprovante-page .comprovante-btn-primary,
+    .comprovante-page .comprovante-btn-secondary {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .comprovante-page .comprovante-rodape-documento {
+        flex-direction: column;
+    }
+
+}
+
+/* IMPRESSÃO */
+
+@media print {
+
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+
+    .comprovante-page {
+        background: white;
+    }
+
+    .comprovante-page .pay-navbar,
+    .comprovante-page .pay-footer,
+    .comprovante-page .comprovante-header,
+    .comprovante-page .comprovante-acoes {
+        display: none !important;
+    }
+
+    .comprovante-page .comprovante-container {
+        width: 100%;
+        padding: 0;
+    }
+
+    .comprovante-page .comprovante-documento {
+        border: 1px solid #ddd;
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+    .comprovante-page .comprovante-sucesso {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .comprovante-page .comprovante-status,
+    .comprovante-page .comprovante-codigo {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+}
