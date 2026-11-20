@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pagamento - SGIE Eventos</title>
+
+    <link rel="stylesheet" href="pagamento.css">
+</head>
+
+<body class="pagamento-page">
+
+    <!-- NAVBAR -->
+    <nav class="pay-navbar">
+        <div class="pay-navbar-container">
+
+            <a href="../index.html" class="pay-brand">
+                SGIE
+                <span>EVENTOS</span>
+            </a>
+
+            <ul class="nav-links pay-nav-links"></ul>
+
+            <div class="nav-user pay-nav-user" id="nav-user-area"></div>
+
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="pagamento-container">
+
+        <header class="pagamento-header">
+            <h1>Pagamento</h1>
+        </header>
+
+        <div id="mensagem-alerta" class="pay-alert" style="display: none;"></div>
+
+        <div class="pagamento-layout">
+
+            <!-- COLUNA ESQUERDA -->
+            <section class="pagamento-coluna-principal">
+
+                <!-- DADOS DO PARTICIPANTE -->
+                <article class="pay-card">
+
+                    <div class="pay-card-header">
+                        <span class="pay-section-icon">♙</span>
+
+                        <div>
+                            <h2>Dados do Participante</h2>
+                            <p>Confira os dados do participante vinculado à inscrição.</p>
+                        </div>
+                    </div>
+
+                    <div class="pay-participante">
+
+                        <div class="pay-participante-identificacao">
+
+                            <div class="pay-avatar" id="participante-avatar">
+                                --
+                            </div>
+
+                            <div class="pay-participante-info">
+                                <div class="pay-nome-status">
+                                    <strong id="participante-nome">
+                                        Carregando participante...
+                                    </strong>
+
+                                    <span class="pay-status-identificacao">
+                                        Dados cadastrais
+                                    </span>
+                                </div>
+
+                                <span id="participante-email">--</span>
+                            </div>
+
+                        </div>
+
+                        <div class="pay-grid-dados">
+
+                            <div class="pay-field">
+                                <label for="participante-cpf">
+                                    Documento Identificador (CPF)
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="participante-cpf"
+                                    value="Não informado"
+                                    readonly
+                                >
+                            </div>
+
+                            <div class="pay-field">
+                                <label for="tipo-credenciamento">
+                                    Tipo de Credenciamento
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="tipo-credenciamento"
+                                    value="Conforme inscrição"
+                                    readonly
+                                >
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <!-- FORMA DE PAGAMENTO -->
+                <article class="pay-card">
+
+                    <div class="pay-card-header">
+                        <div>
+                            <h2>Forma de Pagamento</h2>
+                            <p>Selecione a modalidade desejada.</p>
+                        </div>
+                    </div>
+
+                    <div class="pay-select-wrapper">
+
+                        <select id="forma-pagamento">
+                            <option value="">Forma de pagamento</option>
+                            <option value="pix">PIX</option>
+                            <option value="cartao">Cartão de crédito</option>
+                            <option value="boleto">Boleto bancário</option>
+                        </select>
+
+                    </div>
+
+                    <div
+                        id="area-detalhes-pagamento"
+                        class="pay-detalhes-pagamento"
+                        style="display: none;"
+                    ></div>
+
+                    <div class="pay-method-notice">
+                        <strong>Informação importante</strong>
+                        <p>
+                            A integração com o serviço financeiro ainda não está
+                            disponível. Por isso, nenhuma cobrança ou transação
+                            será realizada nesta página.
+                        </p>
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- COLUNA DIREITA: RESUMO -->
+            <aside class="pagamento-coluna-resumo">
+
+                <article class="pay-summary-card">
+
+                    <div class="pay-summary-header">
+                        <span>RESUMO DA INSCRIÇÃO</span>
+                        <div class="pay-summary-decoration"></div>
+                    </div>
+
+                    <div class="pay-summary-content">
+
+                        <h2 id="resumo-evento">
+                            Carregando evento...
+                        </h2>
+
+                        <div class="pay-summary-row">
+                            <span>Valor da inscrição</span>
+                            <strong id="resumo-valor">R$ 0,00</strong>
+                        </div>
+
+                        <div class="pay-summary-row">
+                            <span>Forma de pagamento</span>
+                            <strong id="resumo-forma">Não selecionada</strong>
+                        </div>
+
+                        <div class="pay-summary-row pay-summary-total">
+                            <span>Valor informado</span>
+                            <strong id="resumo-total">R$ 0,00</strong>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="btn-ir-pagamento"
+                            class="pay-button-primary"
+                            disabled
+                        >
+                            Pagamento indisponível
+                        </button>
+
+                        <p class="pay-payment-unavailable">
+                            A conclusão do pagamento será liberada após a
+                            integração do serviço financeiro ao SGIE.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="pay-footer">
+        <p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../config.js"></script>
+    <script src="../api.js"></script>
+    <script src="pagamento.js"></script>
+
+</body>
+</html>
