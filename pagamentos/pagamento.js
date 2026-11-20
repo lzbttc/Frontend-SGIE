@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
 
     // =========================================
@@ -13,13 +12,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     atualizarCabecalhoUsuario('pagamento');
 
     // =========================================
-    // ELEMENTOS DA PÁGINA
+    // PARÂMETROS DA PÁGINA
     // =========================================
 
     const params = new URLSearchParams(window.location.search);
 
     const eventoId = params.get('evento');
     const inscricaoId = params.get('inscricao');
+
+    // =========================================
+    // FORMAS DE PAGAMENTO
+    // =========================================
+
+    // Chave = valor do <select> | api = valor aceito pelo backend (MetodoPagamento).
+    const METODOS = {
+        pix: {
+            rotulo: 'PIX',
+            api: 'PIX',
+            aviso: 'Ao confirmar, será gerado um código PIX "copia e cola" para você pagar no aplicativo do seu banco.'
+        },
+        cartao: {
+            rotulo: 'Cartão de crédito',
+            api: 'CARTAO_CREDITO',
+            aviso: ''
+        },
+        boleto: {
+            rotulo: 'Boleto bancário',
+            api: 'BOLETO',
+            aviso: 'Ao confirmar, será gerado o boleto bancário para pagamento.'
+        }
+    };
+
+    // =========================================
+    // ELEMENTOS DA PÁGINA
+    // =========================================
 
     const elementos = {
         alerta: document.getElementById('mensagem-alerta'),
@@ -47,11 +73,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     let eventoAtual = null;
     let inscricaoAtual = null;
     let participanteAtual = null;
+    let cobrancaAtual = null;
 
     let valorInscricao = 0;
 
+    let dadosCarregados = false;
+    let processando = false;
+    let aguardandoConfirmacao = false;
+    let finalizado = false;
+
     // =========================================
-    // FORMATAÇÃO
+    // FORMATAÇÃO E UTILITÁRIOS
     // =========================================
 
     function formatarCPFMascarado(cpf) {
@@ -76,22 +108,113 @@ document.addEventListener('DOMContentLoaded', async () => {
             .toUpperCase();
     }
 
-    function escaparHTML(valor) {
-        return String(valor ?? '').replace(/[&<>"']/g, caractere => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-        })[caractere]);
-    }
-
     function obterIdRelacionado(valor) {
         if (valor && typeof valor === 'object') {
             return valor.id ?? valor.pk ?? valor;
         }
 
         return valor;
+    }
+
+    function apenasDigitos(valor) {
+        return String(valor ?? '').replace(/\D/g, '');
+    }
+
+    // Converte os formatos de erro do DRF (texto, lista, {detail}, {campo: [..]})
+    // em uma mensagem legível.
+    function extrairMensagemErro(dados, padrao) {
+        if (!dados) return padrao;
+
+        if (typeof dados === 'string') return dados;
+
+        if (Array.isArray(dados)) {
+            const texto = dados.map(item => String(item)).join(' ').trim();
+            return texto || padrao;
+        }
+
+        if (typeof dados === 'object') {
+            if (dados.detail) return String(dados.detail);
+
+            const partes = Object.entries(dados).map(([campo, erros]) => {
+                const texto = Array.isArray(erros)
+                    ? erros.map(item => String(item)).join(' ')
+                    : String(erros);
+
+                return campo === 'non_field_errors'
+                    ? texto
+                    : `${campo.replace(/_/g, ' ')}: ${texto}`;
+            });
+
+            const mensagem = partes.join(' | ').trim();
+            return mensagem || padrao;
+        }
+
+        return padrao;
+    }
+
+    function urlSegura(url) {
+        try {
+            const endereco = new URL(String(url || ''));
+            return endereco.protocol === 'https:' ? endereco.href : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function irParaComprovante() {
+        window.location.href = resolveAppUrl(
+            `pagamentos/comprovante.html?inscricao=${encodeURIComponent(inscricaoId)}`
+        );
+    }
+
+    function criarElemento(tag, opcoes = {}) {
+        const elemento = document.createElement(tag);
+
+        if (opcoes.classe) elemento.className = opcoes.classe;
+        if (opcoes.texto !== undefined) elemento.textContent = opcoes.texto;
+
+        Object.entries(opcoes.atributos || {}).forEach(([nome, valor]) => {
+            elemento.setAttribute(nome, valor);
+        });
+
+        return elemento;
+    }
+
+    function criarAviso(titulo, texto) {
+        const aviso = criarElemento('div', { classe: 'pay-method-notice' });
+
+        aviso.appendChild(criarElemento('strong', { texto: titulo }));
+        aviso.appendChild(criarElemento('p', { texto }));
+
+        return aviso;
+    }
+
+    function criarCampo(id, rotulo, atributos = {}) {
+        const campo = criarElemento('div', { classe: 'pay-field' });
+
+        campo.appendChild(criarElemento('label', {
+            texto: rotulo,
+            atributos: { for: id }
+        }));
+
+        campo.appendChild(criarElemento('input', {
+            atributos: { id, type: 'text', ...atributos }
+        }));
+
+        return campo;
+    }
+
+    function criarBotao(texto, aoClicar) {
+        const botao = criarElemento('button', {
+            classe: 'pay-button-primary',
+            texto,
+            atributos: { type: 'button' }
+        });
+
+        botao.style.marginTop = '12px';
+        botao.addEventListener('click', () => aoClicar(botao));
+
+        return botao;
     }
 
     // =========================================
@@ -124,12 +247,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================
+    // ESTADO DO BOTÃO
+    // =========================================
+
+    function atualizarBotao() {
+        const metodoValido = Boolean(METODOS[elementos.forma.value]);
+
+        elementos.botaoPagamento.disabled = !(
+            dadosCarregados &&
+            metodoValido &&
+            !processando &&
+            !aguardandoConfirmacao &&
+            !finalizado
+        );
+
+        elementos.botaoPagamento.textContent = processando
+            ? 'Processando pagamento...'
+            : 'Confirmar pagamento';
+    }
+
+    function definirProcessando(valor) {
+        processando = valor;
+        elementos.forma.disabled = valor;
+        atualizarBotao();
+    }
+
+    // =========================================
     // CARREGAR DADOS DA API
     // =========================================
 
+    // Retorna true quando a página está pronta para pagamento e false
+    // quando o usuário foi redirecionado para outra tela.
     async function carregarDados() {
 
-        if (!eventoId || !inscricaoId) {
+        if (
+            !/^\d+$/.test(String(eventoId || '')) ||
+            !/^\d+$/.test(String(inscricaoId || ''))
+        ) {
             throw new Error(
                 'Não foi possível identificar o evento ou a inscrição.'
             );
@@ -176,6 +330,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             );
         }
 
+        // Inscrição já confirmada (pagamento aprovado): vai direto ao comprovante.
+
+        if (inscricaoAtual.status === 'confirmada') {
+            irParaComprovante();
+            return false;
+        }
+
         // Verificar situação da inscrição.
 
         if (inscricaoAtual.status !== 'pendente_pagamento') {
@@ -205,6 +366,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         preencherParticipante();
         preencherResumo();
+
+        return true;
     }
 
     // =========================================
@@ -245,74 +408,469 @@ document.addEventListener('DOMContentLoaded', async () => {
         atualizarFormaPagamento();
     }
 
+    function atualizarTotalDaCobranca(cobranca) {
+        const valorFinal = Number(cobranca && cobranca.valor_final);
+
+        if (Number.isFinite(valorFinal)) {
+            elementos.total.textContent = formatarMoeda(valorFinal);
+        }
+    }
+
     // =========================================
     // FORMA DE PAGAMENTO
     // =========================================
 
     function atualizarFormaPagamento() {
 
-        const formas = {
-            pix: 'PIX',
-            cartao: 'Cartão de crédito',
-            boleto: 'Boleto bancário'
-        };
-
-        const metodo = elementos.forma.value;
+        const metodo = METODOS[elementos.forma.value];
 
         elementos.resumoForma.textContent =
-            formas[metodo] || 'Não selecionada';
+            metodo ? metodo.rotulo : 'Não selecionada';
+    }
+
+    function mascararNumeroCartao(valor) {
+        return apenasDigitos(valor)
+            .slice(0, 19)
+            .replace(/(\d{4})(?=\d)/g, '$1 ');
+    }
+
+    function mascararValidade(valor) {
+        const digitos = apenasDigitos(valor).slice(0, 4);
+
+        return digitos.length > 2
+            ? `${digitos.slice(0, 2)}/${digitos.slice(2)}`
+            : digitos;
+    }
+
+    function criarFormularioCartao() {
+
+        const formulario = criarElemento('div');
+
+        const campoNome = criarCampo('cartao-nome', 'Nome impresso no cartão', {
+            autocomplete: 'cc-name',
+            maxlength: '60'
+        });
+
+        const grade = criarElemento('div', { classe: 'pay-grid-dados' });
+
+        const campoNumero = criarCampo('cartao-numero', 'Número do cartão', {
+            inputmode: 'numeric',
+            autocomplete: 'cc-number',
+            maxlength: '23',
+            placeholder: '0000 0000 0000 0000'
+        });
+
+        const campoValidade = criarCampo('cartao-validade', 'Validade', {
+            inputmode: 'numeric',
+            autocomplete: 'cc-exp',
+            maxlength: '5',
+            placeholder: 'MM/AA'
+        });
+
+        campoNumero.querySelector('input').addEventListener('input', evento => {
+            evento.target.value = mascararNumeroCartao(evento.target.value);
+        });
+
+        campoValidade.querySelector('input').addEventListener('input', evento => {
+            evento.target.value = mascararValidade(evento.target.value);
+        });
+
+        grade.appendChild(campoNumero);
+        grade.appendChild(campoValidade);
+
+        campoNome.style.marginBottom = '12px';
+
+        formulario.appendChild(campoNome);
+        formulario.appendChild(grade);
+
+        return formulario;
+    }
+
+    // Valida os campos do cartão. Retorna os dados prontos para a API
+    // ou null (exibindo a mensagem de erro) quando algo está inválido.
+    // O CVV não é coletado nem enviado: o gateway atual não o utiliza.
+    // Ao integrar um PSP real, os dados do cartão devem ser tokenizados
+    // no navegador pelo SDK do provedor, sem passar pelo backend do SGIE.
+    function lerDadosCartao() {
+
+        const nome = (document.getElementById('cartao-nome')?.value || '').trim();
+        const numero = apenasDigitos(document.getElementById('cartao-numero')?.value);
+        const validade = (document.getElementById('cartao-validade')?.value || '').trim();
+
+        if (nome.length < 3) {
+            exibirMensagem('Informe o nome impresso no cartão.');
+            return null;
+        }
+
+        if (numero.length < 13 || numero.length > 19) {
+            exibirMensagem('Informe um número de cartão válido.');
+            return null;
+        }
+
+        const partesValidade = validade.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+
+        if (!partesValidade) {
+            exibirMensagem('Informe a validade do cartão no formato MM/AA.');
+            return null;
+        }
+
+        const mes = Number(partesValidade[1]);
+        const ano = 2000 + Number(partesValidade[2]);
+
+        // O cartão vale até o último dia do mês informado.
+        if (new Date(ano, mes, 1) <= new Date()) {
+            exibirMensagem('O cartão informado está vencido.');
+            return null;
+        }
+
+        return {
+            numero_cartao: numero,
+            nome_titular: nome,
+            validade
+        };
+    }
+
+    function renderizarDetalhesMetodo() {
+
+        const metodo = elementos.forma.value;
+        const configuracao = METODOS[metodo];
+
+        elementos.detalhes.innerHTML = '';
+
+        if (!configuracao) {
+            elementos.detalhes.style.display = 'none';
+            return;
+        }
+
+        if (metodo === 'cartao') {
+            elementos.detalhes.appendChild(criarFormularioCartao());
+        } else {
+            elementos.detalhes.appendChild(
+                criarAviso(configuracao.rotulo, configuracao.aviso)
+            );
+        }
+
+        elementos.detalhes.style.display = 'block';
     }
 
     elementos.forma.addEventListener('change', () => {
 
-        const metodo = elementos.forma.value;
+        // Trocar a forma de pagamento libera uma nova tentativa.
+        aguardandoConfirmacao = false;
 
-        elementos.detalhes.innerHTML = '';
-        elementos.detalhes.style.display = 'none';
+        limparMensagem();
+        renderizarDetalhesMetodo();
+        atualizarFormaPagamento();
+        atualizarBotao();
+    });
 
-        const mensagens = {
-            pix: 'O pagamento via PIX estará disponível após a integração com o serviço financeiro.',
-            cartao: 'O pagamento via cartão estará disponível após a integração com o serviço financeiro.',
-            boleto: 'A emissão de boletos estará disponível após a integração com o serviço financeiro.'
-        };
+    // =========================================
+    // COBRANÇA (BACKEND)
+    // =========================================
 
-        if (mensagens[metodo]) {
+    // Reaproveita uma cobrança pendente e vigente da inscrição; se não
+    // houver, gera uma nova. Evita cobranças duplicadas a cada tentativa.
+    async function obterCobrancaPendente() {
 
-            const nomeMetodo =
-                elementos.forma.options[
-                    elementos.forma.selectedIndex
-                ].text;
+        const resLista = await apiFetch('/cobrancas/');
 
-            elementos.detalhes.innerHTML = `
-                <div class="pay-method-notice">
-                    <strong>${escaparHTML(nomeMetodo)}</strong>
-                    <p>${escaparHTML(mensagens[metodo])}</p>
-                </div>
-            `;
-
-            elementos.detalhes.style.display = 'block';
+        if (!resLista.ok) {
+            throw new Error('Não foi possível consultar suas cobranças.');
         }
 
-        atualizarFormaPagamento();
-    });
+        const dadosLista = await resLista.json().catch(() => []);
+
+        const cobrancas = Array.isArray(dadosLista)
+            ? dadosLista
+            : (Array.isArray(dadosLista.results) ? dadosLista.results : []);
+
+        const existente = cobrancas.find(cobranca =>
+            String(obterIdRelacionado(cobranca.inscricao)) === String(inscricaoId) &&
+            cobranca.status === 'PENDENTE' &&
+            !cobranca.esta_vencida
+        );
+
+        if (existente) return existente;
+
+        const resCriar = await apiFetch('/cobrancas/', {
+            method: 'POST',
+            body: JSON.stringify({ inscricao_id: Number(inscricaoId) })
+        });
+
+        const dadosCriar = await resCriar.json().catch(() => ({}));
+
+        if (!resCriar.ok) {
+            throw new Error(
+                extrairMensagemErro(dadosCriar, 'Não foi possível gerar a cobrança.')
+            );
+        }
+
+        return dadosCriar;
+    }
+
+    // =========================================
+    // RESULTADO DO PAGAMENTO
+    // =========================================
+
+    function copiarTexto(texto, campo) {
+
+        const concluir = () => exibirMensagem('Código PIX copiado.', 'success');
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto).then(concluir).catch(() => {
+                campo.select();
+                exibirMensagem('Não foi possível copiar automaticamente. Selecione o código e copie manualmente.', 'info');
+            });
+            return;
+        }
+
+        campo.select();
+        exibirMensagem('Selecione o código e copie manualmente.', 'info');
+    }
+
+    async function verificarPagamento(botao) {
+
+        botao.disabled = true;
+
+        try {
+
+            const resposta = await apiFetch(
+                `/inscricoes/${encodeURIComponent(inscricaoId)}/`
+            );
+
+            if (!resposta.ok) {
+                throw new Error('Não foi possível consultar a situação da inscrição.');
+            }
+
+            const inscricao = await resposta.json();
+
+            if (inscricao.status === 'confirmada') {
+
+                finalizado = true;
+                atualizarBotao();
+
+                exibirMensagem('Pagamento confirmado! Redirecionando para o comprovante...', 'success');
+
+                setTimeout(irParaComprovante, 1500);
+                return;
+            }
+
+            if (inscricao.status === 'cancelada') {
+                exibirMensagem('Esta inscrição foi cancelada.', 'danger');
+                return;
+            }
+
+            exibirMensagem(
+                'Ainda não recebemos a confirmação do pagamento. Aguarde alguns instantes e tente novamente.',
+                'info'
+            );
+
+        } catch (erro) {
+
+            console.error('Erro ao verificar pagamento:', erro);
+            exibirMensagem(erro.message || 'Não foi possível verificar o pagamento.');
+
+        } finally {
+
+            if (!finalizado) botao.disabled = false;
+        }
+    }
+
+    function exibirInstrucoesPix(pagamento) {
+
+        elementos.detalhes.innerHTML = '';
+
+        elementos.detalhes.appendChild(criarAviso(
+            'PIX gerado',
+            'Copie o código abaixo e pague no aplicativo do seu banco. Depois, clique em "Já paguei" para verificar a confirmação.'
+        ));
+
+        const campo = criarCampo('pix-copia-cola', 'PIX copia e cola', { readonly: '' });
+        const entrada = campo.querySelector('input');
+
+        entrada.value = pagamento.qr_code_pix || '';
+        campo.style.marginTop = '12px';
+
+        elementos.detalhes.appendChild(campo);
+
+        elementos.detalhes.appendChild(
+            criarBotao('Copiar código PIX', () => copiarTexto(entrada.value, entrada))
+        );
+
+        elementos.detalhes.appendChild(
+            criarBotao('Já paguei — verificar pagamento', verificarPagamento)
+        );
+
+        elementos.detalhes.style.display = 'block';
+    }
+
+    function exibirInstrucoesBoleto(pagamento) {
+
+        elementos.detalhes.innerHTML = '';
+
+        elementos.detalhes.appendChild(criarAviso(
+            'Boleto gerado',
+            'Pague o boleto no seu banco. A confirmação pode levar algum tempo. Depois, clique em "Já paguei" para verificar.'
+        ));
+
+        const endereco = urlSegura(pagamento.url_pagamento);
+
+        if (endereco) {
+            const link = criarElemento('a', {
+                classe: 'pay-button-primary',
+                texto: 'Abrir boleto',
+                atributos: {
+                    href: endereco,
+                    target: '_blank',
+                    rel: 'noopener noreferrer'
+                }
+            });
+
+            link.style.marginTop = '12px';
+            link.style.textDecoration = 'none';
+
+            elementos.detalhes.appendChild(link);
+        } else {
+            const semLink = criarElemento('p', {
+                texto: 'O link do boleto não foi disponibilizado. Consulte Minhas Inscrições mais tarde.'
+            });
+
+            semLink.style.marginTop = '12px';
+            elementos.detalhes.appendChild(semLink);
+        }
+
+        elementos.detalhes.appendChild(
+            criarBotao('Já paguei — verificar pagamento', verificarPagamento)
+        );
+
+        elementos.detalhes.style.display = 'block';
+    }
+
+    function tratarResultadoPagamento(pagamento, metodo) {
+
+        if (pagamento.status === 'APROVADO') {
+
+            finalizado = true;
+            atualizarBotao();
+
+            exibirMensagem(
+                'Pagamento aprovado! Redirecionando para o comprovante...',
+                'success'
+            );
+
+            setTimeout(irParaComprovante, 1500);
+            return;
+        }
+
+        if (pagamento.status === 'RECUSADO') {
+
+            exibirMensagem(
+                'Pagamento recusado. Confira os dados ou escolha outra forma de pagamento.',
+                'danger'
+            );
+            return;
+        }
+
+        if (pagamento.status === 'PROCESSANDO') {
+
+            aguardandoConfirmacao = true;
+            atualizarBotao();
+
+            if (metodo === 'pix') {
+                exibirInstrucoesPix(pagamento);
+                exibirMensagem('Código PIX gerado. Aguardando o pagamento.', 'info');
+                return;
+            }
+
+            if (metodo === 'boleto') {
+                exibirInstrucoesBoleto(pagamento);
+                exibirMensagem('Boleto gerado. Aguardando o pagamento.', 'info');
+                return;
+            }
+        }
+
+        exibirMensagem(
+            'Pagamento em análise. Você será avisado quando for confirmado.',
+            'info'
+        );
+    }
 
     // =========================================
     // PAGAMENTO
     // =========================================
 
-    // O botão permanece desabilitado porque ainda não existe
-    // integração financeira para processar a transação.
+    async function pagar() {
 
-    elementos.botaoPagamento.disabled = true;
+        if (processando || finalizado || !dadosCarregados) return;
 
-    elementos.botaoPagamento.addEventListener('click', () => {
+        const metodo = elementos.forma.value;
+        const configuracao = METODOS[metodo];
 
-        exibirMensagem(
-            'O processamento financeiro ainda não está disponível no SGIE. Nenhum pagamento foi realizado.',
-            'info'
-        );
+        if (!configuracao) {
+            exibirMensagem('Selecione uma forma de pagamento.');
+            return;
+        }
 
-    });
+        let dadosCartao = null;
+
+        if (metodo === 'cartao') {
+            dadosCartao = lerDadosCartao();
+            if (!dadosCartao) return;
+        }
+
+        limparMensagem();
+        definirProcessando(true);
+
+        try {
+
+            if (!cobrancaAtual) {
+                cobrancaAtual = await obterCobrancaPendente();
+            }
+
+            atualizarTotalDaCobranca(cobrancaAtual);
+
+            const corpo = { metodo: configuracao.api };
+
+            if (dadosCartao) corpo.dados_cartao = dadosCartao;
+
+            const resposta = await apiFetch(
+                `/cobrancas/${encodeURIComponent(cobrancaAtual.id)}/pagar/`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify(corpo)
+                }
+            );
+
+            const pagamento = await resposta.json().catch(() => ({}));
+
+            if (!resposta.ok) {
+
+                // A cobrança pode ter vencido ou sido quitada: na próxima
+                // tentativa ela é consultada novamente.
+                cobrancaAtual = null;
+
+                throw new Error(
+                    extrairMensagemErro(pagamento, 'Não foi possível processar o pagamento.')
+                );
+            }
+
+            tratarResultadoPagamento(pagamento, metodo);
+
+        } catch (erro) {
+
+            console.error('Erro ao processar pagamento:', erro);
+
+            exibirMensagem(
+                erro.message || 'Não foi possível processar o pagamento.'
+            );
+
+        } finally {
+
+            definirProcessando(false);
+        }
+    }
+
+    elementos.botaoPagamento.addEventListener('click', pagar);
 
     // =========================================
     // INICIALIZAÇÃO
@@ -320,7 +878,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
 
-        await carregarDados();
+        dadosCarregados = await carregarDados();
 
     } catch (error) {
 
@@ -331,7 +889,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             'Não foi possível carregar a página de pagamento.'
         );
 
-        elementos.botaoPagamento.disabled = true;
+        dadosCarregados = false;
     }
+
+    atualizarBotao();
 
 });

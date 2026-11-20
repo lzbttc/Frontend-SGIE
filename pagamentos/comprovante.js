@@ -124,6 +124,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================
+    // COBRANÇA DA INSCRIÇÃO
+    // =========================================
+
+    // Consulta de apoio: qualquer falha retorna null sem interromper o comprovante.
+    async function buscarCobrancaDaInscricao(idInscricao) {
+
+        try {
+
+            const resposta = await apiFetch('/cobrancas/');
+
+            if (!resposta.ok) return null;
+
+            const dados = await resposta.json();
+
+            const lista = Array.isArray(dados)
+                ? dados
+                : (Array.isArray(dados.results) ? dados.results : []);
+
+            const daInscricao = lista.filter(
+                item => String(item.inscricao) === String(idInscricao)
+            );
+
+            // Prioriza a cobrança paga, se houver mais de uma.
+            return daInscricao.find(item => item.status === 'PAGA')
+                || daInscricao[0]
+                || null;
+
+        } catch (erro) {
+
+            console.error('Erro ao consultar cobrança da inscrição:', erro);
+            return null;
+        }
+    }
+
+    function descreverSituacaoCobranca(cobranca) {
+
+        if (!cobranca) return 'Não informado pelo sistema';
+
+        const situacoes = {
+            PAGA: 'Pago',
+            PENDENTE: 'Aguardando pagamento',
+            EXPIRADA: 'Cobrança expirada',
+            CANCELADA: 'Cobrança cancelada'
+        };
+
+        return situacoes[cobranca.status] || 'Não informado pelo sistema';
+    }
+
+    // =========================================
     // CARREGAR COMPROVANTE
     // =========================================
 
@@ -181,10 +230,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const usuario = await usuarioResponse.json();
 
-        preencher(
-            'comprovante-codigo',
-            `SGIE-${String(inscricao.id).padStart(6, '0')}`
-        );
+        // Mesmo código do ingresso exibido em "Minhas Inscrições"
+        // (gerado pelo backend como SGIE-<evento>-<inscrição>).
+        const codigoIngresso =
+            inscricao.codigo_ingresso ||
+            (
+                inscricao.evento !== null && inscricao.evento !== undefined
+                    ? `SGIE-${String(inscricao.evento).padStart(4, '0')}-${String(inscricao.id).padStart(6, '0')}`
+                    : `SGIE-${String(inscricao.id).padStart(6, '0')}`
+            );
+
+        preencher('comprovante-codigo', codigoIngresso);
 
         preencher(
             'comprovante-nome',
@@ -201,12 +257,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             usuario.email
         );
 
-        // Mantém o valor padrão do HTML enquanto a API
-        // não fornecer um campo confirmado de credenciamento.
-        preencher(
-            'comprovante-credenciamento',
-            inscricao.tipo_credenciamento || 'Participante'
-        );
+        // O backend ainda não possui tipo de credenciamento na inscrição:
+        // mantém o valor padrão ("Participante") definido no HTML.
 
         // =====================================
         // DADOS DO EVENTO
@@ -238,23 +290,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const eventoGratuito = inscricao.evento_e_gratuito === true;
 
-        preencher(
-            'comprovante-valor',
-            eventoGratuito
-                ? 'Gratuito'
-                : (
-                    inscricao.evento_preco !== null &&
-                    inscricao.evento_preco !== undefined
-                        ? formatarMoeda(inscricao.evento_preco)
-                        : 'Não informado'
-                )
-        );
+        // Em eventos pagos, a cobrança é a fonte do valor e da situação.
+        // Se a consulta falhar, o comprovante continua sendo emitido com
+        // os dados do evento.
+        const cobranca = eventoGratuito
+            ? null
+            : await buscarCobrancaDaInscricao(inscricao.id);
+
+        let valorExibido = 'Não informado';
+
+        if (eventoGratuito) {
+            valorExibido = 'Gratuito';
+        } else if (cobranca && cobranca.valor_final !== null && cobranca.valor_final !== undefined) {
+            valorExibido = formatarMoeda(cobranca.valor_final);
+        } else if (inscricao.evento_preco !== null && inscricao.evento_preco !== undefined) {
+            valorExibido = formatarMoeda(inscricao.evento_preco);
+        }
+
+        preencher('comprovante-valor', valorExibido);
 
         preencher(
             'comprovante-financeiro-status',
             eventoGratuito
                 ? 'Não se aplica'
-                : 'Não informado pelo sistema'
+                : descreverSituacaoCobranca(cobranca)
         );
 
         // =====================================
