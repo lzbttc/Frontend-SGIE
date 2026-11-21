@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Submeter trabalho — SGIE</title>
+    <link rel="stylesheet" href="../../sgie.css">
+    <style>
+        .opt {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .drop {
+            border: 2px dashed var(--line-strong);
+            border-radius: var(--r-md);
+            padding: 32px 20px;
+            text-align: center;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        .drop.dragover {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: var(--surface);
+            margin-top: 12px;
+        }
+        .sticky-aside {
+            position: sticky;
+            top: 24px;
+        }
+    </style>
+</head>
+
+<body class="app">
+
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container md">
+
+            <nav aria-label="Você está em" class="crumb">
+                <a href="../../index.html">Explorar eventos</a>
+                <span aria-hidden="true">/</span>
+                <a href="../minhas-submissoes/index.html">Minhas submissões</a>
+                <span aria-hidden="true">/</span>
+                <span>Submeter trabalho</span>
+            </nav>
+
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Submeter trabalho</h1>
+                    <p>Salve como rascunho e envie quando estiver pronto. Você pode editar à vontade até submeter.</p>
+                </div>
+            </header>
+
+            <div id="mensagem-alerta" style="display: none; margin-bottom: 20px;"></div>
+
+            <form class="with-side" id="form-submissao" novalidate>
+                <!-- COLUNA PRINCIPAL -->
+                <div class="stack lg">
+
+                    <!-- SEÇÃO: EVENTO -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Evento acadêmico</h2>
+                                <p>Selecione o evento que receberá a submissão.</p>
+                            </div>
+                        </div>
+
+                        <div class="stack">
+                            <div class="field">
+                                <label class="label" for="sub-evento">Evento <span style="color:var(--danger)">*</span></label>
+                                <select class="select" id="sub-evento" required>
+                                    <option value="">Carregando eventos disponíveis...</option>
+                                </select>
+                                <span class="hint" id="hint-evento">Selecione um evento com inscrições ou submissões abertas.</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SEÇÃO: SOBRE O TRABALHO -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Sobre o trabalho</h2>
+                                <p>O abstract e as palavras-chave são obrigatórios.</p>
+                            </div>
+                        </div>
+
+                        <div class="stack">
+                            <div class="field">
+                                <label class="label" for="t-titulo">Título <span style="color:var(--danger)">*</span></label>
+                                <input class="input" id="t-titulo" maxlength="300" required placeholder="Ex.: Detecção de plágio em textos acadêmicos com modelos de linguagem" />
+                                <span class="hint">Até 300 caracteres.</span>
+                            </div>
+
+                            <div class="grid cols-2 gap-4">
+                                <div class="field">
+                                    <label class="label" for="t-tipo">Tipo de trabalho <span style="color:var(--danger)">*</span></label>
+                                    <select class="select" id="t-tipo" required>
+                                        <option value="Artigo">Artigo</option>
+                                        <option value="Palestra">Palestra</option>
+                                        <option value="Minicurso">Minicurso</option>
+                                        <option value="Poster">Pôster</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label" for="t-area">Área temática <span style="color:var(--danger)">*</span></label>
+                                    <select class="select" id="t-area" required>
+                                        <option value="">Carregando áreas...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label" for="t-abstract">Abstract <span style="color:var(--danger)">*</span></label>
+                                <textarea class="textarea" id="t-abstract" style="min-height: 140px;" required placeholder="Texto acadêmico do abstract..."></textarea>
+                                <span class="hint">Em português ou inglês, conforme as normas do evento.</span>
+                            </div>
+
+                            <div class="field">
+                                <label class="label" for="t-resumo">Resumo executivo <span class="opt">(opcional)</span></label>
+                                <textarea class="textarea" id="t-resumo" placeholder="Uma ou duas frases para a programação do evento"></textarea>
+                            </div>
+
+                            <div class="field">
+                                <label class="label" for="t-kw">Palavras-chave <span style="color:var(--danger)">*</span></label>
+                                <input class="input" id="t-kw" maxlength="500" required placeholder="Ex.: inteligência artificial, educação, integridade acadêmica" />
+                                <span class="hint">Separe por vírgula (até 500 caracteres).</span>
+                            </div>
+
+                            <div class="field">
+                                <label class="label" for="t-desc">Descrição adicional <span class="opt">(opcional)</span></label>
+                                <textarea class="textarea" id="t-desc" placeholder="Algo que o avaliador deva saber antes de ler"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SEÇÃO: AUTORES -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Autores</h2>
+                                <p>Perfil acadêmico do autor principal e dos coautores.</p>
+                            </div>
+                        </div>
+
+                        <div class="stack lg">
+                            <div class="stack">
+                                <div class="row between">
+                                    <h3 class="h3">1. Autor principal</h3>
+                                    <span class="badge badge-neutral">Você</span>
+                                </div>
+
+                                <div class="grid cols-2 gap-4">
+                                    <div class="field">
+                                        <label class="label" for="a1-nome">Nome</label>
+                                        <input class="input" id="a1-nome" readonly />
+                                    </div>
+                                    <div class="field">
+                                        <label class="label" for="a1-mail">E-mail</label>
+                                        <input class="input" id="a1-mail" readonly />
+                                    </div>
+                                    <div class="field">
+                                        <label class="label" for="a1-afil">Afiliação institucional</label>
+                                        <input class="input" id="a1-afil" placeholder="Ex.: Universidade de Brasília" />
+                                    </div>
+                                    <div class="field">
+                                        <label class="label" for="a1-tit">Maior titulação</label>
+                                        <select class="select" id="a1-tit">
+                                            <option value="Graduação">Graduação</option>
+                                            <option value="Especialização">Especialização</option>
+                                            <option value="Mestrado">Mestrado</option>
+                                            <option value="Doutorado">Doutorado</option>
+                                            <option value="Pós-doutorado">Pós-doutorado</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label" for="a1-lattes">Currículo Lattes</label>
+                                        <div class="input-icon">
+                                            <i class="ic ic-link"></i>
+                                            <input class="input" id="a1-lattes" placeholder="http://lattes.cnpq.br/..." />
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="label" for="a1-in">Perfil no LinkedIn</label>
+                                        <div class="input-icon">
+                                            <i class="ic ic-link"></i>
+                                            <input class="input" id="a1-in" placeholder="https://www.linkedin.com/in/..." />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="sep" />
+
+                            <div class="stack">
+                                <div class="row between">
+                                    <h3 class="h3">2. Coautores</h3>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Conta do coautor</label>
+                                    <div class="input-icon">
+                                        <i class="ic ic-mail"></i>
+                                        <input class="input" disabled placeholder="Indisponível na API v1" />
+                                    </div>
+                                    <span class="hint small muted">
+                                        A API exige o UUID do usuário e não oferece busca aberta por e-mail. A inclusão de coautores está reservada para atualização com endpoint seguro de coautoria.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SEÇÃO: ARQUIVO DO TRABALHO -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Arquivo do trabalho</h2>
+                                <p>Envie o texto completo no formato solicitado pelo evento.</p>
+                            </div>
+                        </div>
+
+                        <div class="drop" id="drop-area">
+                            <i class="ic ic-upload" style="font-size: 28px;"></i>
+                            <b style="color: var(--ink);">Arraste o arquivo ou escolha no computador</b>
+                            <span class="small muted">Formatos aceitos: PDF, DOC ou DOCX até 20 MB</span>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn-escolher-arquivo" style="margin-top: 6px;">Escolher arquivo</button>
+                            <input type="file" id="input-arquivo" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+                        </div>
+
+                        <div id="preview-arquivo" class="file-item" style="display: none;">
+                            <i class="ic ic-file" style="color: var(--primary-ink); font-size: 20px;"></i>
+                            <div class="grow">
+                                <b id="arquivo-nome">—</b>
+                                <p class="small muted" id="arquivo-tamanho">—</p>
+                            </div>
+                            <button type="button" aria-label="Remover arquivo" class="btn btn-ghost btn-sm" id="btn-remover-arquivo">
+                                <i class="ic ic-x"></i>
+                            </button>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- SIDEBAR COM RESUMO E AÇÕES -->
+                <aside aria-label="Resumo da submissão" class="stack sticky-aside">
+                    <section class="card stack">
+                        <div>
+                            <p class="eyebrow">Evento selecionado</p>
+                            <h2 class="h3" id="aside-evento-nome" style="margin-top: 4px;">Selecione um evento</h2>
+                        </div>
+
+                        <div id="aside-evento-alerta" class="alert alert-info" style="display: none;">
+                            <i class="ic ic-clock"></i>
+                            <div id="aside-evento-prazo"></div>
+                        </div>
+
+                        <div class="alert alert-warning" style="font-size: 13px;">
+                            <i class="ic ic-alert"></i>
+                            <div>
+                                <b>Nota de submissão:</b> O SGIE recomenda possuir inscrição confirmada no evento antes de submeter trabalhos.
+                            </div>
+                        </div>
+
+                        <hr class="sep" />
+
+                        <div class="stack" style="gap: 10px;">
+                            <button type="button" class="btn btn-primary btn-block" id="btn-submeter-final">
+                                Submeter trabalho agora
+                            </button>
+
+                            <button type="button" class="btn btn-secondary btn-block" id="btn-salvar-rascunho">
+                                Salvar rascunho
+                            </button>
+                        </div>
+
+                        <p class="small muted">
+                            Ao submeter, o trabalho será registrado para avaliação pelos pares. Você poderá acompanhar o status em Minhas Submissões.
+                        </p>
+                    </section>
+                </aside>
+
+            </form>
+
+        </div>
+    </main>
+
+    <!-- RODAPÉ COMPARTILHADO -->
+    <footer class="footer">
+        <div class="container">
+            <p>SGIE — Sistema de Gestão de Inscrições e Eventos Universitários</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../../config.js"></script>
+    <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
+    <script src="submeter_trabalho.js"></script>
+
+</body>
+
+</html>
