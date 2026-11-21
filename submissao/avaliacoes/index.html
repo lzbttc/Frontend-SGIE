@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Avaliações — SGIE</title>
+    <link rel="stylesheet" href="../../sgie.css">
+    <style>
+        .meta-list {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .meta-list li {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn.disabled, .btn[aria-disabled="true"] {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="app">
+
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Avaliações de Trabalhos</h1>
+                    <p>Fila de trabalhos científicos atribuídos a você para emissão de parecer acadêmico.</p>
+                </div>
+            </header>
+
+            <div class="stack lg">
+                <!-- AVISO DE CONTRATO DA API (REGRA DA FASE 9 / SEÇÃO 3.5 DO PLANO) -->
+                <div class="alert alert-warning" style="line-height: 1.5;">
+                    <i class="ic ic-alert"></i>
+                    <div class="grow">
+                        <b>Aviso de Integração com o Backend:</b>
+                        Esta fila de atribuições de avaliação está em fase de homologação. O backend SGIE atual não disponibiliza o endpoint restrito de tarefas pendentes por avaliador autenticado. Os botões de avaliação permanecem desabilitados até a liberação do serviço no servidor.
+                    </div>
+                </div>
+
+                <nav aria-label="Situação" class="tabs">
+                    <a class="tab is-active" href="#">Pendentes <span class="count" id="count-pendentes">0</span></a>
+                    <a class="tab" href="#">Concluídas <span class="count" id="count-concluidas">0</span></a>
+                </nav>
+
+                <div class="alert alert-info">
+                    <i class="ic ic-info"></i>
+                    <div>Você não recebe trabalhos em que é autor ou coautor. Os pareceres chegam ao autor principal junto com a decisão editorial.</div>
+                </div>
+
+                <div id="lista-avaliacoes-container" class="stack" style="gap: 16px;">
+                    <div class="card" style="padding: 32px 24px; text-align: center; color: var(--muted);">
+                        <p>Nenhuma atribuição de avaliação pendente no momento.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- RODAPÉ COMPARTILHADO -->
+    <footer class="footer">
+        <div class="container">
+            <p>SGIE — Sistema de Gestão de Inscrições e Eventos Universitários</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../../config.js"></script>
+    <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
+    <script src="avaliacoes.js"></script>
+
+</body>
+
+</html>
