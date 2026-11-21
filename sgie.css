@@ -44,7 +44,7 @@
 :where(.app) ul { padding: 0; list-style: none; }
 :where(.app) a { color: var(--primary-ink); }
 :where(.app) :focus-visible { outline: 3px solid rgba(0, 168, 104, .4); outline-offset: 2px; }
-.main { flex: 1; padding-bottom: 64px; }
+.main { flex: 1; }
 
 .h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
 .h2 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; line-height: 1.3; }
@@ -349,13 +349,37 @@
 @media (max-width: 960px) { .hero-art { display: none; } .hero { padding: 0 32px; } }
 @media (max-width: 640px) { .hero { padding: 0 20px; } .hero .h1 { font-size: 28px; } }
 
-/* 13. PADRONIZAÇÃO ABSOLUTA DE HEADER E FOOTER -------------------------------
-   Garante proporções, altura, tipografia e espaçamentos idênticos em todas as telas. */
+/* 13. PADRONIZAÇÃO ABSOLUTA DE HEADER, FOOTER E LAYOUT GERAL -----------------
+   Garante 0px de espaço acima do header, rodapé perfeitamente fixado ao fim
+   da tela (sticky footer flexbox sem lacunas) e proporções idênticas em todas as 21 telas. */
+
+html {
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.app,
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100% !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: var(--bg) !important;
+    box-sizing: border-box !important;
+}
+
+/* O Header é SEMPRE o primeiro bloco: topo zero, sem margem */
 header.nav,
 .nav {
+    flex-shrink: 0 !important;
+    width: 100% !important;
     background: var(--header-bg) !important;
     border-bottom: 1px solid var(--header-line) !important;
-    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
 }
 
@@ -363,10 +387,8 @@ header.nav .container,
 .nav .container,
 .nav-in {
     min-height: 64px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
+    height: 64px !important;
+    padding: 0 24px !important;
     max-width: 1200px !important;
     margin: 0 auto !important;
     display: flex !important;
@@ -407,8 +429,48 @@ header.nav .container,
     border-radius: var(--r-pill) !important;
 }
 
+/* O Conteúdo Principal SEMPRE se expande (flex: 1) para empurrar o Footer ao fim */
+body.app > main,
+body.app > article,
+body.app > .container:not(.nav-in),
+body > main,
+body > article,
+body > .container:not(.nav-in),
+.main,
+[class$="__main"] {
+    flex: 1 0 auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Remove min-height: 100vh de wrappers legados para não forçar barra de rolagem artificial */
+.cadastrar-evento,
+.detalhes-do-evento,
+.editar-evento,
+.consulta-de-participantes,
+.credenciamento,
+.minhas-inscricoes,
+.realizar-inscricao,
+[class*="__cadastrar-evento"],
+[class*="__detalhes-do-evento"],
+[class*="__editar-evento"],
+[class*="__consulta-de-participantes"],
+[class*="__credenciamento"],
+[class*="__minhas-inscricoes"],
+[class*="__realizar-inscricao"] {
+    min-height: 0 !important;
+    height: auto !important;
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+}
+
+/* O Footer é SEMPRE o último bloco: margin-top: auto garante que fica colado ao fim da tela */
 footer.footer,
 .footer {
+    flex-shrink: 0 !important;
+    margin-top: auto !important;
+    margin-bottom: 0 !important;
     width: 100% !important;
     background: var(--surface) !important;
     border-top: 1px solid var(--line) !important;
@@ -416,16 +478,12 @@ footer.footer,
     color: var(--muted) !important;
     font-size: 13px !important;
     text-align: center !important;
-    margin-top: auto !important;
     box-sizing: border-box !important;
 }
 
 footer.footer .container,
 .footer .container {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
+    padding: 0 24px !important;
     max-width: 1200px !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
@@ -440,3 +498,23 @@ footer.footer p,
     font-size: 13px !important;
 }
 
+/* Responsivo: mobile nav */
+@media (max-width: 640px) {
+    header.nav .container,
+    .nav .container,
+    .nav-in {
+        height: auto !important;
+        min-height: 56px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+    }
+    .nav-links {
+        order: 3 !important;
+        width: 100% !important;
+        flex: none !important;
+        overflow-x: auto !important;
+        padding-bottom: 4px !important;
+    }
+}
