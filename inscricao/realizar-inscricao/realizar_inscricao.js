@@ -63,18 +63,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         evento = await response.json();
 
-        // Consulta lista de espera
-        let listaEsperaCount = 0;
-        try {
-            const respEspera = await apiFetch(`/eventos/${eventoId}/inscritos/?status=lista_espera`);
-            if (respEspera.ok) {
-                const listaEspera = await respEspera.json();
-                listaEsperaCount = Array.isArray(listaEspera) ? listaEspera.length : 0;
-            }
-        } catch {
-            // Silencioso se não tiver permissão para ver lista
-        }
-
         // Atualiza cabeçalho da página
         const elEventoTitulo = document.getElementById('evento-titulo');
         if (elEventoTitulo) elEventoTitulo.textContent = `Inscrição: ${evento.nome}`;
@@ -147,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const prevVagas = document.getElementById('preview-vagas');
         if (prevVagas) {
             if (evento.vagas_disponiveis === 0) {
-                prevVagas.textContent = `Vagas esgotadas (${listaEsperaCount} na fila)`;
+                prevVagas.textContent = 'Vagas esgotadas (Lista de espera)';
             } else {
                 prevVagas.textContent = `${evento.vagas_disponiveis} vaga(s) restante(s)`;
             }

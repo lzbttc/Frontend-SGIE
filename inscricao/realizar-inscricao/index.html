@@ -4,21 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Realizar Inscrição — SGIE</title>
-    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="../../sgie.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <!-- Cabeçalho Padrão SGIE -->
-    <nav class="navbar">
-      <div class="navbar-container">
-        <a href="../../index.html" class="brand">
-          SGIE
-          <span class="brand-badge">Inscrições</span>
-        </a>
-        <ul class="nav-links"></ul>
+  <body class="app">
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+      <div class="container nav-in">
+        <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Inscrições</span></a>
+        <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
         <div class="nav-user" id="nav-user-area"></div>
       </div>
-    </nav>
+    </header>
 
     <article class="realizar-inscricao">
       <div class="realizar-inscricao__realizar-inscricao">
@@ -328,6 +325,10 @@
     <!-- Scripts Globais e Locais -->
     <script src="../../config.js"></script>
     <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
     <script src="realizar_inscricao.js"></script>
   </body>
 </html>
