@@ -8,26 +8,20 @@
 
     <title>Pagamento - SGIE Eventos</title>
 
+    <link rel="stylesheet" href="../sgie.css">
     <link rel="stylesheet" href="pagamento.css">
 </head>
 
-<body class="pagamento-page">
+<body class="pagamento-page app">
 
-    <!-- NAVBAR -->
-    <nav class="pay-navbar">
-        <div class="pay-navbar-container">
-
-            <a href="../index.html" class="pay-brand">
-                SGIE
-                <span>EVENTOS</span>
-            </a>
-
-            <ul class="nav-links pay-nav-links"></ul>
-
-            <div class="nav-user pay-nav-user" id="nav-user-area"></div>
-
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <nav class="nav-links" aria-label="Principal"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
         </div>
-    </nav>
+    </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="pagamento-container">
@@ -194,16 +188,20 @@
 
     </main>
 
-    <!-- RODAPÉ -->
-    <footer class="pay-footer">
-        <p>
-            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
-        </p>
+    <!-- RODAPÉ COMPARTILHADO -->
+    <footer class="footer">
+        <div class="container">
+            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+        </div>
     </footer>
 
     <!-- SCRIPTS -->
     <script src="../config.js"></script>
     <script src="../api.js"></script>
+    <script src="../shared/dom.js"></script>
+    <script src="../shared/formatters.js"></script>
+    <script src="../shared/roles.js"></script>
+    <script src="../shared/layout.js"></script>
     <script src="pagamento.js"></script>
 
 </body>
