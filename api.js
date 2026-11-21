@@ -33,10 +33,11 @@ function getAppRoot() {
 
     const path = window.location.pathname;
     const modulos = [
-    '/usuarios/',
-    '/eventos/',
-    '/inscricao/',
-    '/pagamentos/'
+        '/usuarios/',
+        '/eventos/',
+        '/inscricao/',
+        '/pagamentos/',
+        '/submissao/'
     ];
 
     for (const modulo of modulos) {
@@ -106,6 +107,8 @@ function logout() {
     window.location.href = resolveAppUrl('usuarios/login/login.html');
 }
 
+let _refreshPromise = null;
+
 async function refreshToken() {
     const refresh = getRefreshToken();
     if (!refresh) {
@@ -113,29 +116,39 @@ async function refreshToken() {
         return null;
     }
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/token/refresh/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refresh }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.access) {
-                localStorage.setItem(ACCESS_TOKEN_KEY, data.access);
-                if (data.refresh) {
-                    localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh);
-                }
-                return data.access;
-            }
-        }
-    } catch (err) {
-        console.error('Falha ao renovar token JWT:', err);
+    if (_refreshPromise) {
+        return _refreshPromise;
     }
 
-    logout();
-    return null;
+    _refreshPromise = (async function() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/token/refresh/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.access) {
+                    localStorage.setItem(ACCESS_TOKEN_KEY, data.access);
+                    if (data.refresh) {
+                        localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh);
+                    }
+                    return data.access;
+                }
+            }
+        } catch (err) {
+            console.error('Falha ao renovar token JWT:', err);
+        } finally {
+            _refreshPromise = null;
+        }
+
+        logout();
+        return null;
+    })();
+
+    return _refreshPromise;
 }
 
 async function apiFetch(path, options = {}) {
@@ -167,34 +180,47 @@ async function apiFetch(path, options = {}) {
 }
 
 function showAlert(containerId, message, type = 'danger') {
+    if (window.SGIE_DOM && typeof window.SGIE_DOM.showAlert === 'function') {
+        window.SGIE_DOM.showAlert(containerId, message, type);
+        return;
+    }
     const container = document.getElementById(containerId);
     if (!container) return;
 
     let text = message;
     if (typeof message === 'object' && message !== null) {
         if (message.detail) {
-            text = message.detail;
+            text = String(message.detail);
         } else if (message.non_field_errors) {
-            text = Array.isArray(message.non_field_errors) ? message.non_field_errors.join(' ') : message.non_field_errors;
+            text = Array.isArray(message.non_field_errors) ? message.non_field_errors.join(' ') : String(message.non_field_errors);
         } else {
             text = Object.entries(message)
                 .map(([field, errs]) => {
                     const arr = Array.isArray(errs) ? errs : [errs];
-                    return `<strong>${field.replace(/_/g, ' ')}:</strong> ${arr.join(' ')}`;
+                    return `${field.replace(/_/g, ' ')}: ${arr.join(' ')}`;
                 })
-                .join('<br>');
+                .join(' | ');
         }
     }
 
+    const safeText = String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
     container.innerHTML = `
         <div class="alert alert-${type}" role="alert">
-            ${text}
+            ${safeText}
         </div>
     `;
     container.style.display = 'block';
 }
 
 function clearAlert(containerId) {
+    if (window.SGIE_DOM && typeof window.SGIE_DOM.clearAlert === 'function') {
+        window.SGIE_DOM.clearAlert(containerId);
+        return;
+    }
     const container = document.getElementById(containerId);
     if (container) {
         container.innerHTML = '';
@@ -203,6 +229,9 @@ function clearAlert(containerId) {
 }
 
 function formatarData(dataIso) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.formatarData === 'function') {
+        return window.SGIE_FORMATTERS.formatarData(dataIso);
+    }
     if (!dataIso) return '—';
     const partes = String(dataIso).split('T')[0].split('-');
     if (partes.length === 3) {
@@ -212,11 +241,17 @@ function formatarData(dataIso) {
 }
 
 function formatarHora(horaStr) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.formatarHora === 'function') {
+        return window.SGIE_FORMATTERS.formatarHora(horaStr);
+    }
     if (!horaStr) return '—';
     return String(horaStr).slice(0, 5);
 }
 
 function formatarDataHora(dataHoraIso) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.formatarDataHora === 'function') {
+        return window.SGIE_FORMATTERS.formatarDataHora(dataHoraIso);
+    }
     if (!dataHoraIso) return '—';
     try {
         const d = new Date(dataHoraIso);
@@ -234,11 +269,17 @@ function formatarDataHora(dataHoraIso) {
 }
 
 function formatarMoeda(valor) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.formatarMoeda === 'function') {
+        return window.SGIE_FORMATTERS.formatarMoeda(valor);
+    }
     const num = parseFloat(valor || 0);
     return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 function mascaraTelefone(valor) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.mascaraTelefone === 'function') {
+        return window.SGIE_FORMATTERS.mascaraTelefone(valor);
+    }
     let v = String(valor || '').replace(/\D/g, '').slice(0, 11);
     if (v.length > 10) {
         return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
@@ -251,6 +292,9 @@ function mascaraTelefone(valor) {
 }
 
 function mascaraCPF(valor) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.mascaraCPF === 'function') {
+        return window.SGIE_FORMATTERS.mascaraCPF(valor);
+    }
     let v = String(valor || '').replace(/\D/g, '').slice(0, 11);
     if (v.length > 9) {
         return `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6, 9)}-${v.slice(9)}`;
@@ -262,7 +306,22 @@ function mascaraCPF(valor) {
     return v;
 }
 
+function mascaraData(valor) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.mascaraData === 'function') {
+        return window.SGIE_FORMATTERS.mascaraData(valor);
+    }
+    const v = String(valor || '').replace(/\D/g, '').slice(0, 8);
+    if (v.length > 4) return `${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`;
+    if (v.length > 2) return `${v.slice(0, 2)}/${v.slice(2)}`;
+    return v;
+}
+
 function atualizarCabecalhoUsuario(activePage = '') {
+    if (window.SGIE_LAYOUT && typeof window.SGIE_LAYOUT.atualizarNavegacao === 'function') {
+        window.SGIE_LAYOUT.atualizarNavegacao(activePage);
+        return;
+    }
+
     const user = getUser();
     const logado = Boolean(user && isAuthenticated());
     const navLinksArea = document.querySelector('.nav-links');
@@ -276,8 +335,18 @@ function atualizarCabecalhoUsuario(activePage = '') {
         if (logado) {
             linksHtml += `
                 <li><a href="${resolveAppUrl('inscricao/minhas-inscricoes/index.html')}" class="nav-link ${ativo('minhas-inscricoes')}">Minhas Inscrições</a></li>
-                <li><a href="${resolveAppUrl('eventos/cadastrar-evento/index.html')}" class="btn btn-sm btn-primary ${ativo('novo')}"><span class="icon icon-plus"></span>Cadastrar Evento</a></li>
             `;
+            // Seção 3.1: apenas organizador homologado ou staff vê atalho de cadastrar evento
+            const ehOrganizador = Boolean(
+                user.is_staff || user.is_superuser ||
+                (user.perfil_organizador && (user.perfil_organizador.status === 'aprovado' || user.perfil_organizador.status === 'homologado' || user.perfil_organizador.ativo)) ||
+                user.eh_organizador === true || user.tipo === 'organizador'
+            );
+            if (ehOrganizador) {
+                linksHtml += `
+                    <li><a href="${resolveAppUrl('eventos/cadastrar-evento/index.html')}" class="btn btn-sm btn-primary ${ativo('novo')}"><span class="icon icon-plus"></span>Cadastrar Evento</a></li>
+                `;
+            }
         }
         navLinksArea.innerHTML = linksHtml;
     }
@@ -285,7 +354,7 @@ function atualizarCabecalhoUsuario(activePage = '') {
     if (navUserArea) {
         if (logado) {
             const nomeBruto = user.nome_completo ? user.nome_completo.split(' ')[0] : user.email.split('@')[0];
-            const nomeExibicao = nomeBruto.replace(/[<>&"']/g, '');
+            const nomeExibicao = String(nomeBruto).replace(/[<>&"']/g, '');
             navUserArea.innerHTML = `
                 <a href="${resolveAppUrl('usuarios/perfil/perfil.html')}" class="user-greeting ${ativo('perfil')}">Olá, ${nomeExibicao}<span class="icon icon-chevron-down"></span></a>
                 <button type="button" onclick="logout()" class="btn-logout"><span class="icon icon-logout"></span>Sair</button>
@@ -297,14 +366,6 @@ function atualizarCabecalhoUsuario(activePage = '') {
             `;
         }
     }
-}
-
-// Máscara dd/mm/aaaa (campos de data digitados)
-function mascaraData(valor) {
-    const v = String(valor || '').replace(/\D/g, '').slice(0, 8);
-    if (v.length > 4) return `${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`;
-    if (v.length > 2) return `${v.slice(0, 2)}/${v.slice(2)}`;
-    return v;
 }
 
 // Botão "olho" dos campos de senha.
