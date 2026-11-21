@@ -275,6 +275,20 @@ function atualizarContadoresParticipantes(participantes) {
     if (elCanc) elCanc.textContent = counts.cancelada;
 }
 
+function verificarPresencaRegistrada(p) {
+    if (p.presenca_registrada) return true;
+    if (p.dados_adicionais) {
+        let dados = p.dados_adicionais;
+        if (typeof dados === 'string') {
+            try { dados = JSON.parse(dados); } catch {}
+        }
+        if (typeof dados === 'object' && dados !== null) {
+            return Boolean(dados.presenca_registrada || dados.credenciado);
+        }
+    }
+    return false;
+}
+
 function renderizarParticipantes(participantes) {
     const lista = document.getElementById('lista-participantes');
     if (!lista) return;
@@ -282,6 +296,7 @@ function renderizarParticipantes(participantes) {
     lista.innerHTML = '';
 
     participantes.forEach(p => {
+        const presencaConfirmada = verificarPresencaRegistrada(p);
         const cfg = STATUS_CONFIG_PARTICIPANTE[p.status] || {
             texto: p.status_display || p.status,
             artigoClass: 'consulta-de-participantes__article-item-1-confirmada',
@@ -313,6 +328,10 @@ function renderizarParticipantes(participantes) {
         const dataFmt = formatarDataHora(p.data_inscricao);
         const comprovanteUrl = p.comprovante ? obterUrlComprovanteSegura(p.comprovante) : null;
 
+        const badgePresenca = presencaConfirmada
+            ? `<span style="font-size: 11px; font-weight: 700; color: #065f46; background: #d1fae5; padding: 2px 8px; border-radius: 999px;">Credenciado</span>`
+            : '';
+
         card.innerHTML = `
             <div style="display: flex; align-items: center; gap: 16px; flex: 1 1 360px;">
                 <div style="width: 44px; height: 44px; border-radius: 50%; background: #ecfdf5; color: #006d41; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0;">
@@ -323,6 +342,7 @@ function renderizarParticipantes(participantes) {
                         <p style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">${nome}</p>
                         <span style="font-size: 13px; color: #94a3b8;">•</span>
                         <span style="font-size: 13px; color: #64748b; font-family: monospace;">#${p.id}</span>
+                        ${badgePresenca}
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
                         <span style="font-size: 13px; color: #64748b;">${email}</span>
@@ -346,6 +366,7 @@ function renderizarParticipantes(participantes) {
             </div>
 
             <div id="detalhes-participante-${p.id}" style="display: none; width: 100%; margin-top: 8px; padding: 14px 16px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;"><strong>Presença / Credenciamento:</strong> ${presencaConfirmada ? 'Presença confirmada' : 'Pendente de credenciamento'}</p>
                 <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;"><strong>Campos adicionais / observações:</strong> ${formatarDadosAdicionais(p.dados_adicionais)}</p>
                 ${comprovanteUrl ? `<p style="margin: 0; font-size: 13px;"><a href="${comprovanteUrl}" target="_blank" rel="noopener noreferrer" style="color: #006d41; font-weight: 700; text-decoration: underline;">Visualizar comprovante de vínculo enviado</a></p>` : '<p style="margin: 0; font-size: 13px; color: #64748b;">Nenhum comprovante anexado.</p>'}
             </div>
@@ -399,15 +420,16 @@ function exportarParaCsv() {
         return;
     }
 
-    const cabecalhos = ['ID', 'Nome', 'E-mail', 'Status', 'Data Inscrição', 'Dados Adicionais'];
+    const cabecalhos = ['ID', 'Nome', 'E-mail', 'Status', 'Presença Registrada', 'Data Inscrição', 'Dados Adicionais'];
     const linhas = todosParticipantes.map(p => {
         const id = p.id;
         const nome = `"${(p.participante_nome || '').replace(/"/g, '""')}"`;
         const email = `"${(p.participante_email || '').replace(/"/g, '""')}"`;
         const status = `"${(p.status_display || p.status || '').replace(/"/g, '""')}"`;
+        const presenca = `"${verificarPresencaRegistrada(p) ? 'Sim' : 'Não'}"`;
         const data = `"${(formatarDataHora(p.data_inscricao) || '').replace(/"/g, '""')}"`;
         const adicionais = `"${(formatarDadosAdicionais(p.dados_adicionais) || '').replace(/"/g, '""')}"`;
-        return [id, nome, email, status, data, adicionais].join(';');
+        return [id, nome, email, status, presenca, data, adicionais].join(';');
     });
 
     const conteudoCsv = [cabecalhos.join(';'), ...linhas].join('\r\n');
