@@ -85,11 +85,18 @@ function mostrarErro(mensagem) {
 function renderizarPaginaEvento(ev) {
     const user = getUser();
     const logado = Boolean(user && isAuthenticated());
+
+    // Verifica se o usuário é o representante OU está na equipe como organizador contextual
     const ehRepresentante = Boolean(
         logado && user && user.id && ev.usuario_representante &&
         String(user.id).toLowerCase() === String(ev.usuario_representante).toLowerCase()
     );
-    const ehGestor = ehRepresentante;
+    const ehMembroEquipe = Boolean(
+        logado && user && Array.isArray(ev.organizadores) &&
+        ev.organizadores.some(o => String(o.usuario_id || o.usuario).toLowerCase() === String(user.id).toLowerCase())
+    );
+    const ehStaff = Boolean(logado && user && (user.is_staff || user.superusuario || user.acesso_admin));
+    const ehGestor = ehRepresentante || ehMembroEquipe || ehStaff;
 
     // 1. Título da Página
     document.title = `${ev.nome} — SGIE`;
@@ -310,9 +317,10 @@ function renderizarPaginaEvento(ev) {
     if (elEquipe) {
         if (ev.organizadores && ev.organizadores.length > 0) {
             elEquipe.innerHTML = ev.organizadores.map(org => {
-                const nomeOrg = org.usuario_nome || org.usuario_email || 'Organizador';
+                const nomeOrg = org.nome || org.usuario_nome || org.usuario_email || 'Organizador';
+                const email = org.email_publico || org.usuario_email || '';
                 const inicial = obterIniciais(nomeOrg);
-                const papel = org.papel_display || org.papel || 'Membro da Equipe';
+                const papel = org.papel_funcao || org.papel_display || org.papel || 'Membro da Equipe';
                 return `
                     <div class="detalhes-do-evento__membro-1" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                         <div class="detalhes-do-evento__background-14" style="width: 40px; height: 40px; border-radius: 50%; background: #006d41; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
@@ -320,7 +328,7 @@ function renderizarPaginaEvento(ev) {
                         </div>
                         <div class="detalhes-do-evento__container-79">
                             <p style="margin: 0; font-weight: 700; color: #0f172a; font-size: 14px;">${nomeOrg}</p>
-                            <p style="margin: 2px 0 0 0; color: #64748b; font-size: 12px;">${papel} ${org.eh_responsavel_principal ? '• Responsável Principal' : ''}</p>
+                            <p style="margin: 2px 0 0 0; color: #64748b; font-size: 12px;">${papel}${org.eh_responsavel_principal ? ' • Responsável Principal' : ''}${email ? ` · ${email}` : ''}</p>
                         </div>
                     </div>
                 `;

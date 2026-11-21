@@ -281,7 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 capacidade,
                 e_gratuito: eGratuito,
                 preco,
-                status: 'Publicado',
                 necessita_comprovante: necessitaComprovante,
                 programacao_geral: programacaoGeral,
             };
@@ -326,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            showAlert('mensagem-alerta', 'Evento publicado e cadastrado com sucesso! Redirecionando para a página do evento...', 'success');
+            showAlert('mensagem-alerta', 'Evento cadastrado com sucesso! Redirecionando para a página do evento...', 'success');
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             const novoId = dataResposta.id || (dataResposta.evento && dataResposta.evento.id);
