@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Minhas submissões — SGIE</title>
+    <link rel="stylesheet" href="../../sgie.css">
+    <style>
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .table-wrap {
+            overflow-x: auto;
+        }
+        .table th.actions, .table td.actions {
+            text-align: right;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body class="app">
+
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Minhas submissões</h1>
+                    <p>Trabalhos científicos que você enviou aos eventos acadêmicos. Acompanhe a decisão e responda a pedidos de correção.</p>
+                </div>
+                <a class="btn btn-primary" href="../submeter-trabalho/index.html" id="btn-nova-submissao">
+                    <i class="ic ic-plus"></i>Nova submissão
+                </a>
+            </header>
+
+            <div id="mensagem-alerta" style="display: none;"></div>
+
+            <div class="stack lg">
+                <!-- Banner de alerta de correções se houver -->
+                <div id="alerta-correcoes" class="alert alert-warning" style="display: none;">
+                    <i class="ic ic-alert"></i>
+                    <div class="grow" id="alerta-correcoes-texto"></div>
+                </div>
+
+                <!-- Barra de Filtros -->
+                <form aria-label="Filtros" class="filters" id="form-filtros" onsubmit="return false">
+                    <div class="input-icon" style="flex: 1; min-width: 240px;">
+                        <i class="ic ic-search"></i>
+                        <input aria-label="Buscar submissões" class="input" id="filtro-busca" placeholder="Buscar pelo título do trabalho..." />
+                    </div>
+
+                    <select aria-label="Status" class="select" id="filtro-status" style="min-width: 180px;">
+                        <option value="">Todos os status</option>
+                        <option value="Rascunho">Rascunho</option>
+                        <option value="Submetida">Submetida</option>
+                        <option value="Em avaliação">Em avaliação</option>
+                        <option value="Correções solicitadas">Correções solicitadas</option>
+                        <option value="Aprovada">Aprovada</option>
+                        <option value="Rejeitada">Rejeitada</option>
+                    </select>
+
+                    <button type="button" class="btn btn-ghost" id="btn-limpar-filtros">Limpar</button>
+                </form>
+
+                <!-- Tabela de Submissões -->
+                <section class="card" style="padding: 8px 0;">
+                    <div class="table-wrap">
+                        <table class="table" id="tabela-submissoes">
+                            <thead>
+                                <tr>
+                                    <th>Trabalho</th>
+                                    <th>Evento</th>
+                                    <th>Status</th>
+                                    <th>Versão</th>
+                                    <th>Atualizada</th>
+                                    <th class="actions">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-submissoes-corpo">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--muted); padding: 32px 0;">
+                                        Carregando suas submissões...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- RODAPÉ COMPARTILHADO -->
+    <footer class="footer">
+        <div class="container">
+            <p>SGIE — Sistema de Gestão de Inscrições e Eventos Universitários</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../../config.js"></script>
+    <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
+    <script src="minhas_submissoes.js"></script>
+
+</body>
+
+</html>
