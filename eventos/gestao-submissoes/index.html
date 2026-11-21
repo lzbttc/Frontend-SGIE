@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestão de Submissões — SGIE</title>
+    <link rel="stylesheet" href="../../sgie.css">
+    <style>
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .table-wrap {
+            overflow-x: auto;
+        }
+        .table th.actions, .table td.actions {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .table tr.is-selected td {
+            background: var(--primary-soft);
+        }
+        .choice {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: var(--surface);
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: border-color 0.15s, background-color 0.15s;
+        }
+        .choice input[type="radio"] {
+            margin-top: 3px;
+        }
+        .choice:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+        .choice.is-warn:has(input:checked) {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+        .choice.is-danger:has(input:checked) {
+            border-color: var(--danger);
+            background: var(--danger-bg);
+        }
+    </style>
+</head>
+
+<body class="app">
+
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <nav aria-label="Você está em" class="crumb">
+                <a href="../meus-eventos/index.html">Meus eventos</a>
+                <span aria-hidden="true">/</span>
+                <span id="crumb-evento-nome">Gestão de submissões</span>
+            </nav>
+
+            <header class="page-head" style="padding-bottom: 16px;">
+                <div>
+                    <div class="row" style="gap: 8px; margin-bottom: 8px;" id="cabecalho-meta">
+                        <span class="badge badge-success" id="badge-status-evento">Evento ativo</span>
+                    </div>
+                    <h1 class="h1" id="titulo-evento">Carregando evento...</h1>
+                </div>
+
+                <div class="row" id="acoes-topo-evento">
+                    <a class="btn btn-secondary" id="btn-editar-evento" href="#"><i class="ic ic-pencil"></i>Editar evento</a>
+                </div>
+            </header>
+
+            <!-- TABS DE NAVEGAÇÃO DA GESTÃO DO EVENTO -->
+            <nav aria-label="Seções do evento" class="tabs">
+                <a class="tab" id="tab-visao-geral" href="#">Visão geral</a>
+                <a class="tab" id="tab-participantes" href="#">Participantes</a>
+                <a class="tab is-active" id="tab-submissoes" href="#">Submissões <span class="count" id="count-total-tab">0</span></a>
+                <a class="tab" id="tab-credenciamento" href="#">Credenciamento</a>
+            </nav>
+
+            <div id="mensagem-alerta" style="display: none; margin-top: 20px;"></div>
+
+            <div class="stack lg" style="margin-top: 24px;">
+
+                <!-- SELETOR DE EVENTO SE NÃO ESTIVER NA URL -->
+                <div class="card" id="card-seletor-evento" style="display: none;">
+                    <div class="field">
+                        <label class="label" for="select-evento-gestao">Selecione o evento para gerenciar submissões:</label>
+                        <select class="select" id="select-evento-gestao">
+                            <option value="">Carregando seus eventos...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CONTADORES STATS -->
+                <div class="grid cols-4 gap-4" id="grid-stats">
+                    <div class="card stat">
+                        <div class="stat-n num" id="stat-total">0</div>
+                        <div class="stat-l">Trabalhos submetidos</div>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-n num" id="stat-avaliacao">0</div>
+                        <div class="stat-l">Em avaliação</div>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-n num" id="stat-correcao">0</div>
+                        <div class="stat-l">Aguardando correção</div>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-n num" id="stat-decididos">0</div>
+                        <div class="stat-l">Decididos</div>
+                    </div>
+                </div>
+
+                <!-- LISTA DE TRABALHOS -->
+                <section class="card" style="padding: 20px 0 12px;">
+                    <form aria-label="Filtros" class="filters" style="padding: 0 20px 16px;" onsubmit="return false">
+                        <div class="input-icon" style="flex: 1; min-width: 240px;">
+                            <i class="ic ic-search"></i>
+                            <input aria-label="Buscar submissões" class="input" id="gs-busca" placeholder="Buscar por título ou autor..." />
+                        </div>
+
+                        <select aria-label="Status" class="select" id="gs-status" style="min-width: 180px;">
+                            <option value="">Todos os status</option>
+                            <option value="Submetida">Submetida</option>
+                            <option value="Em avaliação">Em avaliação</option>
+                            <option value="Correções solicitadas">Correções solicitadas</option>
+                            <option value="Aprovada">Aprovada</option>
+                            <option value="Rejeitada">Rejeitada</option>
+                            <option value="Rascunho">Rascunho</option>
+                        </select>
+
+                        <button type="button" class="btn btn-ghost" id="btn-limpar-filtros">Limpar</button>
+                    </form>
+
+                    <div class="table-wrap">
+                        <table class="table" id="tabela-gestao-submissoes">
+                            <thead>
+                                <tr>
+                                    <th>Trabalho</th>
+                                    <th>Área</th>
+                                    <th>Status</th>
+                                    <th>Avaliador</th>
+                                    <th>Enviada</th>
+                                    <th class="actions">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-gestao-corpo">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--muted); padding: 32px 0;">
+                                        Carregando submissões do evento...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- PAINEL DE CURADORIA E DECISÃO EDITORIAL -->
+                <section class="card" id="painel-curadoria" style="display: none;">
+                    <div class="card-head">
+                        <div>
+                            <p class="eyebrow">Curadoria</p>
+                            <h2 class="h2" id="cur-titulo" style="margin-top: 4px;">Título do trabalho</h2>
+                            <p id="cur-meta">Autor · Tipo · Área</p>
+                        </div>
+                        <a class="btn btn-secondary btn-sm" id="btn-baixar-arquivo-cur" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
+                            <i class="ic ic-download"></i>Baixar arquivo
+                        </a>
+                    </div>
+
+                    <div class="with-side" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin-top: 16px;">
+                        <!-- Coluna 1: Pareceres e Avaliadores -->
+                        <div class="stack">
+                            <h3 class="h3">Parecer do Avaliador</h3>
+                            <div class="card flat stack" id="card-parecer-curadoria" style="padding: 16px; gap: 10px;">
+                                <p class="small muted" id="cur-sem-parecer">Nenhum parecer recebido até o momento.</p>
+                            </div>
+
+                            <div style="margin-top: 8px;">
+                                <button type="button" class="btn btn-secondary btn-sm" id="btn-sortear-avaliador">
+                                    <i class="ic ic-repeat"></i>Sortear avaliador
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Coluna 2: Decisão Editorial -->
+                        <form class="stack" id="form-decisao-curadoria" onsubmit="return false">
+                            <h3 class="h3">Decisão Editorial</h3>
+
+                            <label class="choice">
+                                <input checked name="decisao_tipo" type="radio" value="aprovar" />
+                                <span>
+                                    <b>Aprovar</b>
+                                    <span class="small muted">Trabalho aceito para apresentação nos anais do evento.</span>
+                                </span>
+                            </label>
+
+                            <label class="choice is-warn">
+                                <input name="decisao_tipo" type="radio" value="solicitar_correcao" />
+                                <span>
+                                    <b>Solicitar correção</b>
+                                    <span class="small muted">O autor receberá o parecer para envio de nova versão.</span>
+                                </span>
+                            </label>
+
+                            <label class="choice is-danger">
+                                <input name="decisao_tipo" type="radio" value="rejeitar" />
+                                <span>
+                                    <b>Rejeitar</b>
+                                    <span class="small muted">Trabalho não aceito para este evento.</span>
+                                </span>
+                            </label>
+
+                            <div class="field">
+                                <label class="label" for="cur-obs">Observações para o autor <span class="opt">(obrigatório ao rejeitar ou pedir correção)</span></label>
+                                <textarea class="textarea" id="cur-obs" maxlength="1000" placeholder="Insira a justificativa ou orientações de ajuste para o autor..."></textarea>
+                            </div>
+
+                            <div class="field" id="campo-prazo-correcao" style="max-width: 220px; display: none;">
+                                <label class="label" for="cur-prazo">Prazo para correção <span class="opt">(dias)</span></label>
+                                <input class="input num" id="cur-prazo" max="30" min="1" type="number" value="7" />
+                                <span class="hint">Entre 1 e 30 dias a partir de hoje.</span>
+                            </div>
+
+                            <div class="row" style="justify-content: flex-end; margin-top: 12px;">
+                                <button class="btn btn-primary" type="button" id="btn-registrar-decisao">Registrar decisão</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- RODAPÉ COMPARTILHADO -->
+    <footer class="footer">
+        <div class="container">
+            <p>SGIE — Sistema de Gestão de Inscrições e Eventos Universitários</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../../config.js"></script>
+    <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
+    <script src="gestao_submissoes.js"></script>
+
+</body>
+
+</html>
