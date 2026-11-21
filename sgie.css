@@ -348,3 +348,95 @@
 .ic-repeat { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m17 2 4 4-4 4'/%3E%3Cpath d='M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4'/%3E%3Cpath d='M21 13v1a4 4 0 0 1-4 4H3'/%3E%3C/svg%3E"); }
 @media (max-width: 960px) { .hero-art { display: none; } .hero { padding: 0 32px; } }
 @media (max-width: 640px) { .hero { padding: 0 20px; } .hero .h1 { font-size: 28px; } }
+
+/* 13. PADRONIZAÇÃO ABSOLUTA DE HEADER E FOOTER -------------------------------
+   Garante proporções, altura, tipografia e espaçamentos idênticos em todas as telas. */
+header.nav,
+.nav {
+    background: var(--header-bg) !important;
+    border-bottom: 1px solid var(--header-line) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+header.nav .container,
+.nav .container,
+.nav-in {
+    min-height: 64px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 32px !important;
+    box-sizing: border-box !important;
+}
+
+.nav-links {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.nav-link {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    border-radius: var(--r-pill) !important;
+    line-height: 1.4 !important;
+    text-decoration: none !important;
+}
+
+.nav-user {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.nav-user .btn {
+    font-size: 13px !important;
+    height: 36px !important;
+    padding: 0 16px !important;
+    border-radius: var(--r-pill) !important;
+}
+
+footer.footer,
+.footer {
+    width: 100% !important;
+    background: var(--surface) !important;
+    border-top: 1px solid var(--line) !important;
+    padding: 24px 0 !important;
+    color: var(--muted) !important;
+    font-size: 13px !important;
+    text-align: center !important;
+    margin-top: auto !important;
+    box-sizing: border-box !important;
+}
+
+footer.footer .container,
+.footer .container {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+}
+
+footer.footer p,
+.footer p {
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    color: var(--muted) !important;
+    font-size: 13px !important;
+}
+

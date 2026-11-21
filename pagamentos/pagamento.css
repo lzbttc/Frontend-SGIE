@@ -72,84 +72,10 @@
     text-transform: uppercase;
 }
 
-/* Links inseridos pelo api.js */
-
-.pagamento-page .nav-links,
-.comprovante-page .nav-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.pagamento-page .nav-links a,
-.comprovante-page .nav-links a {
-    color: #172033;
-    font-size: 12px;
-    text-decoration: none;
-}
-
+/* Links inseridos pelo shell sgie v3 */
 .pagamento-page .nav-links a:hover,
 .comprovante-page .nav-links a:hover {
-    color: var(--pay-primary-dark);
-}
-
-.pagamento-page .nav-user,
-.comprovante-page .nav-user {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-
-    font-size: 12px;
-    white-space: nowrap;
-}
-
-.pagamento-page .nav-user .user-greeting,
-.comprovante-page .nav-user .user-greeting {
-    color: #172033;
-}
-
-/* Botões da navegação */
-
-.pagamento-page .nav-user .btn,
-.comprovante-page .nav-user .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 7px 12px;
-    border-radius: 7px;
-
-    font-size: 11px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.pagamento-page .nav-user .btn-primary,
-.comprovante-page .nav-user .btn-primary {
-    color: white;
-    background: var(--pay-primary);
-    border: 1px solid var(--pay-primary);
-}
-
-.pagamento-page .nav-user .btn-outline,
-.comprovante-page .nav-user .btn-outline {
-    color: #172033;
-    background: transparent;
-    border: 1px solid var(--pay-border);
-}
-
-.pagamento-page .nav-user .btn-danger,
-.comprovante-page .nav-user .btn-danger {
-    color: #dc2626;
-    background: transparent;
-    border: none;
+    color: var(--primary-ink);
 }
 
 /* =========================================
