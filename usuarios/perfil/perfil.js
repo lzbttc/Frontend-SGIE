@@ -16,7 +16,7 @@
 const PERFIL_ENDPOINTS = {
     perfil: '/usuarios/perfil/',                    // GET + PATCH (dados pessoais)
     organizador: '/usuarios/perfil/organizador/',   // PATCH (multipart: foto, banner, biografia)
-    meusEventos: '/eventos/meus/',                  // GET (eventos sob gestão do usuário)
+    meusEventos: '/eventos/meus-eventos/',           // GET (eventos sob gestão do usuário)
 };
 
 const LIMITE_FOTO_MB = 5;
