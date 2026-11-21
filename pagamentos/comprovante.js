@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const params = new URLSearchParams(window.location.search);
     const inscricaoId = params.get('inscricao');
+    const pagamentoId = params.get('pagamento');
 
     const alerta = document.getElementById('comprovante-alerta');
     const documento = document.getElementById('comprovante-documento');
@@ -315,6 +316,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? 'Não se aplica'
                 : descreverSituacaoCobranca(cobranca)
         );
+
+        // Se houver ID de pagamento informado, busca e complementa dados
+        if (pagamentoId) {
+            try {
+                const resPag = await apiFetch(`/pagamentos/${encodeURIComponent(pagamentoId)}/`);
+                if (resPag.ok) {
+                    const pag = await resPag.json();
+                    const containerMetodo = document.getElementById('comprovante-metodo-container');
+                    const containerTransacao = document.getElementById('comprovante-transacao-container');
+
+                    if (pag.metodo && containerMetodo) {
+                        preencher('comprovante-metodo', pag.metodo);
+                        containerMetodo.style.display = 'block';
+                    }
+
+                    if (pag.transacao_id && containerTransacao) {
+                        const gateway = pag.gateway_nome ? ` (${pag.gateway_nome})` : '';
+                        preencher('comprovante-transacao', `${pag.transacao_id}${gateway}`);
+                        containerTransacao.style.display = 'block';
+                    }
+                }
+            } catch (errPag) {
+                console.warn('Não foi possível obter detalhes adicionais do pagamento:', errPag);
+            }
+        }
 
         // =====================================
         // DATA DE EMISSÃO

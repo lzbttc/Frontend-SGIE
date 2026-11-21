@@ -30,6 +30,11 @@
             <h1>Pagamento</h1>
         </header>
 
+        <!-- AVISO DE SIMULAÇÃO -->
+        <div class="pay-alert-message pay-alert-info" style="margin-bottom: 20px; border-left: 4px solid #0284c7; background: #f0f9ff; color: #0369a1; padding: 12px 16px; border-radius: 8px; font-size: 14px;">
+            <strong>Ambiente de Simulação:</strong> Este sistema utiliza um gateway simulado para fins acadêmicos. <strong>Nunca insira dados reais de cartão de crédito ou débito.</strong> Utilize apenas números de teste.
+        </div>
+
         <div id="mensagem-alerta" class="pay-alert" style="display: none;"></div>
 
         <div class="pagamento-layout">
@@ -123,6 +128,7 @@
                             <option value="">Forma de pagamento</option>
                             <option value="pix">PIX</option>
                             <option value="cartao">Cartão de crédito</option>
+                            <option value="debito">Cartão de débito</option>
                             <option value="boleto">Boleto bancário</option>
                         </select>
 
@@ -162,6 +168,11 @@
                         <div class="pay-summary-row">
                             <span>Forma de pagamento</span>
                             <strong id="resumo-forma">Não selecionada</strong>
+                        </div>
+
+                        <div class="pay-summary-row" id="resumo-vencimento-linha" style="display: none;">
+                            <span>Vencimento</span>
+                            <strong id="resumo-vencimento">—</strong>
                         </div>
 
                         <div class="pay-summary-row pay-summary-total">

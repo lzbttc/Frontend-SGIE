@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             api: 'CARTAO_CREDITO',
             aviso: ''
         },
+        debito: {
+            rotulo: 'Cartão de débito',
+            api: 'CARTAO_DEBITO',
+            aviso: ''
+        },
         boleto: {
             rotulo: 'Boleto bancário',
             api: 'BOLETO',
@@ -61,6 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         evento: document.getElementById('resumo-evento'),
         valor: document.getElementById('resumo-valor'),
         resumoForma: document.getElementById('resumo-forma'),
+        vencimentoLinha: document.getElementById('resumo-vencimento-linha'),
+        vencimento: document.getElementById('resumo-vencimento'),
         total: document.getElementById('resumo-total'),
 
         botaoPagamento: document.getElementById('btn-ir-pagamento')
@@ -74,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let inscricaoAtual = null;
     let participanteAtual = null;
     let cobrancaAtual = null;
+    let pagamentoAtual = null;
 
     let valorInscricao = 0;
 
@@ -161,9 +169,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function irParaComprovante() {
+    function irParaComprovante(pagamentoId) {
+        const idPag = pagamentoId || (pagamentoAtual && pagamentoAtual.id);
+        const qs = new URLSearchParams({ inscricao: String(inscricaoId) });
+        if (idPag) qs.set('pagamento', String(idPag));
         window.location.href = resolveAppUrl(
-            `pagamentos/comprovante.html?inscricao=${encodeURIComponent(inscricaoId)}`
+            `pagamentos/comprovante.html?${qs.toString()}`
         );
     }
 
@@ -409,10 +420,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function atualizarTotalDaCobranca(cobranca) {
-        const valorFinal = Number(cobranca && cobranca.valor_final);
+        if (!cobranca) return;
 
+        const valorFinal = Number(cobranca.valor_final);
         if (Number.isFinite(valorFinal)) {
             elementos.total.textContent = formatarMoeda(valorFinal);
+        }
+
+        const valorOriginal = Number(cobranca.valor_original);
+        if (Number.isFinite(valorOriginal) && elementos.valor) {
+            elementos.valor.textContent = formatarMoeda(valorOriginal);
+        }
+
+        if (cobranca.data_vencimento && elementos.vencimento && elementos.vencimentoLinha) {
+            elementos.vencimento.textContent = formatarData(cobranca.data_vencimento);
+            elementos.vencimentoLinha.style.display = 'flex';
         }
     }
 
@@ -542,7 +564,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        if (metodo === 'cartao') {
+        if (metodo === 'cartao' || metodo === 'debito') {
             elementos.detalhes.appendChild(criarFormularioCartao());
         } else {
             elementos.detalhes.appendChild(
@@ -633,35 +655,53 @@ document.addEventListener('DOMContentLoaded', async () => {
         botao.disabled = true;
 
         try {
+            // Consulta tanto a inscrição quanto o pagamento persistido no SGIE
+            const promises = [
+                apiFetch(`/inscricoes/${encodeURIComponent(inscricaoId)}/`)
+            ];
 
-            const resposta = await apiFetch(
-                `/inscricoes/${encodeURIComponent(inscricaoId)}/`
-            );
+            if (pagamentoAtual && pagamentoAtual.id) {
+                promises.push(apiFetch(`/pagamentos/${encodeURIComponent(pagamentoAtual.id)}/`));
+            }
 
-            if (!resposta.ok) {
+            const [respostaInscricao, respostaPagamento] = await Promise.all(promises);
+
+            if (!respostaInscricao.ok) {
                 throw new Error('Não foi possível consultar a situação da inscrição.');
             }
 
-            const inscricao = await resposta.json();
+            const inscricao = await respostaInscricao.json();
+            let pagamentoStatus = null;
 
-            if (inscricao.status === 'confirmada') {
+            if (respostaPagamento && respostaPagamento.ok) {
+                const pag = await respostaPagamento.json();
+                pagamentoAtual = pag;
+                pagamentoStatus = pag.status;
+            }
+
+            if (inscricao.status === 'confirmada' || pagamentoStatus === 'APROVADO') {
 
                 finalizado = true;
                 atualizarBotao();
 
-                exibirMensagem('Pagamento confirmado! Redirecionando para o comprovante...', 'success');
+                exibirMensagem('Pagamento confirmado no sistema SGIE! Redirecionando para o comprovante...', 'success');
 
-                setTimeout(irParaComprovante, 1500);
+                setTimeout(() => irParaComprovante(pagamentoAtual?.id), 1500);
                 return;
             }
 
-            if (inscricao.status === 'cancelada') {
-                exibirMensagem('Esta inscrição foi cancelada.', 'danger');
+            if (inscricao.status === 'cancelada' || pagamentoStatus === 'CANCELADO') {
+                exibirMensagem('Esta inscrição/pagamento foi cancelada.', 'danger');
+                return;
+            }
+
+            if (pagamentoStatus === 'RECUSADO') {
+                exibirMensagem('O pagamento foi recusado pelo gateway simulado. Tente novamente com outro método.', 'danger');
                 return;
             }
 
             exibirMensagem(
-                'Ainda não recebemos a confirmação do pagamento. Aguarde alguns instantes e tente novamente.',
+                'Situação atual no SGIE: aguardando compensação/notificação do webhook. (Esta verificação consulta o estado gravado no sistema; para Pix e boleto simulados, a confirmação depende do envio do webhook do gateway).',
                 'info'
             );
 
@@ -758,7 +798,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 'success'
             );
 
-            setTimeout(irParaComprovante, 1500);
+            setTimeout(() => irParaComprovante(pagamento.id), 1500);
             return;
         }
 
@@ -813,7 +853,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         let dadosCartao = null;
 
-        if (metodo === 'cartao') {
+        if (metodo === 'cartao' || metodo === 'debito') {
             dadosCartao = lerDadosCartao();
             if (!dadosCartao) return;
         }
@@ -854,6 +894,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 );
             }
 
+            pagamentoAtual = pagamento;
             tratarResultadoPagamento(pagamento, metodo);
 
         } catch (erro) {
