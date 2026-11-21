@@ -2,345 +2,205 @@
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Definir Nova Senha - SGIE</title>
 
-    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../sgie.css">
     <link rel="stylesheet" href="../auth.css">
     <link rel="stylesheet" href="definir_senha.css">
-
 </head>
 
+<body class="definir-senha-page app">
 
-<body class="definir-senha-page">
-
-
-    <nav class="navbar">
-
-        <div class="navbar-container">
-
-            <a
-                href="../../index.html"
-                class="brand"
-            >
-                SGIE
-
-                <span class="brand-badge">
-                    Eventos
-                </span>
-            </a>
-
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links">
+                <a class="nav-link" href="../../index.html">Explorar eventos</a>
+            </nav>
+            <div class="nav-user" id="nav-user-area">
+                <a class="btn btn-ghost btn-sm" href="../login/login.html">Entrar</a>
+                <a class="btn btn-primary btn-sm" href="../cadastro/cadastro.html">Criar conta</a>
+            </div>
         </div>
+    </header>
 
-    </nav>
+    <main class="main auth-bg" style="display:grid;place-items:center;padding:48px 24px">
 
+        <section class="card stack lg" style="width:100%;max-width:480px;padding:32px">
 
-    <main class="auth-page">
-
-        <section class="auth-card">
-
-
-            <div class="auth-aside">
-
-                <span class="auth-accent"></span>
-
-                <h1 class="auth-title">
-                    Definir Nova Senha
-                </h1>
-
-                <p class="auth-subtitle">
-                    Insira o código de 6 dígitos enviado
-                    ao seu e-mail institucional e crie sua
-                    nova credencial de acesso segura.
+            <div>
+                <span class="accent-bar"></span>
+                <h1 class="h1">Definir nova senha</h1>
+                <p class="muted" style="margin-top:4px">
+                    Insira o código de 6 dígitos enviado para seu e-mail e crie sua nova senha.
                 </p>
-
             </div>
 
-
-            <form
-                class="auth-form"
-                id="form-redefinir-senha"
-                novalidate
-            >
-
-
-                <div class="notice-box notice-success">
-
-                    <span
-                        class="icon icon-mail-check"
-                        aria-hidden="true"
-                    ></span>
-
-                    <div>
-
-                        <p class="notice-title">
-                            Código Enviado
-                        </p>
-
-                        <p class="notice-desc">
-                            Se o e-mail constar em nossa base,
-                            enviamos um código de verificação
-                            para
-
-                            <strong id="email-destino-texto">
-                            </strong>.
-
-                            Insira-o abaixo junto com sua
-                            nova senha.
-                        </p>
-
-                    </div>
-
+            <div class="alert alert-info">
+                <i class="ic ic-mail" style="flex: none;"></i>
+                <div class="small">
+                    Código enviado para <strong id="email-destino-texto"></strong>.
                 </div>
+            </div>
 
+            <div id="mensagem-alerta" style="display: none;"></div>
 
-                <div
-                    id="mensagem-alerta"
-                    style="display: none;"
-                ></div>
+            <form class="stack" id="form-redefinir-senha" novalidate>
 
-
-                <div class="form-group">
-
-                    <div class="form-label">
-
-                        <label for="codigo-1">
-                            Código de Verificação
-                            <span class="req">*</span>
+                <div class="field">
+                    <div class="row between">
+                        <label for="codigo-1" class="label">
+                            Código de verificação
                         </label>
-
                         <button
                             type="button"
                             id="btn-reenviar"
-                            class="link-btn"
+                            class="btn btn-ghost btn-sm"
+                            style="padding: 0; min-height: auto; color: var(--primary-ink);"
                         >
-                            Reenviar código agora
+                            Reenviar código
                         </button>
-
                     </div>
 
-
-                    <div class="code-inputs">
-
+                    <div class="code code-inputs">
                         <input
                             type="text"
                             id="codigo-1"
+                            class="input"
                             inputmode="numeric"
                             maxlength="1"
                             autocomplete="one-time-code"
                             aria-label="Dígito 1"
+                            autofocus
                         >
-
                         <input
                             type="text"
+                            class="input"
                             inputmode="numeric"
                             maxlength="1"
                             aria-label="Dígito 2"
                         >
-
                         <input
                             type="text"
+                            class="input"
                             inputmode="numeric"
                             maxlength="1"
                             aria-label="Dígito 3"
                         >
-
                         <input
                             type="text"
+                            class="input"
                             inputmode="numeric"
                             maxlength="1"
                             aria-label="Dígito 4"
                         >
-
                         <input
                             type="text"
+                            class="input"
                             inputmode="numeric"
                             maxlength="1"
                             aria-label="Dígito 5"
                         >
-
                         <input
                             type="text"
+                            class="input"
                             inputmode="numeric"
                             maxlength="1"
                             aria-label="Dígito 6"
                         >
-
                     </div>
-
-
-                    <span class="form-hint">
-                        Informe os dígitos numéricos
-                        recebidos em sua caixa de entrada
-                        ou spam.
-                    </span>
-
+                    <span class="hint">Informe os 6 dígitos recebidos no e-mail.</span>
                 </div>
 
-
-                <div class="form-group">
-
-                    <label
-                        for="id_nova_senha"
-                        class="form-label"
-                    >
-                        <span>
-                            Nova Senha
-                            <span class="req">*</span>
-                        </span>
+                <div class="field">
+                    <label for="id_nova_senha" class="label">
+                        Nova senha
                     </label>
-
-
-                    <div class="input-wrap has-toggle">
-
-                        <span
-                            class="icon icon-lock"
-                            aria-hidden="true"
-                        ></span>
-
+                    <div class="input-icon">
+                        <i class="ic ic-lock"></i>
                         <input
                             type="password"
                             id="id_nova_senha"
                             name="nova_senha"
-                            class="input-field"
+                            class="input"
                             required
-                            minlength="8"
-                            placeholder="Digite ao menos 8 caracteres"
+                            placeholder="Mínimo 8 caracteres"
                             autocomplete="new-password"
                         >
-
                         <button
                             type="button"
-                            class="input-toggle"
+                            class="btn btn-ghost btn-sm toggle"
                             data-toggle-senha
                             aria-label="Mostrar senha"
                         >
-                            <span
-                                class="icon icon-eye"
-                                aria-hidden="true"
-                            ></span>
+                            <i class="ic ic-eye"></i>
                         </button>
-
                     </div>
-
                 </div>
 
-
-                <div class="form-group">
-
-                    <label
-                        for="id_confirmacao_senha"
-                        class="form-label"
-                    >
-                        <span>
-                            Confirmar Nova Senha
-                            <span class="req">*</span>
-                        </span>
+                <div class="field">
+                    <label for="id_confirmacao_senha" class="label">
+                        Confirmar nova senha
                     </label>
-
-
-                    <div class="input-wrap has-toggle">
-
-                        <span
-                            class="icon icon-lock"
-                            aria-hidden="true"
-                        ></span>
-
+                    <div class="input-icon">
+                        <i class="ic ic-lock"></i>
                         <input
                             type="password"
                             id="id_confirmacao_senha"
                             name="confirmacao_senha"
-                            class="input-field"
+                            class="input"
                             required
-                            minlength="8"
-                            placeholder="Repita a nova senha exatamente"
+                            placeholder="Repita a nova senha"
                             autocomplete="new-password"
                         >
-
                         <button
                             type="button"
-                            class="input-toggle"
+                            class="btn btn-ghost btn-sm toggle"
                             data-toggle-senha
                             aria-label="Mostrar senha"
                         >
-                            <span
-                                class="icon icon-eye"
-                                aria-hidden="true"
-                            ></span>
+                            <i class="ic ic-eye"></i>
                         </button>
-
                     </div>
-
                 </div>
-
 
                 <button
                     type="submit"
                     id="btn-redefinir"
-                    class="btn btn-primary btn-block"
+                    class="btn btn-primary btn-lg btn-block"
                 >
                     Redefinir Senha e Entrar
                 </button>
 
-
-                <div class="note-bar">
-
-                    <span>
-                        <span
-                            class="icon icon-at"
-                            aria-hidden="true"
-                        ></span>
-
-                        Não é seu e-mail cadastrado?
-                    </span>
-
-
-                    <a
-                        href="../recuperar-senha/recuperar_senha.html"
-                    >
-                        <span
-                            class="icon icon-pencil"
-                            aria-hidden="true"
-                        ></span>
-
-                        Trocar E-mail
-                    </a>
-
-                </div>
-
-
             </form>
+
+            <hr class="sep">
+
+            <p class="small muted" style="text-align:center">
+                <a href="../login/login.html"><b>Voltar ao login</b></a>
+            </p>
 
         </section>
 
     </main>
 
-
+    <!-- RODAPÉ COMPARTILHADO -->
     <footer class="footer">
-
-        <div class="container" style="padding-top: 0; padding-bottom: 0;">
-
-            <p>
-                SGIE — Sistema de Gestão de Inscrições
-                e Eventos Universitários
-            </p>
-
+        <div class="container">
+            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
         </div>
-
     </footer>
-
 
     <script src="../../config.js"></script>
     <script src="../../api.js"></script>
-
-
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
     <script src="definir_senha.js"></script>
 
 </body>

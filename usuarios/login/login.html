@@ -3,199 +3,130 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Entrar - SGIE</title>
 
-    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../sgie.css">
     <link rel="stylesheet" href="../auth.css">
     <link rel="stylesheet" href="login.css">
 </head>
 
-<body class="login-page">
+<body class="login-page app">
 
-    <nav class="navbar">
-        <div class="navbar-container">
-
-            <a href="../../index.html" class="brand">
-                SGIE
-                <span class="brand-badge">
-                    Eventos
-                </span>
-            </a>
-
+    <!-- NAVBAR COMPARTILHADA -->
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links">
+                <a class="nav-link" href="../../index.html">Explorar eventos</a>
+            </nav>
+            <div class="nav-user" id="nav-user-area">
+                <a class="btn btn-ghost btn-sm is-active" href="login.html">Entrar</a>
+                <a class="btn btn-primary btn-sm" href="../cadastro/cadastro.html">Criar conta</a>
+            </div>
         </div>
-    </nav>
+    </header>
 
+    <main class="main auth-bg" style="display:grid;place-items:center;padding:48px 24px">
 
-    <main class="auth-page">
+        <section class="card stack lg" style="width:100%;max-width:440px;padding:32px">
 
-        <section class="auth-card">
-
-            <div class="auth-aside">
-
-                <span class="auth-accent"></span>
-
-                <h1 class="auth-title">
-                    Acessar o SGIE
-                </h1>
-
-                <p class="auth-subtitle">
-                    Entre com suas credenciais para
-                    visualizar eventos e gerenciar inscrições.
+            <div>
+                <span class="accent-bar"></span>
+                <h1 class="h1">Entrar</h1>
+                <p class="muted" style="margin-top:4px">
+                    Acesse sua conta para se inscrever e acompanhar seus eventos.
                 </p>
-
             </div>
 
+            <div id="mensagem-alerta" style="display: none;"></div>
 
-            <form
-                class="auth-form"
-                id="form-login"
-                novalidate
-            >
+            <form class="stack" id="form-login" novalidate>
 
-                <div
-                    id="mensagem-alerta"
-                    style="display: none;"
-                ></div>
-
-
-                <div class="form-group">
-
-                    <label
-                        for="id_identificador"
-                        class="form-label"
-                    >
-                        <span>
-                            Identificador (E-mail ou CPF)
-                            <span class="req">*</span>
-                        </span>
+                <div class="field">
+                    <label for="id_identificador" class="label">
+                        E-mail ou CPF
                     </label>
-
-                    <div class="input-wrap">
-
-                        <span
-                            class="icon icon-id-card"
-                            aria-hidden="true"
-                        ></span>
-
+                    <div class="input-icon">
+                        <i class="ic ic-user"></i>
                         <input
                             type="text"
                             id="id_identificador"
                             name="identificador"
-                            class="input-field"
+                            class="input"
                             required
-                            placeholder="ex: usuario@universidade.br ou 000.000.000-00"
+                            placeholder="voce@universidade.edu.br ou CPF"
                             autocomplete="username"
                             autofocus
                         >
-
                     </div>
-
                 </div>
 
-
-                <div class="form-group">
-
-                    <label
-                        for="id_password"
-                        class="form-label"
-                    >
-                        <span>
+                <div class="field">
+                    <div class="row between">
+                        <label for="id_password" class="label">
                             Senha
-                            <span class="req">*</span>
-                        </span>
-                    </label>
-
-                    <div class="input-wrap has-toggle">
-
-                        <span
-                            class="icon icon-lock"
-                            aria-hidden="true"
-                        ></span>
-
+                        </label>
+                        <a href="../recuperar-senha/recuperar_senha.html" class="small">
+                            Esqueci minha senha
+                        </a>
+                    </div>
+                    <div class="input-icon">
+                        <i class="ic ic-lock"></i>
                         <input
                             type="password"
                             id="id_password"
                             name="password"
-                            class="input-field"
+                            class="input"
                             required
                             placeholder="Digite sua senha"
                             autocomplete="current-password"
                         >
-
                         <button
                             type="button"
-                            class="input-toggle"
+                            class="btn btn-ghost btn-sm toggle"
                             data-toggle-senha
                             aria-label="Mostrar senha"
                         >
-                            <span
-                                class="icon icon-eye"
-                                aria-hidden="true"
-                            ></span>
+                            <i class="ic ic-eye"></i>
                         </button>
-
                     </div>
-
                 </div>
 
-
-                <div class="form-link-row">
-                    <a
-                        href="../recuperar-senha/recuperar_senha.html"
-                    >
-                        Esqueceu sua senha?
-                    </a>
-                </div>
-
-
-                <div class="form-actions">
-
-                    <button
-                        type="submit"
-                        id="btn-entrar"
-                        class="btn btn-primary btn-block"
-                    >
-                        Entrar
-                    </button>
-
-                    <div class="divider">
-                        OU
-                    </div>
-
-                    <a
-                        href="../cadastro/cadastro.html"
-                        class="btn btn-secondary btn-block"
-                    >
-                        Cadastre-se
-                    </a>
-
-                </div>
+                <button
+                    type="submit"
+                    id="btn-entrar"
+                    class="btn btn-primary btn-lg btn-block"
+                >
+                    Entrar
+                </button>
 
             </form>
+
+            <hr class="sep">
+
+            <p class="small muted" style="text-align:center">
+                Ainda não tem conta? <a href="../cadastro/cadastro.html"><b>Criar conta</b></a>
+            </p>
 
         </section>
 
     </main>
 
-
+    <!-- RODAPÉ COMPARTILHADO -->
     <footer class="footer">
-        <div class="container" style="padding-top: 0; padding-bottom: 0;">
-            <p>
-                SGIE — Sistema de Gestão de Inscrições
-                e Eventos Universitários
-            </p>
+        <div class="container">
+            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
         </div>
     </footer>
 
-
     <script src="../../config.js"></script>
     <script src="../../api.js"></script>
-
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
     <script src="login.js"></script>
 
 </body>

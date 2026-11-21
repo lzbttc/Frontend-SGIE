@@ -372,13 +372,19 @@ function atualizarCabecalhoUsuario(activePage = '') {
 // HTML: <div class="input-wrap has-toggle"> ... <button type="button" class="input-toggle" data-toggle-senha><span class="icon icon-eye"></span></button></div>
 function iniciarToggleSenha() {
     document.querySelectorAll('[data-toggle-senha]').forEach((btn) => {
-        const input = btn.closest('.input-wrap').querySelector('input');
-        const icone = btn.querySelector('.icon');
+        const wrap = btn.closest('.input-icon') || btn.closest('.input-wrap');
+        const input = wrap ? wrap.querySelector('input') : null;
+        if (!input) return;
+        const icone = btn.querySelector('.icon') || btn.querySelector('.ic');
         btn.addEventListener('click', () => {
             const mostrar = input.type === 'password';
             input.type = mostrar ? 'text' : 'password';
-            icone.classList.toggle('icon-eye', !mostrar);
-            icone.classList.toggle('icon-eye-off', mostrar);
+            if (icone) {
+                icone.classList.toggle('icon-eye', !mostrar);
+                icone.classList.toggle('icon-eye-off', mostrar);
+                icone.classList.toggle('ic-eye', !mostrar);
+                icone.classList.toggle('ic-lock', mostrar);
+            }
             btn.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
         });
     });
