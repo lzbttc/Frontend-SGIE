@@ -5,53 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explorar Eventos - SGIE</title>
     <link rel="stylesheet" href="sgie.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="index.css">
 </head>
 <body class="explorar-page app">
     <!-- NAVBAR COMPARTILHADA -->
-    <header class="nav">
+    <header class="nav" id="app-nav">
         <div class="container nav-in">
-            <a href="index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="index.html" class="brand">
+                <span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE
+            </a>
             <nav class="nav-links" aria-label="Principal"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
     </header>
 
-    <div class="container">
-        <header class="hero">
-            <div class="hero-text">
-                <span class="hero-bar"></span>
-                <h1 class="hero-title">Eventos Acadêmicos <span>e Científicos</span></h1>
-                <p class="hero-subtitle">Explore conferências, simpósios e palestras. Inscreva-se como participante ou publique seu próprio evento.</p>
-            </div>
-            <div class="hero-art" aria-hidden="true">
-                <span class="art-yellow"></span>
-                <span class="art-green"></span>
-                <span class="art-orange"></span>
-                <span class="art-panel"></span>
-                <span class="art-ring"></span>
-                <span class="art-diamond"></span>
-                <span class="art-cap"><span class="icon icon-graduation-cap"></span></span>
-            </div>
-        </header>
+    <main class="main">
+        <div class="container">
+            <header class="hero">
+                <div class="hero-text">
+                    <span class="hero-bar"></span>
+                    <h1 class="h1">Eventos acadêmicos <span>e científicos</span></h1>
+                    <p class="hero-subtitle">Congressos, simpósios, oficinas e palestras da universidade. Inscreva-se e envie seus trabalhos.</p>
+                </div>
+                <div class="hero-art" aria-hidden="true">
+                    <span class="art-yellow"></span>
+                    <span class="art-green"></span>
+                    <span class="art-orange"></span>
+                    <span class="art-panel"></span>
+                    <span class="art-ring"></span>
+                    <span class="art-diamond"></span>
+                    <span class="art-cap"><i class="ic ic-cap"></i></span>
+                </div>
+            </header>
 
-        <div id="mensagem-alerta" hidden></div>
+            <div id="mensagem-alerta" hidden></div>
 
-        <nav class="tabs" id="tabs-nav" aria-label="Visualizações de eventos" hidden>
-            <button type="button" class="tab active" id="tab-todos"><span class="icon icon-calendar"></span>Todos os Eventos</button>
-            <button type="button" class="tab" id="tab-meus-eventos"><span class="icon icon-user"></span>Meus Eventos Criados <span class="tab-badge" id="badge-total-meus">0</span></button>
-            <a href="inscricao/consulta-de-participantes/index.html" class="tab"><span class="icon icon-users"></span>Ver participantes</a>
-            <a href="inscricao/credenciamento/index.html" class="tab"><span class="icon icon-id-card"></span>Credenciamento</a>
-        </nav>
+            <nav class="tabs" id="tabs-nav" aria-label="Visualizações de eventos" hidden>
+                <button type="button" class="tab is-active" id="tab-todos"><i class="ic ic-cal"></i>Todos os Eventos</button>
+                <button type="button" class="tab" id="tab-meus-eventos"><i class="ic ic-user"></i>Meus Eventos Criados <span class="count" id="badge-total-meus">0</span></button>
+                <a href="inscricao/consulta-de-participantes/index.html" class="tab"><i class="ic ic-users"></i>Ver participantes</a>
+                <a href="inscricao/credenciamento/index.html" class="tab"><i class="ic ic-user"></i>Credenciamento</a>
+            </nav>
 
-        <section class="filters" id="toolbar-filtros" aria-label="Filtros de eventos">
-            <div class="search-wrap">
-                <span class="icon icon-search"></span>
-                <input type="text" id="filtro-busca" class="filter-input" placeholder="Buscar por título, descrição ou local">
-            </div>
-            <select id="filtro-categoria" class="filter-select" aria-label="Categoria">
-                <option value="">Categoria</option>
+            <section class="filters" id="toolbar-filtros" aria-label="Filtros de eventos">
+                <div class="input-icon">
+                    <i class="ic ic-search"></i>
+                    <input type="text" id="filtro-busca" class="input" placeholder="Buscar por título, descrição ou local" aria-label="Buscar eventos">
+                </div>
+                <select id="filtro-categoria" class="select" aria-label="Categoria">
+                    <option value="">Todas as categorias</option>
                     <option value="Congresso">Congresso</option>
                     <option value="Simpósio">Simpósio</option>
                     <option value="Seminário">Seminário</option>
@@ -68,36 +69,37 @@
                     <option value="Treinamento">Treinamento</option>
                     <option value="Lançamento de Produto">Lançamento de Produto</option>
                     <option value="Outro">Outro</option>
-            </select>
-            <select id="filtro-modalidade" class="filter-select" aria-label="Modalidade">
-                <option value="">Modalidade</option>
-                <option value="Presencial">Presencial</option>
-                <option value="On-line">On-line</option>
-                <option value="Híbrido">Híbrido</option>
-            </select>
-            <select id="filtro-preco" class="filter-select" aria-label="Preço">
-                <option value="">Preço</option>
-                <option value="true">Gratuito</option>
-                <option value="false">Pago</option>
-            </select>
-            <button type="button" id="btn-aplicar-filtros" class="btn btn-primary"><span class="icon icon-filter"></span>Filtrar</button>
-            <button type="button" id="btn-limpar-filtros" class="btn-link">Limpar</button>
-        </section>
+                </select>
+                <select id="filtro-modalidade" class="select" aria-label="Modalidade">
+                    <option value="">Qualquer modalidade</option>
+                    <option value="Presencial">Presencial</option>
+                    <option value="On-line">On-line</option>
+                    <option value="Híbrido">Híbrido</option>
+                </select>
+                <select id="filtro-preco" class="select" aria-label="Preço">
+                    <option value="">Qualquer preço</option>
+                    <option value="true">Gratuito</option>
+                    <option value="false">Pago</option>
+                </select>
+                <button type="button" id="btn-aplicar-filtros" class="btn btn-primary"><i class="ic ic-filter"></i>Filtrar</button>
+                <button type="button" id="btn-limpar-filtros" class="btn btn-ghost">Limpar</button>
+            </section>
 
-        <main>
-            <p id="loading-spinner" class="state-msg">Carregando eventos...</p>
-            <div class="events-grid" id="grid-eventos" hidden></div>
-            <div id="sem-eventos" class="state-msg empty" hidden>
-                <h3 id="titulo-vazio">Nenhum evento encontrado</h3>
-                <p id="desc-vazio">Tente ajustar os filtros aplicados.</p>
-            </div>
-        </main>
-    </div>
+            <section aria-label="Lista de eventos">
+                <p id="loading-spinner" class="muted" style="padding: 24px 0;">Carregando eventos...</p>
+                <div class="events" id="grid-eventos" hidden></div>
+                <div id="sem-eventos" class="card" style="text-align: center; padding: 48px 24px; margin-top: 16px;" hidden>
+                    <h3 id="titulo-vazio" class="h2">Nenhum evento encontrado</h3>
+                    <p id="desc-vazio" class="muted" style="margin-top: 8px;">Tente ajustar os filtros aplicados.</p>
+                </div>
+            </section>
+        </div>
+    </main>
 
     <!-- RODAPÉ COMPARTILHADO -->
-    <footer class="footer">
+    <footer class="footer" id="app-footer">
         <div class="container">
-            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
         </div>
     </footer>
 

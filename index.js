@@ -146,66 +146,56 @@ function renderizarEventos(eventos) {
 function htmlCard(ev, user, logado) {
     const temVagas = Number.isFinite(ev.vagas_disponiveis);
     const esgotado = temVagas && ev.vagas_disponiveis <= 0 && ev.status !== 'Finalizado' && ev.status !== 'Cancelado';
-    const dono = Boolean(
-        logado && user && user.id && ev.usuario_representante && String(ev.usuario_representante).toLowerCase() === String(user.id).toLowerCase()
-    );
-    const gerencia = dono;
 
-    let [tom, deco] = TEMAS_CATEGORIA[ev.categoria] || ['green', 'globe'];
-    if (esgotado) tom = 'gray';
+    let badgeClasse = 'badge-neutral';
+    let rotuloStatus = ev.status_display || ev.status || 'Publicado';
 
-    const estado = esgotado ? 'st-full' : (ESTADOS_STATUS[ev.status] ?? 'st-neutral');
-    const rotuloStatus = esgotado ? 'Vagas Esgotadas' : (ev.status_display || ev.status);
-    const preco = ev.e_gratuito
-        ? '<span class="pill pill-price">Gratuito</span>'
-        : `<span class="pill pill-price paid">${esc(formatarMoeda(ev.preco))}</span>`;
-
-    const categoria = ev.categoria === 'Outro' && ev.categoria_personalizada ? ev.categoria_personalizada : (ev.categoria_display || ev.categoria);
-    const rodapeCapa = logado
-        ? `<div class="ev-row"><span class="pill pill-cat">${esc(categoria)}</span>${dono
-            ? '<span class="pill pill-owner"><span class="icon icon-shield-check"></span>Você é Organizador(a)</span>' : ''}</div>`
-        : '<div></div>';
-
-    const iconeModalidade = ev.modalidade === 'Híbrido' ? 'icon-repeat' : 'icon-monitor';
-    const linhaVagas = !temVagas
-        ? `<li><span class="icon icon-users"></span>Capacidade: ${esc(ev.capacidade)} participantes</li>`
-        : esgotado
-            ? '<li class="full"><span class="icon icon-alert-circle"></span>0 vagas disponíveis (Lista de espera)</li>'
-            : `<li class="strong"><span class="icon icon-users"></span><span><b>${ev.vagas_disponiveis}</b> vagas disponíveis (de ${esc(ev.capacidade)})</span></li>`;
-
-    const detalhes = `eventos/detalhes-do-evento/index.html?id=${encodeURIComponent(ev.id)}`;
-    let acoes;
-    if (gerencia) {
-        acoes = `<a href="eventos/editar-evento/index.html?id=${encodeURIComponent(ev.id)}" class="btn btn-secondary"><span class="icon icon-pencil"></span>Editar</a>
-                 <a href="${detalhes}" class="btn btn-primary"><span class="icon icon-settings"></span>Gerenciar</a>`;
-    } else if (logado && !esgotado && ev.status === 'Inscrições abertas' && ev.inscricoes_abertas !== false) {
-        acoes = `<a href="${detalhes}" class="btn btn-secondary btn-detalhes">Detalhes</a>
-                 <a href="inscricao/realizar-inscricao/index.html?evento=${encodeURIComponent(ev.id)}" class="btn btn-primary"><span class="icon icon-user-plus"></span>Realizar Inscrição</a>`;
-    } else {
-        acoes = `<a href="${detalhes}" class="btn btn-soft">Ver Detalhes${logado ? '<span class="icon icon-arrow-right"></span>' : ''}</a>`;
+    if (esgotado) {
+        badgeClasse = 'badge-warning';
+        rotuloStatus = 'Vagas esgotadas';
+    } else if (ev.status === 'Inscrições abertas') {
+        badgeClasse = 'badge-success';
+    } else if (ev.status === 'Publicado') {
+        badgeClasse = 'badge-info';
+    } else if (ev.status === 'Em andamento') {
+        badgeClasse = 'badge-info';
+    } else if (ev.status === 'Cancelado') {
+        badgeClasse = 'badge-danger';
+    } else if (ev.status === 'Finalizado') {
+        badgeClasse = 'badge-neutral';
     }
 
+    const categoria = ev.categoria === 'Outro' && ev.categoria_personalizada ? ev.categoria_personalizada : (ev.categoria_display || ev.categoria || 'Evento');
+    const detalhes = `eventos/detalhes-do-evento/index.html?id=${encodeURIComponent(ev.id)}`;
+
+    const vagasTexto = !temVagas
+        ? `${esc(ev.capacidade || 0)} vagas`
+        : esgotado
+            ? 'Lista de espera'
+            : `${ev.vagas_disponiveis} vagas`;
+
+    const iconeLocal = (ev.modalidade === 'On-line') ? 'ic-link' : (ev.modalidade === 'Híbrido' ? 'ic-repeat' : 'ic-pin');
+    const localTexto = ev.modalidade === 'On-line' ? 'On-line' : (ev.local ? `${esc(ev.local)} · ${esc(ev.modalidade || 'Presencial')}` : esc(ev.modalidade || 'Presencial'));
+
+    const tomAmber = (ev.categoria === 'Workshop' || ev.categoria === 'Mini-curso' || ev.categoria === 'Feira');
+
     return `
-    <article class="ev-card tone-${tom}">
-        <div class="ev-cover">
-            <svg class="ev-deco" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">${DECORACOES[deco]}</svg>
-            <div class="ev-row">
-                <span class="pill pill-status ${estado}">${esgotado ? '' : '<span class="dot"></span>'}${esc(rotuloStatus)}</span>
-                ${preco}
-            </div>
-            ${rodapeCapa}
+    <a class="ev" href="${detalhes}">
+        <div aria-hidden="true" class="ev-cover ${tomAmber ? 'tone-amber' : ''}"><i class="ic ic-cap"></i></div>
+        <div class="ev-top">
+            <span class="eyebrow">${esc(categoria)}</span>
+            <span class="badge ${badgeClasse}">${esc(rotuloStatus)}</span>
         </div>
-        <div class="ev-body">
-            <h2 class="ev-title"><a href="${detalhes}">${esc(ev.nome)}</a></h2>
-            <p class="ev-desc">${esc(ev.descricao || 'Sem descrição cadastrada.')}</p>
-            <ul class="ev-meta">
-                <li><span class="icon icon-calendar"></span>${esc(dataCurta(ev.data))}</li>
-                <li><span class="icon icon-clock"></span>${esc(formatarHora(ev.hora_inicio))} às ${esc(formatarHora(ev.hora_fim))}</li>
-                <li><span class="icon ${iconeModalidade}"></span>${esc(ev.modalidade_display || ev.modalidade)}</li>
-                <li><span class="icon icon-map-pin"></span>${esc(ev.local)}</li>
-                ${linhaVagas}
-            </ul>
-            <div class="ev-actions">${acoes}</div>
+        <h2 class="ev-title">${esc(ev.nome)}</h2>
+        <p class="ev-desc">${esc(ev.descricao || 'Sem descrição cadastrada.')}</p>
+        <ul class="meta">
+            <li><i class="ic ic-cal"></i>${esc(dataCurta(ev.data))}</li>
+            <li><i class="ic ic-clock"></i>${esc(formatarHora(ev.hora_inicio))} às ${esc(formatarHora(ev.hora_fim))}</li>
+            <li><i class="ic ${iconeLocal}"></i>${localTexto}</li>
+        </ul>
+        <div class="ev-foot">
+            <span class="price ${ev.e_gratuito ? 'free' : ''}">${ev.e_gratuito ? 'Gratuito' : esc(formatarMoeda(ev.preco))}</span>
+            <span class="small muted">${vagasTexto}</span>
         </div>
-    </article>`;
+    </a>`;
 }

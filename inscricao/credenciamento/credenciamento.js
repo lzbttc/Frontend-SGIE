@@ -190,110 +190,60 @@ function exibirParticipante(p) {
     const statusNorm = String(p.status).toUpperCase();
     const jaCredenciado = Boolean(p.presenca_registrada);
 
-    let statusTexto = 'Inscrição Regular & Confirmada';
-    let statusClass = 'credenciamento__background-7';
+    let statusTexto = 'Inscrição Confirmada';
+    let statusBadge = 'badge-success';
     let acaoHtml = '';
 
     if (jaCredenciado) {
         statusTexto = 'Presença Já Registrada';
-        statusClass = 'credenciamento__background-border-2';
+        statusBadge = 'badge-info';
         acaoHtml = `
-            <div style="padding: 16px; background-color: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; text-align: center; width: 100%;">
-                <p style="font-size: 15px; font-weight: 700; color: #1e40af; margin: 0;">Presença já foi confirmada anteriormente para este participante.</p>
+            <div class="alert alert-info" style="width: 100%;">
+                <div>
+                    <b>Presença Registrada</b>
+                    <p style="margin-top: 2px;">Este participante já realizou o credenciamento para este evento.</p>
+                </div>
             </div>
         `;
     } else if (statusNorm === 'CONFIRMADA') {
-        statusTexto = 'Inscrição Regular & Confirmada';
-        statusClass = 'credenciamento__background-7';
+        statusTexto = 'Inscrição Confirmada (Apto)';
+        statusBadge = 'badge-success';
         acaoHtml = `
-            <button type="button" class="credenciamento__button-big-primary-action-button" onclick="confirmarPresenca(${p.id})" style="cursor: pointer; width: 100%; border: none;">
-                <span class="credenciamento__button-big-primary-action-button-shadow"></span>
-                <span class="credenciamento__overlay">
-                    <div class="credenciamento__container-48">
-                        <svg viewBox="0 0 21.667 17.767" xmlns="http://www.w3.org/2000/svg" fill="none" class="credenciamento__icon-13" role="img">
-                            <path d="M0 17.333 L0 14.3 C0 13.704 0.153 13.144 0.46 12.621 C0.767 12.097 1.192 11.7 1.733 11.429 C2.654 10.96 3.692 10.563 4.848 10.238 C6.003 9.913 7.276 9.75 8.667 9.75 C9.208 9.75 9.736 9.777 10.251 9.831 C10.766 9.885 11.267 9.967 11.754 10.075 L9.858 11.971 C9.66 11.935 9.466 11.917 9.276 11.917 C9.086 11.917 8.883 11.917 8.667 11.917 C7.385 11.917 6.234 12.07 5.214 12.377 C4.193 12.684 3.358 13.018 2.708 13.379 C2.546 13.469 2.415 13.596 2.316 13.758 C2.216 13.921 2.167 14.101 2.167 14.3 L2.167 15.167 L8.938 15.167 L11.104 17.333 L0 17.333 Z M14.679 17.767 L10.942 14.029 L12.458 12.512 L14.679 14.733 L20.15 9.262 L21.667 10.779 L14.679 17.767 Z M8.667 8.667 C7.475 8.667 6.455 8.242 5.606 7.394 C4.758 6.545 4.333 5.525 4.333 4.333 C4.333 3.142 4.758 2.122 5.606 1.273 C6.455 0.424 7.475 0 8.667 0 C9.858 0 10.878 0.424 11.727 1.273 C12.576 2.122 13 3.142 13 4.333 C13 5.525 12.576 6.545 11.727 7.394 C10.878 8.242 9.858 8.667 8.667 8.667 Z" fill="rgb(255, 255, 255)" />
-                        </svg>
-                    </div>
-                </span>
-                <span class="credenciamento__container-49">
-                    <div class="credenciamento__container-50">
-                        <p class="credenciamento__text-22">Confirmar Presença</p>
-                    </div>
-                    <div class="credenciamento__container-51">
-                        <p class="credenciamento__text-23">Liberar credencial & registrar entrada</p>
-                    </div>
-                </span>
-                <span class="credenciamento__margin">
-                    <svg viewBox="0 0 14.667 14.667" xmlns="http://www.w3.org/2000/svg" fill="none" class="credenciamento__icon-14" role="img">
-                        <path d="M11.16 8.25 L0 8.25 L0 6.417 L11.16 6.417 L6.027 1.283 L7.333 0 L14.667 7.333 L7.333 14.667 L6.027 13.383 L11.16 8.25 Z" fill="rgb(255, 255, 255)" />
-                    </svg>
-                </span>
+            <button type="button" class="btn btn-primary btn-lg" onclick="confirmarPresenca(${p.id})" style="width: 100%; min-height: 48px;">
+                <i class="ic ic-check"></i>Confirmar Presença e Liberar Entrada
             </button>
         `;
     } else {
         statusTexto = `Inscrição ${p.status} (Não Apta)`;
-        statusClass = 'credenciamento__background-border-4';
+        statusBadge = 'badge-danger';
         acaoHtml = `
-            <div style="padding: 16px; background-color: #fff1f2; border: 1.5px solid #fecdd3; border-radius: 12px; text-align: center; width: 100%;">
-                <p style="font-size: 15px; font-weight: 700; color: #9f1239; margin: 0;">Inscrição não está confirmada para credenciamento.</p>
+            <div class="alert alert-danger" style="width: 100%;">
+                <div>
+                    <b>Inscrição Não Regular</b>
+                    <p style="margin-top: 2px;">Apenas participantes com inscrição confirmada podem ser credenciados.</p>
+                </div>
             </div>
         `;
     }
 
     divResultado.innerHTML = `
-        <div class="credenciamento__result-primary-action-card-identified-participan">
-            <header class="credenciamento__header-ribbon-of-result">
-                <div class="credenciamento__container-40">
-                    <div class="credenciamento__background-6"></div>
-                    <div class="credenciamento__container-41">
-                        <p class="credenciamento__text-18">PARTICIPANTE IDENTIFICADO</p>
-                    </div>
-                </div>
-                <div class="${statusClass}">
-                    <div class="credenciamento__container-42">
-                        <svg viewBox="0 0 13.333 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="credenciamento__icon-11" role="img">
-                            <path d="M5.733 9.733 L10.433 5.033 L9.5 4.1 L5.733 7.867 L3.833 5.967 L2.9 6.9 L5.733 9.733 Z" fill="rgb(0, 109, 65)" />
-                        </svg>
-                    </div>
-                    <p class="credenciamento__text-19">${statusTexto}</p>
-                </div>
-            </header>
-            <div class="credenciamento__gradient-edge-accent-accent-strip"></div>
-            <main class="credenciamento__main-action-layout-left-info-right-fast-confirma">
-                <div class="credenciamento__left-attendee-detailed-info-cols-1-7">
-                    <div class="credenciamento__profile-badge">
-                        <div class="credenciamento__background-shadow"><p class="credenciamento__text-20">${iniciais}</p></div>
-                        <div class="credenciamento__background-8">
-                            <div class="credenciamento__container-43">
-                                <svg viewBox="0 0 11.667 11.667" xmlns="http://www.w3.org/2000/svg" fill="none" class="credenciamento__icon-12" role="img">
-                                    <path d="M1.167 11.667 C0.846 11.667 0.571 11.552 0.343 11.324 C0.114 11.095 0 10.821 0 10.5 L0 4.083 L4.083 2.917 L5.25 0 L6.417 0 L7.583 2.917 L11.667 4.083 L11.667 10.5 C11.667 11.095 11.095 11.667 10.5 11.667 Z" fill="rgb(255, 255, 255)" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <ul class="credenciamento__metadata-list">
-                        <li class="credenciamento__container-44">
-                            <div class="credenciamento__container-45">
-                                <div class="credenciamento__heading-3">
-                                    <p class="credenciamento__beatriz-mendes-cavalcanti">${nome}</p>
-                                </div>
-                            </div>
-                            <div class="credenciamento__container-46">
-                                <p class="credenciamento__beatriz-mendes-universidade-br">${p.usuario_email}</p>
-                            </div>
-                        </li>
-                        <li class="credenciamento__badges-and-academic-metadata-grid">
-                            <div class="credenciamento__container-47">
-                                <p class="credenciamento__codigo-ingresso">Código Inscrição</p>
-                            </div>
-                            <p class="credenciamento__text-21">#${p.id}</p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="credenciamento__right-primary-action-area-cols-8-12">
-                    ${acaoHtml}
-                </div>
-            </main>
+        <div class="card-head">
+            <div>
+                <span class="eyebrow">Participante identificado</span>
+                <h2 class="h2" style="margin-top: 4px;">${nome}</h2>
+            </div>
+            <span class="badge ${statusBadge}"><i class="ic ic-check"></i>${statusTexto}</span>
+        </div>
+        <div class="row" style="gap: 16px; margin: 16px 0; padding: 16px; background: var(--bg); border-radius: var(--r-md); border: 1px solid var(--line);">
+            <span class="avatar lg">${iniciais}</span>
+            <div class="grow">
+                <b class="h3">${nome}</b>
+                <p class="small muted" style="margin-top: 2px;">${p.usuario_email || 'E-mail não informado'}</p>
+                <p class="small muted" style="margin-top: 2px;">Código da inscrição: <strong class="num">#${p.id}</strong></p>
+            </div>
+        </div>
+        <div>
+            ${acaoHtml}
         </div>
     `;
 

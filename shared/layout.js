@@ -78,16 +78,43 @@
             ? window.SGIE_ROLES.isAutenticado()
             : Boolean(localStorage.getItem('sgie_access_token'));
 
+        const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
+            ? window.SGIE_ROLES.getUsuarioLogado()
+            : (function () {
+                  try {
+                      return JSON.parse(localStorage.getItem('sgie_user'));
+                  } catch {
+                      return null;
+                  }
+              })();
+
         if (isAuth) {
+            const iniciais = (user && user.nome_completo)
+                ? user.nome_completo.split(' ').filter(Boolean).slice(0, 2).map((n) => n[0].toUpperCase()).join('')
+                : (user && user.nome ? user.nome.slice(0, 2).toUpperCase() : 'US');
+            const primeiroNome = (user && user.nome_completo)
+                ? user.nome_completo.split(' ')[0]
+                : (user && user.nome ? user.nome : 'Usuário');
+            const nomeCompleto = (user && (user.nome_completo || user.nome)) || 'Usuário SGIE';
+            const email = (user && user.email) || '';
+
             return `
                 <details class="menu" id="menu-conta">
-                    <summary aria-label="Menu da conta" class="user-btn">
-                        <i class="ic ic-user"></i>
+                    <summary aria-label="Menu da conta" class="user-chip">
+                        <span class="avatar">${iniciais}</span>${primeiroNome}<i class="ic ic-down"></i>
                     </summary>
                     <div class="menu-pop">
+                        <div class="menu-head">
+                            <div style="font-weight:700">${nomeCompleto}</div>
+                            <div class="small muted">${email}</div>
+                        </div>
                         <a class="menu-item" href="${getAppUrl('usuarios/perfil/perfil.html')}">
                             <i class="ic ic-user"></i>Meu perfil
                         </a>
+                        <a class="menu-item" href="${getAppUrl('submissao/minhas-submissoes/index.html')}">
+                            <i class="ic ic-file"></i>Minhas submissões
+                        </a>
+                        <div class="sep" style="margin:4px 0"></div>
                         <a class="menu-item danger" href="#" data-logout-action>
                             <i class="ic ic-out"></i>Sair
                         </a>
@@ -110,11 +137,11 @@
                 if (isLast || !crumb.href) {
                     return `<span>${crumb.label}</span>`;
                 }
-                return `<a href="${crumb.href}">${crumb.label}</a> <span class="muted" style="font-size: 11px;">&gt;</span>`;
+                return `<a href="${crumb.href}">${crumb.label}</a> <span aria-hidden="true">/</span>`;
             })
             .join(' ');
 
-        return `<nav class="crumb" aria-label="Trilha de navegação">${itemsHtml}</nav>`;
+        return `<nav class="crumb" aria-label="Você está em">${itemsHtml}</nav>`;
     }
 
     function montarHeader(activePage = '') {
@@ -122,7 +149,7 @@
             <header class="nav" id="app-nav">
                 <div class="container nav-in">
                     <a class="brand" href="${getAppUrl('index.html')}">
-                        SGIE<span class="brand-tag">Eventos</span>
+                        <span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE
                     </a>
                     <nav aria-label="Principal" class="nav-links">
                         ${renderNavLinks(activePage)}
@@ -139,7 +166,7 @@
         return `
             <footer class="footer" id="app-footer">
                 <div class="container">
-                    <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+                    SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
                 </div>
             </footer>
         `;
@@ -194,7 +221,7 @@
             if (brand) {
                 brand.className = 'brand';
                 brand.href = getAppUrl('index.html');
-                brand.innerHTML = 'SGIE<span class="brand-tag">Eventos</span>';
+                brand.innerHTML = '<span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE';
             }
             atualizarNavegacao(activePage);
         } else {
@@ -222,7 +249,7 @@
             footerExistente.className = 'footer';
             footerExistente.innerHTML = `
                 <div class="container">
-                    <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+                    SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
                 </div>
             `;
         } else {

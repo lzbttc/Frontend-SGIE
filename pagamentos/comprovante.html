@@ -1,223 +1,136 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Comprovante - SGIE Eventos</title>
-
+    <title>Comprovante — SGIE</title>
     <link rel="stylesheet" href="../sgie.css">
-    <link rel="stylesheet" href="pagamento.css">
 </head>
-
-<body class="comprovante-page app">
-
-    <!-- NAVBAR COMPARTILHADA -->
+<body class="app">
     <header class="nav">
         <div class="container nav-in">
-            <a href="../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
-            <nav class="nav-links" aria-label="Principal"></nav>
+            <a href="../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
     </header>
 
-    <!-- CONTEÚDO -->
-    <main class="comprovante-container">
+    <main class="main">
+        <div class="container sm">
+            <nav aria-label="Você está em" class="crumb">
+                <a href="../inscricao/minhas-inscricoes/index.html">Minhas inscrições</a>
+                <span aria-hidden="true">/</span>
+                <span>Comprovante</span>
+            </nav>
 
-        <header class="comprovante-header">
-            <h1>Comprovante</h1>
-            <p>Confira os dados da sua inscrição.</p>
-        </header>
-
-        <div id="comprovante-alerta" style="display: none;"></div>
-
-        <!-- DOCUMENTO -->
-        <section
-            class="comprovante-documento"
-            id="comprovante-documento"
-            style="display: none;"
-        >
-
-            <div class="comprovante-sucesso">
-
-                <div class="comprovante-icone">
-                    ✓
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Comprovante de pagamento</h1>
+                    <p>Guarde este recibo ou imprima uma cópia.</p>
                 </div>
+                <div class="row">
+                    <button class="btn btn-secondary" type="button" id="btn-imprimir">
+                        <i class="ic ic-download"></i>Imprimir
+                    </button>
+                    <a class="btn btn-primary" href="../inscricao/minhas-inscricoes/index.html">
+                        Ver ingresso
+                    </a>
+                </div>
+            </header>
 
-                <h2>Inscrição confirmada!</h2>
+            <div id="comprovante-alerta" style="display: none;"></div>
 
-                <p>
-                    Obrigado por participar.
-                    Sua inscrição foi registrada com sucesso.
-                </p>
+            <div class="stack lg">
+                <section class="card stack lg" id="comprovante-documento" style="display: none;">
 
-            </div>
-
-            <div class="comprovante-recibo">
-
-                <div class="comprovante-recibo-header">
-
-                    <div>
-                        <span class="comprovante-etiqueta">
-                            SGIE EVENTOS
-                        </span>
-
-                        <h2>Recibo de Inscrição</h2>
+                    <!-- Alert de sucesso -->
+                    <div class="alert alert-success">
+                        <i class="ic ic-check"></i>
+                        <div><b>Pagamento confirmado.</b> Sua inscrição está confirmada.</div>
                     </div>
 
-                    <span class="comprovante-status">
-                        Confirmada
-                    </span>
-
-                </div>
-
-                <div class="comprovante-codigo">
-                    <span>CÓDIGO DA INSCRIÇÃO</span>
-                    <strong id="comprovante-codigo">—</strong>
-                </div>
-
-                <!-- PARTICIPANTE -->
-                <div class="comprovante-secao">
-
-                    <h3>Dados do Participante</h3>
-
-                    <div class="comprovante-dados">
-
+                    <!-- Cabeçalho do recibo -->
+                    <div class="row between">
                         <div>
-                            <span>Nome completo</span>
-                            <strong id="comprovante-nome">—</strong>
+                            <p class="eyebrow">SGIE Eventos</p>
+                            <h2 class="h2" style="margin-top: 4px;">Comprovante de pagamento da inscrição</h2>
                         </div>
-
-                        <div>
-                            <span>CPF</span>
-                            <strong id="comprovante-cpf">—</strong>
-                        </div>
-
-                        <div>
-                            <span>E-mail</span>
-                            <strong id="comprovante-email">—</strong>
-                        </div>
-
-                        <div>
-                            <span>Tipo de credenciamento</span>
-                            <strong id="comprovante-credenciamento">Participante</strong>
-                        </div>
-
+                        <span class="badge badge-success">Confirmada</span>
                     </div>
 
-                </div>
+                    <dl class="dl">
+                        <dt>Código da inscrição</dt>
+                        <dd class="num" id="comprovante-codigo">—</dd>
+                        <dt>Data de emissão</dt>
+                        <dd class="num" id="comprovante-data-emissao">—</dd>
+                    </dl>
 
-                <!-- EVENTO -->
-                <div class="comprovante-secao">
+                    <hr class="sep">
 
-                    <h3>Dados do Evento</h3>
+                    <!-- Participante -->
+                    <h3 class="h3">Participante</h3>
+                    <dl class="dl">
+                        <dt>Nome</dt>
+                        <dd id="comprovante-nome">—</dd>
+                        <dt>E-mail</dt>
+                        <dd id="comprovante-email">—</dd>
+                        <dt>CPF</dt>
+                        <dd id="comprovante-cpf">—</dd>
+                        <dt>Tipo de credenciamento</dt>
+                        <dd id="comprovante-credenciamento">Participante</dd>
+                    </dl>
 
-                    <div class="comprovante-dados">
+                    <hr class="sep">
 
-                        <div class="comprovante-dado-completo">
-                            <span>Evento</span>
-                            <strong id="comprovante-evento">—</strong>
-                        </div>
+                    <!-- Evento -->
+                    <h3 class="h3">Evento</h3>
+                    <dl class="dl">
+                        <dt>Evento</dt>
+                        <dd id="comprovante-evento">—</dd>
+                        <dt>Data</dt>
+                        <dd class="num" id="comprovante-data-evento">—</dd>
+                        <dt>Horário</dt>
+                        <dd class="num" id="comprovante-horario">—</dd>
+                        <dt>Local</dt>
+                        <dd id="comprovante-local">—</dd>
+                    </dl>
 
-                        <div>
-                            <span>Data</span>
-                            <strong id="comprovante-data-evento">—</strong>
-                        </div>
+                    <hr class="sep">
 
-                        <div>
-                            <span>Horário</span>
-                            <strong id="comprovante-horario">—</strong>
-                        </div>
+                    <!-- Pagamento -->
+                    <h3 class="h3">Pagamento</h3>
+                    <dl class="dl">
+                        <dt>Valor pago</dt>
+                        <dd class="num" id="comprovante-valor">—</dd>
+                        <dt>Situação</dt>
+                        <dd id="comprovante-financeiro-status">—</dd>
+                        <dt id="comprovante-metodo-container" style="display: none;">Método</dt>
+                        <dd id="comprovante-metodo" style="display: none;">—</dd>
+                        <dt id="comprovante-transacao-container" style="display: none;">ID da transação</dt>
+                        <dd id="comprovante-transacao" style="display: none;">—</dd>
+                    </dl>
 
-                        <div class="comprovante-dado-completo">
-                            <span>Local</span>
-                            <strong id="comprovante-local">—</strong>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- PAGAMENTO -->
-                <div class="comprovante-secao">
-
-                    <h3>Resumo Financeiro</h3>
-
-                    <div class="comprovante-financeiro">
-
-                        <div>
-                            <span>Valor da inscrição</span>
-                            <strong id="comprovante-valor">—</strong>
-                        </div>
-
-                        <div>
-                            <span>Situação financeira</span>
-                            <strong id="comprovante-financeiro-status">
-                                Não informado
-                            </strong>
-                        </div>
-
-                        <div id="comprovante-metodo-container" style="display: none;">
-                            <span>Método de pagamento</span>
-                            <strong id="comprovante-metodo">—</strong>
-                        </div>
-
-                        <div id="comprovante-transacao-container" style="display: none;">
-                            <span>Transação / Gateway</span>
-                            <strong id="comprovante-transacao">—</strong>
-                        </div>
-
-                    </div>
-
-                    <p class="comprovante-observacao">
-                        Este documento confirma o registro da inscrição.
-                        A confirmação financeira depende dos registros
-                        específicos de pagamento.
+                    <p class="hint">
+                        A API não gera arquivo de recibo. Esta página reúne dados da inscrição, da cobrança e do pagamento. Dúvidas? Fale com a organização do evento.
                     </p>
-
-                </div>
-
-                <div class="comprovante-rodape-documento">
-                    <span>SGIE — Sistema de Gestão de Inscrições e Eventos</span>
-                    <span id="comprovante-data-emissao">—</span>
-                </div>
-
+                </section>
             </div>
 
-        </section>
-
-        <!-- AÇÕES -->
-        <div class="comprovante-acoes" id="comprovante-acoes">
-
-            <button
-                type="button"
-                class="comprovante-btn-primary"
-                id="btn-imprimir"
-            >
-                Imprimir comprovante
-            </button>
-
-            <a
-                href="../inscricao/minhas-inscricoes/index.html"
-                class="comprovante-btn-secondary"
-            >
-                Voltar para minhas inscrições
-            </a>
-
+            <!-- Ações -->
+            <div class="row" id="comprovante-acoes" style="display: none; margin-top: 24px; justify-content: flex-end;">
+                <a href="../inscricao/minhas-inscricoes/index.html" class="btn btn-secondary">
+                    Voltar para minhas inscrições
+                </a>
+            </div>
         </div>
-
     </main>
 
-    <!-- RODAPÉ COMPARTILHADO -->
     <footer class="footer">
         <div class="container">
-            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
         </div>
     </footer>
 
-    <!-- SCRIPTS -->
     <script src="../config.js"></script>
     <script src="../api.js"></script>
     <script src="../shared/dom.js"></script>
@@ -225,6 +138,5 @@
     <script src="../shared/roles.js"></script>
     <script src="../shared/layout.js"></script>
     <script src="comprovante.js"></script>
-
 </body>
 </html>

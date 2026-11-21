@@ -4,47 +4,23 @@ let filtroStatusAtivo = '';
 const STATUS_CONFIG = {
     confirmada: {
         texto: 'Confirmada',
-        artigoClass: 'minhas-inscricoes__article-item-1-confirmada',
-        badgeClass: 'minhas-inscricoes__background-border',
-        badgeTextoClass: 'minhas-inscricoes__text-20',
-        badgeIcon: `
-            <svg viewBox="0 0 13.333 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="minhas-inscricoes__icon-12" role="img">
-              <path d="M5.733 9.733 L10.433 5.033 L9.5 4.1 L5.733 7.867 L3.833 5.967 L2.9 6.9 L5.733 9.733 Z" fill="rgb(6, 95, 70)" />
-            </svg>
-        `
+        badgeClass: 'badge-success',
+        icon: 'ic-check'
     },
     pendente_pagamento: {
-        texto: 'Pendente de Pagamento',
-        artigoClass: 'minhas-inscricoes__article-item-2-pendente-de-pagamento',
-        badgeClass: 'minhas-inscricoes__background-border-2',
-        badgeTextoClass: 'minhas-inscricoes__text-30',
-        badgeIcon: `
-            <svg viewBox="0 0 13.333 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="minhas-inscricoes__icon-17" role="img">
-              <path d="M6.667 0 C2.987 0 0 2.987 0 6.667 C0 10.347 2.987 13.333 6.667 13.333 C10.347 13.333 13.333 10.347 13.333 6.667 C13.333 2.987 10.347 0 6.667 0 Z M6.667 12 C3.727 12 1.333 9.607 1.333 6.667 C1.333 3.727 3.727 1.333 6.667 1.333 C9.607 1.333 12 3.727 12 6.667 C12 9.607 9.607 12 6.667 12 Z M7 3.333 L6 3.333 L6 7.333 L9.5 9.433 L10 8.6 L7 6.833 Z" fill="rgb(133, 83, 0)" />
-            </svg>
-        `
+        texto: 'Pendente de pagamento',
+        badgeClass: 'badge-warning',
+        icon: 'ic-clock'
     },
     lista_espera: {
-        texto: 'Lista de Espera',
-        artigoClass: 'minhas-inscricoes__article-item-3-lista-de-espera',
-        badgeClass: 'minhas-inscricoes__background-border-3',
-        badgeTextoClass: 'minhas-inscricoes__text-40',
-        badgeIcon: `
-            <svg viewBox="0 0 10.667 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="minhas-inscricoes__icon-21" role="img">
-              <path d="M2.667 12 L8 12 L8 10 C8 9.267 7.733 8.64 7.213 8.12 C6.693 7.6 6.067 7.333 5.333 7.333 C4.6 7.333 3.973 7.6 3.453 8.12 C2.933 8.64 2.667 9.267 2.667 10 Z" fill="rgb(0, 109, 65)" />
-            </svg>
-        `
+        texto: 'Lista de espera',
+        badgeClass: 'badge-info',
+        icon: 'ic-info'
     },
     cancelada: {
         texto: 'Cancelada',
-        artigoClass: 'minhas-inscricoes__article-item-4-cancelada',
-        badgeClass: 'minhas-inscricoes__background-border-4',
-        badgeTextoClass: 'minhas-inscricoes__text-50',
-        badgeIcon: `
-            <svg viewBox="0 0 13.333 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="minhas-inscricoes__icon-26" role="img">
-              <path d="M4.267 10 L6.667 7.6 L9.067 10 L10 9.067 L7.6 6.667 L10 4.267 L9.067 3.333 L6.667 5.733 L4.267 3.333 L3.333 4.267 L5.733 6.667 L3.333 9.067 Z" fill="rgb(159, 18, 57)" />
-            </svg>
-        `
+        badgeClass: 'badge-neutral',
+        icon: 'ic-x'
     }
 };
 
@@ -228,35 +204,43 @@ function renderizarInscricoes(inscricoes, busca = '', statusFiltro = '') {
     inscricoes.forEach(insc => {
         const cfg = STATUS_CONFIG[insc.status] || {
             texto: insc.status_display || insc.status,
-            artigoClass: 'minhas-inscricoes__article-item-1-confirmada',
-            badgeClass: 'minhas-inscricoes__background-border',
-            badgeTextoClass: 'minhas-inscricoes__text-20',
-            badgeIcon: ''
+            badgeClass: 'badge-neutral',
+            icon: 'ic-info'
         };
 
         const card = document.createElement('div');
-        card.className = cfg.artigoClass;
-        card.style.position = 'relative';
+        card.className = 'item';
+        card.style.flexWrap = 'wrap';
 
         const codigoIngresso = insc.codigo_ingresso || `#SGIE-${insc.id}`;
-        const categoria = insc.evento_categoria || 'Evento';
         const dataFmt = formatarData(insc.evento_data);
         const horaFmt = formatarHora(insc.evento_hora_inicio);
         const local = insc.evento_local || 'Local a confirmar';
 
+        // Extrai dia e mês para o datebox
+        let mesAbrev = 'evt';
+        let diaNum = '—';
+        if (insc.evento_data) {
+            try {
+                const dataObj = new Date(insc.evento_data);
+                if (!isNaN(dataObj.getTime())) {
+                    const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+                    mesAbrev = meses[dataObj.getUTCMonth()];
+                    diaNum = String(dataObj.getUTCDate()).padStart(2, '0');
+                }
+            } catch {}
+        }
+
         let badgeExtra = '';
         if (insc.status === 'lista_espera' && insc.posicao_lista_espera) {
-            badgeExtra = `<p style="font-size: 13px; color: #006d41; font-weight: 700; margin: 4px 0 0 0;">Posição na fila: ${insc.posicao_lista_espera}º lugar</p>`;
+            badgeExtra = `<p class="small" style="color: var(--primary-ink); font-weight: 700; margin-top: 4px;">Posição na fila: ${insc.posicao_lista_espera}º lugar</p>`;
         }
 
         let acoesHtml = '';
         if (insc.status === 'confirmada' && insc.codigo_ingresso) {
             acoesHtml += `
-                <button type="button" class="btn-acao-ingresso" onclick="abrirIngresso(${insc.id})" style="display: inline-flex; align-items: center; gap: 8px; background-color: #006d41; color: #fff; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; border: none;">
-                  <svg viewBox="0 0 13.5 13.5" xmlns="http://www.w3.org/2000/svg" fill="none" style="width: 14px; height: 14px;" role="img">
-                    <path d="M7.5 13.5 L7.5 12 L9 12 L9 13.5 Z M6 12 L6 8.25 L7.5 8.25 L7.5 12 Z M0 4.5 L0 0 L4.5 0 L4.5 4.5 Z M0 13.5 L0 9 L4.5 9 L4.5 13.5 Z M9 4.5 L9 0 L13.5 0 L13.5 4.5 Z" fill="rgb(255, 255, 255)" />
-                  </svg>
-                  <span>Ver Ingresso</span>
+                <button type="button" class="btn btn-primary btn-sm" onclick="abrirIngresso(${insc.id})">
+                    <i class="ic ic-ticket"></i>Ver Ingresso
                 </button>
             `;
         }
@@ -264,94 +248,34 @@ function renderizarInscricoes(inscricoes, busca = '', statusFiltro = '') {
         if (insc.pode_cancelar) {
             const rotuloCancelar = insc.status === 'lista_espera' ? 'Desistir da Fila' : 'Cancelar Inscrição';
             acoesHtml += `
-                <button type="button" class="btn-acao-cancelar" onclick="cancelarInscricao(${insc.id})" style="display: inline-flex; align-items: center; gap: 6px; background-color: #fff; color: #ba1a1a; border: 1.5px solid #fecdd3; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer;">
-                  <span>${rotuloCancelar}</span>
+                <button type="button" class="btn btn-danger-outline btn-sm" onclick="cancelarInscricao(${insc.id})">
+                    <i class="ic ic-x"></i>${rotuloCancelar}
                 </button>
             `;
         }
 
         acoesHtml += `
-            <button type="button" class="btn-acao-detalhes" onclick="alternarDetalhes(${insc.id})" style="display: inline-flex; align-items: center; gap: 6px; background-color: #f1f5f9; color: #334155; border: 1.5px solid #cbd5e1; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;">
-              <span id="rotulo-detalhes-${insc.id}">Ver Detalhes</span>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="alternarDetalhes(${insc.id})">
+                <span id="rotulo-detalhes-${insc.id}">Detalhes</span>
             </button>
         `;
 
         card.innerHTML = `
-            <div class="minhas-inscricoes__container-29" style="width: 100%;">
-                <div class="minhas-inscricoes__container-30">
-                    <div class="minhas-inscricoes__background-5">
-                        <p class="minhas-inscricoes__text-12">${categoria}</p>
-                    </div>
-                    <div class="minhas-inscricoes__container-31"><p class="minhas-inscricoes__text-13">•</p></div>
-                    <div class="minhas-inscricoes__container-32">
-                        <p class="minhas-inscricoes__text-14">${codigoIngresso}</p>
-                    </div>
-                    <div class="minhas-inscricoes__container-33"><p class="minhas-inscricoes__text-15">•</p></div>
-                    <div class="minhas-inscricoes__container-34">
-                        <p class="minhas-inscricoes__text-16">${insc.evento_modalidade || 'Presencial'}</p>
-                    </div>
-                </div>
-
-                <div class="minhas-inscricoes__heading-2">
-                    <p class="minhas-inscricoes__simposio-internacional-de-inteligencia-artificia">${insc.evento_nome}</p>
-                </div>
-
-                <div class="minhas-inscricoes__container-35">
-                    <div class="minhas-inscricoes__container-36">
-                        <div class="minhas-inscricoes__container-37">
-                            <svg viewBox="0 0 13.5 15" xmlns="http://www.w3.org/2000/svg" fill="none" class="minhas-inscricoes__icon-9" role="img">
-                              <path d="M1.5 15 L12 15 L12 6 L1.5 6 Z M1.5 4.5 L12 4.5 L12 3 L1.5 3 Z" fill="rgb(0, 109, 65)" />
-                            </svg>
-                        </div>
-                        <div class="minhas-inscricoes__container-38">
-                            <p class="minhas-inscricoes__text-17">${dataFmt}</p>
-                        </div>
-                    </div>
-
-                    <div class="minhas-inscricoes__container-39">
-                        <div class="minhas-inscricoes__container-40">
-                            <svg viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" fill="none" class="minhas-inscricoes__icon-10" role="img">
-                              <path d="M7.5 0 C3.36 0 0 3.36 0 7.5 C0 11.64 3.36 15 7.5 15 C11.64 15 15 11.64 15 7.5 C15 3.36 11.64 0 7.5 0 Z M7.5 13.5 C4.185 13.5 1.5 10.815 1.5 7.5 C1.5 4.185 4.185 1.5 7.5 1.5 C10.815 1.5 13.5 4.185 13.5 7.5 C13.5 10.815 10.815 13.5 7.5 13.5 Z" fill="rgb(0, 109, 65)" />
-                            </svg>
-                        </div>
-                        <div class="minhas-inscricoes__container-41">
-                            <p class="minhas-inscricoes__text-18">${horaFmt}</p>
-                        </div>
-                    </div>
-
-                    <div class="minhas-inscricoes__container-42">
-                        <div class="minhas-inscricoes__container-43">
-                            <svg viewBox="0 0 12 15" xmlns="http://www.w3.org/2000/svg" fill="none" class="minhas-inscricoes__icon-11" role="img">
-                              <path d="M6 0 C2.688 0 0 2.688 0 6 C0 10.5 6 15 6 15 C6 15 12 10.5 12 6 C12 2.688 9.312 0 6 0 Z" fill="rgb(0, 109, 65)" />
-                            </svg>
-                        </div>
-                        <div class="minhas-inscricoes__container-44">
-                            <p class="minhas-inscricoes__text-19">${local}</p>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="datebox"><small>${mesAbrev}</small>${diaNum}</div>
+            <div class="grow" style="min-width: 240px;">
+                <b class="h3">${insc.evento_nome}</b>
+                <p class="small muted" style="margin-top: 2px;">${local} · ${dataFmt} às ${horaFmt} · ${codigoIngresso}</p>
                 ${badgeExtra}
-
-                <div id="detalhes-${insc.id}" style="display: none; margin-top: 16px; padding: 14px 16px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                    <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;"><strong>Data da inscrição:</strong> ${formatarDataHora(insc.data_inscricao)}</p>
-                    <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;"><strong>Valor:</strong> ${insc.evento_e_gratuito ? 'Gratuito' : formatarMoeda(insc.evento_preco)}</p>
-                    <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;"><strong>Campos adicionais informados:</strong> ${formatarDadosAdicionais(insc.dados_adicionais)}</p>
-                    ${insc.comprovante ? `<p style="margin: 0; font-size: 13px;"><a href="${insc.comprovante}" target="_blank" rel="noopener noreferrer" style="color: #006d41; font-weight: 700; text-decoration: underline;">Visualizar comprovante enviado</a></p>` : ''}
+                <div id="detalhes-${insc.id}" style="display: none; margin-top: 12px; padding: 12px; background-color: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);">
+                    <p class="small" style="margin: 0 0 4px 0;"><strong>Data da inscrição:</strong> ${formatarDataHora(insc.data_inscricao)}</p>
+                    <p class="small" style="margin: 0 0 4px 0;"><strong>Valor:</strong> ${insc.evento_e_gratuito ? 'Gratuito' : formatarMoeda(insc.evento_preco)}</p>
+                    <p class="small" style="margin: 0 0 4px 0;"><strong>Dados adicionais:</strong> ${formatarDadosAdicionais(insc.dados_adicionais)}</p>
+                    ${insc.comprovante ? `<p class="small" style="margin: 0;"><a href="${insc.comprovante}" target="_blank" rel="noopener noreferrer">Visualizar comprovante enviado</a></p>` : ''}
                 </div>
             </div>
-
-            <div class="minhas-inscricoes__container-45" style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
-                <div class="${cfg.badgeClass}">
-                    <div class="minhas-inscricoes__container-46">
-                        ${cfg.badgeIcon}
-                    </div>
-                    <p class="${cfg.badgeTextoClass}">${insc.status_display || cfg.texto}</p>
-                </div>
-
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end;">
-                    ${acoesHtml}
-                </div>
+            <div class="row" style="gap: 8px; align-items: center;">
+                <span class="badge ${cfg.badgeClass}"><i class="ic ${cfg.icon}"></i>${insc.status_display || cfg.texto}</span>
+                ${acoesHtml}
             </div>
         `;
 
@@ -422,22 +346,25 @@ function abrirIngresso(id) {
     if (!conteudo) return;
 
     conteudo.innerHTML = `
-        <div class="ticket-imprimivel" id="ticket-imprimivel" style="text-align: center; padding: 24px; background: #ffffff; border-radius: 16px;">
-            <span style="display: inline-block; padding: 4px 12px; background-color: #ecfdf5; color: #006d41; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 12px;">INGRESSO DIGITAL OFICIAL</span>
-            <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0;">${insc.evento_nome}</h2>
-            <p style="font-size: 14px; color: #475569; margin: 0 0 16px 0;">${formatarData(insc.evento_data)} às ${formatarHora(insc.evento_hora_inicio)} • ${insc.evento_local}</p>
-            
-            <div style="display: inline-block; padding: 12px; background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px; margin-bottom: 16px;">
-                <img src="${qrUrl}" alt="QR Code do ingresso" style="width: 180px; height: 180px; display: block; margin: 0 auto;">
-            </div>
-
-            <p style="font-family: monospace; font-size: 18px; font-weight: 800; letter-spacing: 1px; color: #006d41; margin: 0 0 6px 0;">${insc.codigo_ingresso}</p>
-            <p style="font-size: 15px; font-weight: 700; color: #0f172a; margin: 0 0 4px 0;">${nomeParticipante}</p>
-            <p style="font-size: 13px; color: #64748b; margin: 0;">Apresente este QR Code ou informe o código no credenciamento do evento.</p>
+        <div class="ticket-top">
+            <p class="eyebrow" style="color: var(--primary-ink);">Ingresso digital oficial</p>
+            <h2 class="h3" style="margin-top: 6px;">${insc.evento_nome}</h2>
+            <ul class="meta" style="margin-top: 12px;">
+                <li><i class="ic ic-cal"></i>${formatarData(insc.evento_data)}, ${formatarHora(insc.evento_hora_inicio)}</li>
+                <li><i class="ic ic-pin"></i>${insc.evento_local || 'Auditório Central'}</li>
+            </ul>
         </div>
-        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
-            <button type="button" class="btn btn-primary" onclick="window.print()" style="padding: 10px 20px; font-weight: 700; border-radius: 10px; background-color: #006d41; color: #fff; border: none; cursor: pointer;">Imprimir Ingresso</button>
-            <button type="button" class="btn btn-outline" onclick="fecharIngresso()" style="padding: 10px 20px; font-weight: 700; border-radius: 10px; background-color: #f1f5f9; color: #334155; border: 1.5px solid #cbd5e1; cursor: pointer;">Fechar</button>
+        <div class="ticket-body">
+            <div aria-label="QR Code da inscrição ${insc.codigo_ingresso}" class="qr" role="img" style="margin: 0 auto; text-align: center;">
+                <img src="${qrUrl}" alt="QR Code do ingresso" style="width: 160px; height: 160px; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--line);">
+            </div>
+            <b class="num" style="font-size: 18px;">${insc.codigo_ingresso}</b>
+            <p class="small muted" style="text-align: center;">${nomeParticipante} · apresente na entrada do evento</p>
+            <span class="badge badge-success"><i class="ic ic-check"></i>Confirmada</span>
+            <div class="row" style="gap: 12px; margin-top: 8px;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="ic ic-download"></i>Imprimir</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="fecharIngresso()">Fechar</button>
+            </div>
         </div>
     `;
 

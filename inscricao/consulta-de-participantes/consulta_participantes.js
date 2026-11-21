@@ -4,47 +4,23 @@ let eventoSelecionadoId = null;
 const STATUS_CONFIG_PARTICIPANTE = {
     confirmada: {
         texto: 'Confirmada',
-        artigoClass: 'consulta-de-participantes__article-item-1-confirmada',
-        badgeClass: 'consulta-de-participantes__background-7',
-        badgeTextoClass: 'consulta-de-participantes__text-21',
-        badgeIcon: `
-            <svg viewBox="0 0 13.333 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="consulta-de-participantes__icon-12" role="img">
-              <path d="M5.733 9.733 L10.433 5.033 L9.5 4.1 L5.733 7.867 L3.833 5.967 L2.9 6.9 L5.733 9.733 Z" fill="rgb(6, 95, 70)" />
-            </svg>
-        `
+        badgeClass: 'badge-success',
+        icon: 'ic-check'
     },
     pendente_pagamento: {
         texto: 'Pendente de Pagamento',
-        artigoClass: 'consulta-de-participantes__article-item-4-pendente',
-        badgeClass: 'consulta-de-participantes__background-11',
-        badgeTextoClass: 'consulta-de-participantes__text-41',
-        badgeIcon: `
-            <svg viewBox="0 0 13.333 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="consulta-de-participantes__icon-17" role="img">
-              <path d="M6.667 0 C2.987 0 0 2.987 0 6.667 C0 10.347 2.987 13.333 6.667 13.333 C10.347 13.333 13.333 10.347 13.333 6.667 C13.333 2.987 10.347 0 6.667 0 Z M7 3.333 L6 3.333 L6 7.333 L9.5 9.433 L10 8.6 L7 6.833 Z" fill="rgb(133, 83, 0)" />
-            </svg>
-        `
+        badgeClass: 'badge-warning',
+        icon: 'ic-clock'
     },
     lista_espera: {
         texto: 'Lista de Espera',
-        artigoClass: 'consulta-de-participantes__article-item-5-lista-de-espera',
-        badgeClass: 'consulta-de-participantes__background-13',
-        badgeTextoClass: 'consulta-de-participantes__text-51',
-        badgeIcon: `
-            <svg viewBox="0 0 10.667 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="consulta-de-participantes__icon-20" role="img">
-              <path d="M2.667 12 L8 12 L8 10 C8 9.267 7.733 8.64 7.213 8.12 C6.693 7.6 6.067 7.333 5.333 7.333 C4.6 7.333 3.973 7.6 3.453 8.12 C2.933 8.64 2.667 9.267 2.667 10 Z" fill="rgb(0, 109, 65)" />
-            </svg>
-        `
+        badgeClass: 'badge-info',
+        icon: 'ic-info'
     },
     cancelada: {
         texto: 'Cancelada',
-        artigoClass: 'consulta-de-participantes__article-item-6-cancelada',
-        badgeClass: 'consulta-de-participantes__background-15',
-        badgeTextoClass: 'consulta-de-participantes__text-61',
-        badgeIcon: `
-            <svg viewBox="0 0 13.333 13.333" xmlns="http://www.w3.org/2000/svg" fill="none" class="consulta-de-participantes__icon-22" role="img">
-              <path d="M4.267 10 L6.667 7.6 L9.067 10 L10 9.067 L7.6 6.667 L10 4.267 L9.067 3.333 L6.667 5.733 L4.267 3.333 L3.333 4.267 L5.733 6.667 L3.333 9.067 Z" fill="rgb(186, 26, 26)" />
-            </svg>
-        `
+        badgeClass: 'badge-neutral',
+        icon: 'ic-x'
     }
 };
 
@@ -299,24 +275,13 @@ function renderizarParticipantes(participantes) {
         const presencaConfirmada = verificarPresencaRegistrada(p);
         const cfg = STATUS_CONFIG_PARTICIPANTE[p.status] || {
             texto: p.status_display || p.status,
-            artigoClass: 'consulta-de-participantes__article-item-1-confirmada',
-            badgeClass: 'consulta-de-participantes__background-7',
-            badgeTextoClass: 'consulta-de-participantes__text-21',
-            badgeIcon: ''
+            badgeClass: 'badge-neutral',
+            icon: 'ic-info'
         };
 
         const card = document.createElement('div');
-        card.className = cfg.artigoClass;
-        card.style.display = 'flex';
-        card.style.justifyContent = 'space-between';
-        card.style.alignItems = 'center';
+        card.className = 'item';
         card.style.flexWrap = 'wrap';
-        card.style.gap = '16px';
-        card.style.padding = '18px 24px';
-        card.style.borderRadius = '14px';
-        card.style.background = '#ffffff';
-        card.style.border = '1px solid #e2e8f0';
-        card.style.marginBottom = '12px';
 
         const nome = p.participante_nome || p.participante_email || 'Participante';
         const partes = nome.trim().split(/\s+/);
@@ -329,46 +294,30 @@ function renderizarParticipantes(participantes) {
         const comprovanteUrl = p.comprovante ? obterUrlComprovanteSegura(p.comprovante) : null;
 
         const badgePresenca = presencaConfirmada
-            ? `<span style="font-size: 11px; font-weight: 700; color: #065f46; background: #d1fae5; padding: 2px 8px; border-radius: 999px;">Credenciado</span>`
+            ? `<span class="badge badge-success" style="font-size: 11px;"><i class="ic ic-check"></i>Credenciado</span>`
             : '';
 
         card.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 16px; flex: 1 1 360px;">
-                <div style="width: 44px; height: 44px; border-radius: 50%; background: #ecfdf5; color: #006d41; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0;">
-                    ${iniciais}
+            <span class="avatar">${iniciais}</span>
+            <div class="grow" style="min-width: 240px;">
+                <div class="row" style="gap: 8px;">
+                    <b class="h3">${nome}</b>
+                    <span class="small muted num">#${p.id}</span>
+                    ${badgePresenca}
                 </div>
-                <div style="min-width: 0;">
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <p style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">${nome}</p>
-                        <span style="font-size: 13px; color: #94a3b8;">•</span>
-                        <span style="font-size: 13px; color: #64748b; font-family: monospace;">#${p.id}</span>
-                        ${badgePresenca}
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
-                        <span style="font-size: 13px; color: #64748b;">${email}</span>
-                        <span style="font-size: 13px; color: #94a3b8;">•</span>
-                        <span style="font-size: 13px; color: #64748b;">Inscrito em: ${dataFmt}</span>
-                    </div>
+                <p class="small muted" style="margin-top: 2px;">${email} · Inscrito em ${dataFmt}</p>
+                <div id="detalhes-participante-${p.id}" style="display: none; margin-top: 12px; padding: 12px; background-color: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);">
+                    <p class="small" style="margin: 0 0 4px 0;"><strong>Presença / Credenciamento:</strong> ${presencaConfirmada ? 'Presença confirmada' : 'Pendente de credenciamento'}</p>
+                    <p class="small" style="margin: 0 0 4px 0;"><strong>Dados adicionais:</strong> ${formatarDadosAdicionais(p.dados_adicionais)}</p>
+                    ${comprovanteUrl ? `<p class="small" style="margin: 0;"><a href="${comprovanteUrl}" target="_blank" rel="noopener noreferrer">Visualizar comprovante de vínculo</a></p>` : '<p class="small muted" style="margin: 0;">Nenhum comprovante anexado.</p>'}
                 </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                <div class="${cfg.badgeClass}">
-                    <div class="consulta-de-participantes__container-45">
-                        ${cfg.badgeIcon}
-                    </div>
-                    <p class="${cfg.badgeTextoClass}">${p.status_display || cfg.texto}</p>
-                </div>
-
-                <button type="button" class="btn btn-sm btn-outline" onclick="alternarDetalhesParticipante(${p.id})" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border-radius: 8px; background: #f8fafc; border: 1.5px solid #cbd5e1; cursor: pointer;">
-                    <span id="rotulo-detalhes-p-${p.id}">Ver Detalhes</span>
+            <div class="row" style="gap: 8px; align-items: center;">
+                <span class="badge ${cfg.badgeClass}"><i class="ic ${cfg.icon}"></i>${p.status_display || cfg.texto}</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="alternarDetalhesParticipante(${p.id})">
+                    <span id="rotulo-detalhes-p-${p.id}">Detalhes</span>
                 </button>
-            </div>
-
-            <div id="detalhes-participante-${p.id}" style="display: none; width: 100%; margin-top: 8px; padding: 14px 16px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;"><strong>Presença / Credenciamento:</strong> ${presencaConfirmada ? 'Presença confirmada' : 'Pendente de credenciamento'}</p>
-                <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;"><strong>Campos adicionais / observações:</strong> ${formatarDadosAdicionais(p.dados_adicionais)}</p>
-                ${comprovanteUrl ? `<p style="margin: 0; font-size: 13px;"><a href="${comprovanteUrl}" target="_blank" rel="noopener noreferrer" style="color: #006d41; font-weight: 700; text-decoration: underline;">Visualizar comprovante de vínculo enviado</a></p>` : '<p style="margin: 0; font-size: 13px; color: #64748b;">Nenhum comprovante anexado.</p>'}
             </div>
         `;
 

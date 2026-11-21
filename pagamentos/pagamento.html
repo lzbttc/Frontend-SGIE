@@ -1,212 +1,193 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Pagamento - SGIE Eventos</title>
-
+    <title>Pagamento — SGIE</title>
     <link rel="stylesheet" href="../sgie.css">
-    <link rel="stylesheet" href="pagamento.css">
 </head>
-
-<body class="pagamento-page app">
-
-    <!-- NAVBAR COMPARTILHADA -->
+<body class="app">
     <header class="nav">
         <div class="container nav-in">
-            <a href="../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
-            <nav class="nav-links" aria-label="Principal"></nav>
+            <a href="../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="pagamento-container">
+    <main class="main">
+        <div class="container md">
+            <nav aria-label="Você está em" class="crumb">
+                <a href="../inscricao/minhas-inscricoes/index.html">Minhas inscrições</a>
+                <span aria-hidden="true">/</span>
+                <span>Pagamento</span>
+            </nav>
 
-        <header class="pagamento-header">
-            <h1>Pagamento</h1>
-        </header>
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Pagamento</h1>
+                    <p>A cobrança é criada depois da inscrição. Escolha o método para iniciar o pagamento.</p>
+                </div>
+                <span class="badge badge-warning">Pendente de pagamento</span>
+            </header>
 
-        <!-- AVISO DE SIMULAÇÃO -->
-        <div class="pay-alert-message pay-alert-info" style="margin-bottom: 20px; border-left: 4px solid #0284c7; background: #f0f9ff; color: #0369a1; padding: 12px 16px; border-radius: 8px; font-size: 14px;">
-            <strong>Ambiente de Simulação:</strong> Este sistema utiliza um gateway simulado para fins acadêmicos. <strong>Nunca insira dados reais de cartão de crédito ou débito.</strong> Utilize apenas números de teste.
-        </div>
+            <div id="mensagem-alerta" style="display: none;"></div>
 
-        <div id="mensagem-alerta" class="pay-alert" style="display: none;"></div>
+            <form class="with-side" onsubmit="return false;">
+                <!-- Coluna principal -->
+                <div class="stack lg">
+                    <!-- Dados do participante -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Dados do participante</h2>
+                                <p>Confirme os dados vinculados à inscrição.</p>
+                            </div>
+                        </div>
+                        <div class="grid cols-2 gap-4">
+                            <div class="field">
+                                <label class="label" for="participante-nome">Nome completo</label>
+                                <input class="input" type="text" id="participante-nome" readonly placeholder="—">
+                            </div>
+                            <div class="field">
+                                <label class="label" for="participante-email">E-mail</label>
+                                <input class="input" type="email" id="participante-email" readonly placeholder="—">
+                            </div>
+                            <div class="field">
+                                <label class="label" for="participante-cpf">CPF</label>
+                                <input class="input" type="text" id="participante-cpf" readonly placeholder="—">
+                            </div>
+                            <div class="field">
+                                <label class="label">Avatar</label>
+                                <span class="avatar" id="participante-avatar">--</span>
+                            </div>
+                        </div>
+                    </section>
 
-        <div class="pagamento-layout">
+                    <!-- Forma de pagamento -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Forma de pagamento</h2>
+                                <p>A inscrição só será confirmada quando o pagamento estiver APROVADO.</p>
+                            </div>
+                        </div>
 
-            <!-- COLUNA ESQUERDA -->
-            <section class="pagamento-coluna-principal">
+                        <div class="alert alert-warning" style="margin-bottom: 16px;">
+                            <i class="ic ic-info"></i>
+                            <div><b>Ambiente simulado.</b> Não insira dados reais de cartão. Use apenas números de teste fornecidos pela organização.</div>
+                        </div>
 
-                <!-- DADOS DO PARTICIPANTE -->
-                <article class="pay-card">
+                        <div class="stack">
+                            <label class="choice">
+                                <input type="radio" name="forma-pag" id="forma-pagamento" value="pix" checked>
+                                <span>
+                                    <b>Pix</b>
+                                    <span class="small muted">Código exibido após confirmação. Pagamento confirmado por webhook.</span>
+                                </span>
+                            </label>
+                            <label class="choice">
+                                <input type="radio" name="forma-pag" value="cartao">
+                                <span>
+                                    <b>Cartão de crédito</b>
+                                    <span class="small muted">Pagamento à vista simulado.</span>
+                                </span>
+                            </label>
+                            <label class="choice">
+                                <input type="radio" name="forma-pag" value="debito">
+                                <span>Cartão de débito</span>
+                            </label>
+                            <label class="choice">
+                                <input type="radio" name="forma-pag" value="boleto">
+                                <span>
+                                    <b>Boleto bancário</b>
+                                    <span class="small muted">Link e vencimento gerados pela API.</span>
+                                </span>
+                            </label>
+                        </div>
+                    </section>
 
-                    <div class="pay-card-header">
-                        <span class="pay-section-icon">♙</span>
+                    <!-- Área de detalhes do método selecionado -->
+                    <div id="area-detalhes-pagamento" style="display: none;"></div>
 
+                    <!-- Dados de cartão (exibidos quando selecionado) -->
+                    <section class="card" id="area-cartao" style="display: none;">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Dados do cartão</h2>
+                                <p>Use apenas números de teste. Não insira dados reais.</p>
+                            </div>
+                        </div>
+                        <div class="grid cols-2 gap-4">
+                            <div class="field" style="grid-column: 1 / -1;">
+                                <label class="label" for="cartao-nome">Nome no cartão</label>
+                                <input class="input" type="text" id="cartao-nome" placeholder="NOME COMO NO CARTÃO" autocomplete="cc-name">
+                            </div>
+                            <div class="field">
+                                <label class="label" for="cartao-numero">Número do cartão</label>
+                                <input class="input" type="text" id="cartao-numero" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number">
+                            </div>
+                            <div class="field">
+                                <label class="label" for="cartao-validade">Validade</label>
+                                <input class="input" type="text" id="cartao-validade" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Aside: resumo -->
+                <aside aria-label="Resumo da inscrição" class="stack sticky">
+                    <section class="card stack">
                         <div>
-                            <h2>Dados do Participante</h2>
-                            <p>Confira os dados do participante vinculado à inscrição.</p>
+                            <p class="eyebrow">Evento</p>
+                            <h2 class="h3" id="resumo-evento" style="margin-top: 4px;">Carregando…</h2>
                         </div>
-                    </div>
 
-                    <div class="pay-participante">
+                        <hr class="sep">
 
-                        <div class="pay-participante-identificacao">
+                        <div class="row between">
+                            <span class="muted">Valor</span>
+                            <b class="num" id="resumo-valor">R$ 0,00</b>
+                        </div>
+                        <div class="row between">
+                            <span class="muted">Forma</span>
+                            <b id="resumo-forma">—</b>
+                        </div>
+                        <div class="row between" id="resumo-vencimento-linha" style="display: none;">
+                            <span class="muted">Vencimento</span>
+                            <b class="num" id="resumo-vencimento">—</b>
+                        </div>
+                        <div class="row between">
+                            <span class="muted">Total</span>
+                            <b class="price num" id="resumo-total">R$ 0,00</b>
+                        </div>
 
-                            <div class="pay-avatar" id="participante-avatar">
-                                --
+                        <label class="check">
+                            <input type="checkbox" id="aceite-termos">
+                            <div>
+                                <b>Li e aceito os termos</b>
+                                <span>Política de cancelamento e reembolso.</span>
                             </div>
+                        </label>
 
-                            <div class="pay-participante-info">
-                                <div class="pay-nome-status">
-                                    <strong id="participante-nome">
-                                        Carregando participante...
-                                    </strong>
-
-                                    <span class="pay-status-identificacao">
-                                        Dados cadastrais
-                                    </span>
-                                </div>
-
-                                <span id="participante-email">--</span>
-                            </div>
-
-                        </div>
-
-                        <div class="pay-grid-dados">
-
-                            <div class="pay-field">
-                                <label for="participante-cpf">
-                                    Documento Identificador (CPF)
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="participante-cpf"
-                                    value="Não informado"
-                                    readonly
-                                >
-                            </div>
-
-                            <div class="pay-field">
-                                <label for="tipo-credenciamento">
-                                    Tipo de Credenciamento
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="tipo-credenciamento"
-                                    value="Conforme inscrição"
-                                    readonly
-                                >
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </article>
-
-                <!-- FORMA DE PAGAMENTO -->
-                <article class="pay-card">
-
-                    <div class="pay-card-header">
-                        <div>
-                            <h2>Forma de Pagamento</h2>
-                            <p>Selecione a modalidade desejada.</p>
-                        </div>
-                    </div>
-
-                    <div class="pay-select-wrapper">
-
-                        <select id="forma-pagamento">
-                            <option value="">Forma de pagamento</option>
-                            <option value="pix">PIX</option>
-                            <option value="cartao">Cartão de crédito</option>
-                            <option value="debito">Cartão de débito</option>
-                            <option value="boleto">Boleto bancário</option>
-                        </select>
-
-                    </div>
-
-                    <div
-                        id="area-detalhes-pagamento"
-                        class="pay-detalhes-pagamento"
-                        style="display: none;"
-                    ></div>
-
-                </article>
-
-            </section>
-
-            <!-- COLUNA DIREITA: RESUMO -->
-            <aside class="pagamento-coluna-resumo">
-
-                <article class="pay-summary-card">
-
-                    <div class="pay-summary-header">
-                        <span>RESUMO DA INSCRIÇÃO</span>
-                        <div class="pay-summary-decoration"></div>
-                    </div>
-
-                    <div class="pay-summary-content">
-
-                        <h2 id="resumo-evento">
-                            Carregando evento...
-                        </h2>
-
-                        <div class="pay-summary-row">
-                            <span>Valor da inscrição</span>
-                            <strong id="resumo-valor">R$ 0,00</strong>
-                        </div>
-
-                        <div class="pay-summary-row">
-                            <span>Forma de pagamento</span>
-                            <strong id="resumo-forma">Não selecionada</strong>
-                        </div>
-
-                        <div class="pay-summary-row" id="resumo-vencimento-linha" style="display: none;">
-                            <span>Vencimento</span>
-                            <strong id="resumo-vencimento">—</strong>
-                        </div>
-
-                        <div class="pay-summary-row pay-summary-total">
-                            <span>Total a pagar</span>
-                            <strong id="resumo-total">R$ 0,00</strong>
-                        </div>
-
-                        <button
-                            type="button"
-                            id="btn-ir-pagamento"
-                            class="pay-button-primary"
-                            disabled
-                        >
+                        <button class="btn btn-primary btn-lg btn-block" type="submit" id="btn-ir-pagamento" disabled>
                             Confirmar pagamento
                         </button>
-
-                    </div>
-
-                </article>
-
-            </aside>
-
+                        <a class="btn btn-ghost btn-block" href="../inscricao/minhas-inscricoes/index.html">
+                            Pagar depois
+                        </a>
+                    </section>
+                </aside>
+            </form>
         </div>
-
     </main>
 
-    <!-- RODAPÉ COMPARTILHADO -->
     <footer class="footer">
         <div class="container">
-            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
         </div>
     </footer>
 
-    <!-- SCRIPTS -->
     <script src="../config.js"></script>
     <script src="../api.js"></script>
     <script src="../shared/dom.js"></script>
@@ -214,6 +195,5 @@
     <script src="../shared/roles.js"></script>
     <script src="../shared/layout.js"></script>
     <script src="pagamento.js"></script>
-
 </body>
 </html>

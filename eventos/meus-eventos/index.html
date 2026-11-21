@@ -1,68 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Meus Eventos - SGIE</title>
-
+    <title>Meus eventos — SGIE</title>
     <link rel="stylesheet" href="../../sgie.css">
-    <link rel="stylesheet" href="style.css">
 </head>
-
-<body class="meus-eventos-page app">
-
-    <!-- NAVBAR COMPARTILHADA -->
+<body class="app">
     <header class="nav">
         <div class="container nav-in">
-            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="../../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
             <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
     </header>
 
-
     <main class="main">
         <div class="container">
-
             <header class="page-head">
                 <div>
-                    <h1 class="h1">Meus Eventos</h1>
-                    <p class="muted">Eventos sob sua coordenação ou co-organização no SGIE.</p>
+                    <h1 class="h1">Meus eventos</h1>
+                    <p>Eventos que você organiza. Abra um evento para gerenciar inscritos e credenciamento.</p>
                 </div>
-
-                <div class="page-head-actions">
-                    <a href="../cadastrar-evento/index.html" class="btn btn-primary btn-sm" id="btn-novo-evento">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2.5"
-                             stroke-linecap="round" stroke-linejoin="round"
-                             aria-hidden="true">
-                            <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                        Cadastrar Evento
-                    </a>
-                </div>
+                <a href="../cadastrar-evento/index.html" class="btn btn-primary" id="btn-novo-evento">
+                    <i class="ic ic-plus"></i>Novo evento
+                </a>
             </header>
-
 
             <div id="mensagem-alerta" style="display: none;"></div>
 
-
-            <!-- Filtros -->
-            <div class="filter-bar" id="filter-bar" style="display:none;">
-                <div class="field" style="flex:1;min-width:200px;">
-                    <label for="filtro-busca" class="label">Buscar</label>
+            <div class="stack lg">
+                <!-- Filtros -->
+                <form aria-label="Filtros" class="filters" id="filter-bar" style="display: none;">
                     <div class="input-icon">
                         <i class="ic ic-search"></i>
-                        <input type="search" id="filtro-busca" class="input" placeholder="Nome do evento...">
+                        <input aria-label="Buscar eventos" class="input" id="filtro-busca" placeholder="Buscar pelo nome do evento" type="search">
                     </div>
-                </div>
-
-                <div class="field">
-                    <label for="filtro-status" class="label">Status</label>
-                    <select id="filtro-status" class="input">
-                        <option value="">Todos</option>
+                    <select aria-label="Status" class="input" id="filtro-status">
+                        <option value="">Todos os status</option>
                         <option value="Rascunho">Rascunho</option>
                         <option value="Configuração">Configuração</option>
                         <option value="Publicado">Publicado</option>
@@ -72,25 +47,21 @@
                         <option value="Arquivado">Arquivado</option>
                         <option value="Cancelado">Cancelado</option>
                     </select>
+                </form>
+
+                <!-- Lista de eventos -->
+                <div id="lista-meus-eventos">
+                    <!-- preenchido dinamicamente -->
                 </div>
             </div>
-
-
-            <!-- Lista de eventos -->
-            <div id="lista-meus-eventos">
-                <!-- preenchido dinamicamente -->
-            </div>
-
         </div>
     </main>
 
-
     <footer class="footer">
         <div class="container">
-            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
         </div>
     </footer>
-
 
     <script src="../../config.js"></script>
     <script src="../../api.js"></script>
@@ -99,7 +70,5 @@
     <script src="../../shared/roles.js"></script>
     <script src="../../shared/layout.js"></script>
     <script src="meus_eventos.js"></script>
-
 </body>
-
 </html>

@@ -1,711 +1,187 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Meu Perfil - SGIE</title>
-
+    <title>Meu perfil — SGIE</title>
     <link rel="stylesheet" href="../../sgie.css">
-    <link rel="stylesheet" href="perfil.css">
 </head>
-
-
-<body class="perfil-page app">
-
-    <!-- NAVBAR COMPARTILHADA -->
+<body class="app">
+    <!-- Navbar compartilhada -->
     <header class="nav">
         <div class="container nav-in">
-            <a href="../../index.html" class="brand">SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="../../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
             <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
     </header>
 
-
     <main class="main">
         <div class="container">
-
             <header class="page-head">
                 <div>
-                    <h1 class="h1">Meu Perfil</h1>
+                    <h1 class="h1">Meu perfil</h1>
                     <p class="muted" id="perfil-subtitulo">Seus dados pessoais e, se você organiza eventos, seu perfil público de organizador.</p>
                 </div>
             </header>
 
-
             <div id="mensagem-alerta" style="display: none;"></div>
 
-
-            <!-- Layout com sidebar -->
-            <div class="perfil-layout">
-
-                <!-- ======================================================
-                     COLUNA PRINCIPAL
-                     ====================================================== -->
-                <div class="perfil-main">
-
-                    <!-- ==================================================
-                         DADOS CADASTRAIS PESSOAIS
-                         ================================================== -->
-                    <section class="card perfil-card">
-
-                        <div class="card-body">
-
-                            <header class="perfil-card-head">
-
-                                <div class="perfil-card-titulo">
-
-                                    <span
-                                        class="icon icon-id-card"
-                                        aria-hidden="true"
-                                    ></span>
-
-                                    <div>
-                                        <h2>Dados Cadastrais Pessoais</h2>
-
-                                        <p>
-                                            Consulte seus registros institucionais
-                                            e atualize seus dados de contato e
-                                            identificação.
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                                <span
-                                    class="badge badge-success"
-                                    id="badge-status-cadastro"
-                                >
-                                    Cadastrado Ativo
-                                </span>
-
-                            </header>
-
-
-                            <div class="perfil-resumo">
-
-                                <div class="resumo-item">
-                                    <span class="resumo-label">
-                                        Membro desde
-                                    </span>
-
-                                    <span class="resumo-valor">
-                                        <span
-                                            class="icon icon-calendar"
-                                            aria-hidden="true"
-                                        ></span>
-
-                                        <span id="resumo-membro-desde">—</span>
-                                    </span>
-                                </div>
-
-                                <div class="resumo-item">
-                                    <span class="resumo-label">
-                                        E-mail Cadastrado
-                                    </span>
-
-                                    <span class="resumo-valor">
-                                        <span
-                                            class="icon icon-mail"
-                                            aria-hidden="true"
-                                        ></span>
-
-                                        <span id="resumo-email">—</span>
-                                    </span>
-                                </div>
-
-                                <div class="resumo-item">
-                                    <span class="resumo-label">
-                                        CPF
-
-                                        <span class="resumo-bloqueado">
-                                            <span
-                                                class="icon icon-lock"
-                                                aria-hidden="true"
-                                            ></span>
-                                            Bloqueado
-                                        </span>
-                                    </span>
-
-                                    <span class="resumo-valor">
-                                        <span id="resumo-cpf">—</span>
-                                    </span>
-                                </div>
-
-                                <div class="resumo-item">
-                                    <span class="resumo-label">
-                                        Data de Nascimento
-                                    </span>
-
-                                    <span class="resumo-valor">
-                                        <span
-                                            class="icon icon-calendar"
-                                            aria-hidden="true"
-                                        ></span>
-
-                                        <span id="resumo-nascimento">—</span>
-                                    </span>
-                                </div>
-
-                                <div class="resumo-item">
-                                    <span class="resumo-label">
-                                        Telefone
-                                    </span>
-
-                                    <span class="resumo-valor">
-                                        <span
-                                            class="icon icon-phone"
-                                            aria-hidden="true"
-                                        ></span>
-
-                                        <span id="resumo-telefone">—</span>
-                                    </span>
-                                </div>
-
-                                <div class="resumo-item">
-                                    <span class="resumo-label">
-                                        Papel de Organizador
-                                    </span>
-
-                                    <span
-                                        class="badge badge-neutral"
-                                        id="resumo-papel"
-                                    >
-                                        Não solicitado
-                                    </span>
-                                </div>
-
-                            </div>
-
-
-                            <form
-                                id="form-dados-pessoais"
-                                class="perfil-form"
-                                novalidate
-                            >
-
-                                <div class="form-group">
-
-                                    <label
-                                        for="id_nome_completo"
-                                        class="form-label"
-                                    >
-                                        <span>
-                                            Nome Completo
-                                            <span class="req">*</span>
-                                        </span>
-
-                                        <span class="form-hint">
-                                            Até 150 caracteres
-                                        </span>
-                                    </label>
-
-                                    <div class="input-wrap">
-
-                                        <input
-                                            type="text"
-                                            id="id_nome_completo"
-                                            name="nome_completo"
-                                            class="input-field"
-                                            required
-                                            maxlength="150"
-                                            autocomplete="name"
-                                        >
-
-                                        <span
-                                            class="icon icon-user"
-                                            aria-hidden="true"
-                                        ></span>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="form-row">
-
-                                    <div class="form-group">
-
-                                        <label
-                                            for="id_telefone"
-                                            class="form-label"
-                                        >
-                                            <span>
-                                                Telefone / WhatsApp
-                                                <span class="req">*</span>
-                                            </span>
-                                        </label>
-
-                                        <div class="input-wrap">
-
-                                            <input
-                                                type="tel"
-                                                id="id_telefone"
-                                                name="telefone"
-                                                class="input-field"
-                                                required
-                                                maxlength="15"
-                                                placeholder="(00) 00000-0000"
-                                                autocomplete="tel"
-                                            >
-
-                                            <span
-                                                class="icon icon-phone"
-                                                aria-hidden="true"
-                                            ></span>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    <div class="form-group">
-
-                                        <label
-                                            for="id_data_nascimento"
-                                            class="form-label"
-                                        >
-                                            <span>
-                                                Data de Nascimento
-                                                <span class="req">*</span>
-                                            </span>
-                                        </label>
-
-                                        <div class="input-wrap">
-
-                                            <input
-                                                type="text"
-                                                id="id_data_nascimento"
-                                                name="data_nascimento"
-                                                class="input-field"
-                                                required
-                                                inputmode="numeric"
-                                                maxlength="10"
-                                                placeholder="dd/mm/aaaa"
-                                                autocomplete="bday"
-                                            >
-
-                                            <span
-                                                class="icon icon-calendar"
-                                                aria-hidden="true"
-                                            ></span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="perfil-form-actions">
-
-                                    <button
-                                        type="submit"
-                                        id="btn-salvar-pessoais"
-                                        class="btn btn-primary btn-sm"
-                                    >
-                                        Salvar Alterações Pessoais
-                                    </button>
-
-                                </div>
-
-                            </form>
-
+            <div class="with-side" style="grid-template-columns: 300px minmax(0, 1fr);">
+                <!-- Sidebar lateral -->
+                <aside class="card stack" style="align-items: center; text-align: center;">
+                    <div style="position: relative; display: inline-block;">
+                        <span class="avatar lg" id="foto-iniciais">--</span>
+                        <img id="foto-preview" class="avatar lg" style="display: none; object-fit: cover;" alt="Foto de perfil">
+                        <span class="badge badge-success" id="foto-check" style="position: absolute; bottom: 0; right: 0; border-radius: 999px; padding: 2px 4px;" hidden><i class="ic ic-check"></i></span>
+                    </div>
+
+                    <div>
+                        <h2 class="h3" id="banner-nome">—</h2>
+                        <p class="small muted" id="resumo-email">—</p>
+                    </div>
+
+                    <div class="row" style="justify-content: center; gap: 6px;">
+                        <span class="badge badge-success" id="foto-badge"><i class="ic ic-check"></i>Conta ativa</span>
+                        <span class="badge badge-neutral" id="resumo-papel">Participante</span>
+                    </div>
+
+                    <hr class="sep" style="width: 100%;">
+
+                    <div class="stack" style="width: 100%; text-align: left; gap: 8px;">
+                        <div class="small muted">
+                            <strong>CPF:</strong> <span id="resumo-cpf">—</span>
                         </div>
-
-                    </section>
-
-
-                    <!-- ==================================================
-                         PERFIL DE ORGANIZADOR
-                         ================================================== -->
-                    <section class="card perfil-card">
-
-                        <div class="card-body">
-
-                            <header class="perfil-card-head">
-
-                                <div class="perfil-card-titulo">
-
-                                    <span
-                                        class="icon icon-user"
-                                        aria-hidden="true"
-                                    ></span>
-
-                                    <div>
-                                        <h2>Perfil de Organizador de Eventos</h2>
-
-                                        <p>
-                                            Cadastre suas credenciais para criar,
-                                            homologar e gerenciar eventos no SGIE.
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </header>
-
-
-                            <form
-                                id="form-organizador"
-                                class="perfil-form"
-                                novalidate
-                            >
-
-                                <!-- Foto -->
-                                <div class="foto-box">
-
-                                    <div class="foto-avatar-wrap">
-
-                                        <div
-                                            class="foto-avatar"
-                                            id="foto-avatar"
-                                        >
-                                            <img
-                                                id="foto-preview"
-                                                alt="Foto de perfil"
-                                                hidden
-                                            >
-
-                                            <span id="foto-iniciais">?</span>
-                                        </div>
-
-                                        <span
-                                            class="foto-check"
-                                            id="foto-check"
-                                            aria-hidden="true"
-                                            hidden
-                                        >
-                                            <svg
-                                                width="12"
-                                                height="12"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="3.5"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <path d="M20 6 9 17l-5-5"/>
-                                            </svg>
-                                        </span>
-
-                                    </div>
-
-
-                                    <div class="foto-info">
-
-                                        <div class="foto-info-head">
-                                            <h3>Foto de Identificação Pública / Perfil</h3>
-
-                                            <span
-                                                class="badge badge-success"
-                                                id="foto-badge"
-                                                hidden
-                                            >
-                                                Prévia Atual
-                                            </span>
-                                        </div>
-
-                                        <p class="foto-descricao">
-                                            Utilizada nos crachás digitais, catálogo
-                                            de organizadores e certificados oficiais.
-                                            Formatos JPG, PNG ou WebP até 5MB.
-                                        </p>
-
-                                        <div class="foto-acoes">
-
-                                            <label
-                                                for="input-foto"
-                                                class="btn btn-outline btn-sm"
-                                            >
-                                                <svg
-                                                    width="14"
-                                                    height="14"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    aria-hidden="true"
-                                                >
-                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                                    <path d="m17 8-5-5-5 5"/>
-                                                    <path d="M12 3v12"/>
-                                                </svg>
-
-                                                Alterar Foto
-                                            </label>
-
-                                            <input
-                                                type="file"
-                                                id="input-foto"
-                                                accept="image/jpeg,image/png,image/webp"
-                                                hidden
-                                            >
-
-                                            <button
-                                                type="button"
-                                                id="btn-remover-foto"
-                                                class="link-discreto"
-                                            >
-                                                Remover
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <!-- Banner -->
-                                <div class="form-group">
-
-                                    <div class="form-label">
-                                        <span>Banner Visual / Imagem de Capa do Organizador</span>
-
-                                        <span class="form-hint">
-                                            Até 10MB • Recomendado proporção 16:5 (1200×375px)
-                                        </span>
-                                    </div>
-
-                                    <div
-                                        class="banner-box"
-                                        id="banner-box"
-                                    >
-
-                                        <img
-                                            id="banner-preview"
-                                            alt="Banner do organizador"
-                                            hidden
-                                        >
-
-                                        <div class="banner-overlay">
-
-                                            <div class="banner-texto">
-                                                <strong id="banner-nome">
-                                                    Organizador
-                                                </strong>
-
-                                                <span>
-                                                    Banner institucional exibido no
-                                                    catálogo e na página dos eventos.
-                                                </span>
-                                            </div>
-
-                                            <label
-                                                for="input-banner"
-                                                class="banner-botao"
-                                            >
-                                                <svg
-                                                    width="14"
-                                                    height="14"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    aria-hidden="true"
-                                                >
-                                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/>
-                                                    <circle cx="12" cy="13" r="3"/>
-                                                </svg>
-
-                                                Substituir Banner
-                                            </label>
-
-                                            <input
-                                                type="file"
-                                                id="input-banner"
-                                                accept="image/jpeg,image/png,image/webp"
-                                                hidden
-                                            >
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <!-- Biografia -->
-                                <div class="form-group">
-
-                                    <label
-                                        for="id_biografia"
-                                        class="form-label"
-                                    >
-                                        <span>Mini-Biografia / Histórico Institucional</span>
-
-                                        <span class="form-hint">
-                                            <span id="contador-bio">0</span> / 500 caracteres
-                                        </span>
-                                    </label>
-
-                                    <textarea
-                                        id="id_biografia"
-                                        name="biografia"
-                                        class="input-field"
-                                        maxlength="500"
-                                        rows="5"
-                                        placeholder="Conte um pouco sobre sua trajetória e a instituição que você representa."
-                                    ></textarea>
-
-                                </div>
-
-
-                                <div class="perfil-form-actions perfil-form-actions-left">
-
-                                    <button
-                                        type="submit"
-                                        id="btn-salvar-organizador"
-                                        class="btn btn-primary btn-sm"
-                                    >
-                                        Submeter Dados de Organizador
-                                    </button>
-
-                                </div>
-
-                            </form>
-
+                        <div class="small muted">
+                            <strong>Nascimento:</strong> <span id="resumo-nascimento">—</span>
                         </div>
-
-                    </section>
-
-
-                    <!-- ==================================================
-                         SEGURANÇA
-                         ================================================== -->
-                    <section class="card perfil-card">
-
-                        <div class="card-body">
-
-                            <header class="perfil-card-head">
-
-                                <div class="perfil-card-titulo">
-
-                                    <span
-                                        class="icon icon-lock"
-                                        aria-hidden="true"
-                                    ></span>
-
-                                    <div>
-                                        <h2>Segurança</h2>
-
-                                        <p>
-                                            Redefina sua senha ou revise as opções
-                                            de acesso à sua conta.
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </header>
-
-                            <p class="muted" style="margin-bottom:12px">
-                                Um código de verificação será enviado para o e-mail
-                                <strong><span id="email-destino-texto"></span></strong>.
-                            </p>
-
-                            <a
-                                href="../recuperar-senha/recuperar_senha.html"
-                                class="btn btn-outline btn-sm"
-                            >
-                                Redefinir senha
-                            </a>
-
+                        <div class="small muted">
+                            <strong>Telefone:</strong> <span id="resumo-telefone">—</span>
                         </div>
-
-                    </section>
-
-                </div>
-
-
-                <!-- ======================================================
-                     COLUNA LATERAL
-                     ====================================================== -->
-                <aside class="perfil-aside">
-
-                    <section class="card perfil-card">
-
-                        <div class="card-body">
-
-                            <div class="painel-gestao">
-
-                                <span class="painel-eyebrow">
-                                    <svg
-                                        width="12"
-                                        height="12"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2.2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="m3 11 18-5v12L3 14v-3z"/>
-                                        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
-                                    </svg>
-
-                                    Painel de Gestão
-                                </span>
-
-                                <p class="painel-titulo">
-                                    Eventos sob Minha Gestão
-                                </p>
-
-                                <p class="painel-numero">
-                                    <strong id="painel-total">—</strong>
-                                    <span>Ativos no SGIE</span>
-                                </p>
-
-                                <p class="painel-descricao" id="painel-descricao">
-                                    Carregando informações dos seus eventos...
-                                </p>
-
-                                <a
-                                    href="../../index.html?tab=meus-eventos"
-                                    id="btn-ver-meus-eventos"
-                                    class="btn btn-primary btn-sm btn-block"
-                                >
-                                    Ver Meus Eventos
-                                </a>
-
-                            </div>
-
+                        <div class="small muted">
+                            <strong>Membro desde:</strong> <span id="resumo-membro-desde">—</span>
                         </div>
+                    </div>
 
-                    </section>
+                    <hr class="sep" style="width: 100%;">
 
-
-                    <button
-                        type="button"
-                        class="btn btn-outline btn-block btn-encerrar"
-                        onclick="logout()"
-                    >
-                        Encerrar Sessão
-                    </button>
-
+                    <div class="card" style="width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line); padding: 12px; border-radius: var(--radius-sm);">
+                        <div class="small muted">Eventos sob gestão</div>
+                        <div class="h2" id="painel-total" style="margin: 4px 0;">0</div>
+                        <div class="small muted" id="painel-descricao">Nenhum evento ativo</div>
+                        <a href="../../eventos/meus-eventos/index.html" class="btn btn-secondary btn-sm" style="margin-top: 8px; width: 100%; justify-content: center;">Acessar gestão</a>
+                    </div>
                 </aside>
 
-            </div>
+                <!-- Coluna principal -->
+                <div class="stack lg">
+                    <!-- Seção 1: Dados pessoais -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Dados pessoais</h2>
+                                <p>Atualize seus dados de contato e nome completo. CPF e e-mail são protegidos institucionalmente.</p>
+                            </div>
+                        </div>
 
+                        <form id="form-dados-pessoais" class="stack" novalidate>
+                            <div class="grid cols-2 gap-4">
+                                <div class="field">
+                                    <label class="label" for="id_nome_completo">Nome completo *</label>
+                                    <input class="input" type="text" id="id_nome_completo" name="nome_completo" required maxlength="150">
+                                </div>
+
+                                <div class="field">
+                                    <label class="label" for="id_telefone">Telefone / WhatsApp *</label>
+                                    <input class="input" type="tel" id="id_telefone" name="telefone" required maxlength="15" placeholder="(00) 00000-0000">
+                                </div>
+
+                                <div class="field">
+                                    <label class="label" for="id_data_nascimento">Data de nascimento</label>
+                                    <input class="input" type="text" id="id_data_nascimento" name="data_nascimento" placeholder="dd/mm/aaaa" maxlength="10">
+                                </div>
+                            </div>
+
+                            <div class="row" style="justify-content: flex-end;">
+                                <button class="btn btn-primary" type="submit" id="btn-salvar-pessoais">Salvar alterações</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Seção 2: Perfil de organizador -->
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Perfil de organizador</h2>
+                                <p>Necessário para criar e gerenciar eventos. Aparece publicamente na página dos seus eventos.</p>
+                            </div>
+                        </div>
+
+                        <form id="form-organizador" class="stack" novalidate>
+                            <div class="grid cols-2 gap-4">
+                                <div class="field">
+                                    <span class="label">Foto de perfil</span>
+                                    <div class="drop" style="flex-direction: column; align-items: center; justify-content: center; min-height: 120px;">
+                                        <i class="ic ic-upload"></i>
+                                        <span class="small muted">PNG, JPG ou WebP (máx. 5MB)</span>
+                                        <input type="file" id="input-foto" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                                        <div class="row" style="gap: 8px; margin-top: 6px;">
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('input-foto').click()">Escolher imagem</button>
+                                            <button type="button" class="btn btn-danger btn-sm" id="btn-remover-foto" style="display: none;">Remover</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <span class="label">Banner institucional</span>
+                                    <div class="drop" style="flex-direction: column; align-items: center; justify-content: center; min-height: 120px;">
+                                        <i class="ic ic-upload"></i>
+                                        <span class="small muted">PNG, JPG ou WebP (formato largo, máx. 10MB)</span>
+                                        <input type="file" id="input-banner" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                                        <div class="row" style="gap: 8px; margin-top: 6px;">
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('input-banner').click()">Escolher imagem</button>
+                                        </div>
+                                        <img id="banner-preview" style="display: none; max-width: 100%; max-height: 60px; object-fit: cover; margin-top: 8px; border-radius: var(--radius-sm);" alt="Preview do banner">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="row" style="justify-content: space-between;">
+                                    <label class="label" for="id_biografia">Minibiografia</label>
+                                    <span class="small muted"><span id="contador-bio">0</span>/1000 caracteres</span>
+                                </div>
+                                <textarea class="textarea" id="id_biografia" name="biografia" maxlength="1000" rows="4" placeholder="Conte sua experiência e atuação acadêmica ou profissional."></textarea>
+                                <span class="hint">Aparece na página dos seus eventos e no perfil público.</span>
+                            </div>
+
+                            <div class="row" style="justify-content: flex-end;">
+                                <button class="btn btn-primary" type="submit" id="btn-salvar-organizador">Salvar perfil de organizador</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Seção 3: Segurança -->
+                    <section class="card">
+                        <div class="card-head" style="margin-bottom: 0;">
+                            <div>
+                                <h2 class="h2">Segurança da conta</h2>
+                                <p>Para trocar sua senha institucional ou de acesso, solicite a recuperação por e-mail.</p>
+                            </div>
+                            <a class="btn btn-secondary" href="../recuperar-senha/recuperar_senha.html"><i class="ic ic-lock"></i>Alterar senha</a>
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
     </main>
 
-
+    <!-- Footer compartilhado -->
     <footer class="footer">
         <div class="container">
-            <p>SGIE — Sistema de Gestão de Inscrições e Eventos</p>
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
         </div>
     </footer>
-
 
     <script src="../../config.js"></script>
     <script src="../../api.js"></script>
@@ -714,7 +190,5 @@
     <script src="../../shared/roles.js"></script>
     <script src="../../shared/layout.js"></script>
     <script src="perfil.js"></script>
-
 </body>
-
 </html>

@@ -38,7 +38,8 @@
 }
 
 /* 2. BASE ------------------------------------------------------------------ */
-.app { font-family: var(--font); font-size: 15px; line-height: 1.55; color: var(--ink); background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; }
+html, body { margin: 0; padding: 0; border: 0; }
+.app { font-family: var(--font); font-size: 15px; line-height: 1.55; color: var(--ink); background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; margin: 0; padding: 0; }
 .app *, .app *::before, .app *::after { box-sizing: border-box; }
 :where(.app) h1, :where(.app) h2, :where(.app) h3, :where(.app) h4, :where(.app) p, :where(.app) ul, :where(.app) dl, :where(.app) dd { margin: 0; }
 :where(.app) ul { padding: 0; list-style: none; }
@@ -75,7 +76,7 @@
 .grow { flex: 1; min-width: 0; }
 .right { margin-left: auto; }
 .sep { height: 1px; background: var(--line); border: 0; margin: 0; }
-.footer { border-top: 1px solid var(--line); background: var(--surface); padding: 24px 0; color: var(--muted); font-size: 13px; text-align: center; }
+.footer { border-top: 1px solid var(--line); background: var(--surface); padding: 24px 0; color: var(--muted); font-size: 13px; text-align: center; margin-top: auto; }
 
 /* 4. NAVEGAÇÃO ------------------------------------------------------------- */
 .nav { background: var(--surface); border-bottom: 1px solid var(--line); }

@@ -322,13 +322,11 @@ function renderizarPaginaEvento(ev) {
                 const inicial = obterIniciais(nomeOrg);
                 const papel = org.papel_funcao || org.papel_display || org.papel || 'Membro da Equipe';
                 return `
-                    <div class="detalhes-do-evento__membro-1" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <div class="detalhes-do-evento__background-14" style="width: 40px; height: 40px; border-radius: 50%; background: #006d41; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-                            ${inicial}
-                        </div>
-                        <div class="detalhes-do-evento__container-79">
-                            <p style="margin: 0; font-weight: 700; color: #0f172a; font-size: 14px;">${nomeOrg}</p>
-                            <p style="margin: 2px 0 0 0; color: #64748b; font-size: 12px;">${papel}${org.eh_responsavel_principal ? ' • Responsável Principal' : ''}${email ? ` · ${email}` : ''}</p>
+                    <div class="row" style="gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line);">
+                        <span class="avatar">${inicial}</span>
+                        <div>
+                            <b>${nomeOrg}</b>
+                            <p class="small muted">${papel}${org.eh_responsavel_principal ? ' · Responsável Principal' : ''}${email ? ` · ${email}` : ''}</p>
                         </div>
                     </div>
                 `;
@@ -337,13 +335,11 @@ function renderizarPaginaEvento(ev) {
             const respNome = ev.usuario_representante_nome || 'Coordenação Geral';
             const inicial = obterIniciais(respNome);
             elEquipe.innerHTML = `
-                <div class="detalhes-do-evento__membro-1" style="display: flex; align-items: center; gap: 12px;">
-                    <div class="detalhes-do-evento__background-14" style="width: 40px; height: 40px; border-radius: 50%; background: #006d41; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-                        ${inicial}
-                    </div>
-                    <div class="detalhes-do-evento__container-79">
-                        <p style="margin: 0; font-weight: 700; color: #0f172a; font-size: 14px;">${respNome}</p>
-                        <p style="margin: 2px 0 0 0; color: #64748b; font-size: 12px;">Coordenador(a) Geral do Evento</p>
+                <div class="row" style="gap: 12px; padding: 8px 0;">
+                    <span class="avatar">${inicial}</span>
+                    <div>
+                        <b>${respNome}</b>
+                        <p class="small muted">Coordenador(a) Geral do Evento</p>
                     </div>
                 </div>
             `;
