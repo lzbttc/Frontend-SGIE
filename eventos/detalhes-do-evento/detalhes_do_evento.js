@@ -101,7 +101,14 @@ function renderizarPaginaEvento(ev) {
 
     // 2. Hero Badges
     const badgeStatus = document.getElementById('detalhe-status');
-    if (badgeStatus) badgeStatus.textContent = (ev.status_display || ev.status || 'Publicado').toUpperCase();
+    if (badgeStatus) {
+        const st = window.SGIE_FORMATTERS?.formatarStatusEvento(ev.status) || {
+            label: ev.status_display || ev.status || 'Publicado',
+            badgeClass: 'badge-neutral'
+        };
+        badgeStatus.textContent = st.label.toUpperCase();
+        badgeStatus.className = `badge ${st.badgeClass}`;
+    }
 
     const badgeCategoria = document.getElementById('detalhe-categoria');
     if (badgeCategoria) badgeCategoria.textContent = ev.categoria_display || ev.categoria || 'Evento';

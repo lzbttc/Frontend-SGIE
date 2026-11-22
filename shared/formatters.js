@@ -61,22 +61,24 @@
 
     function formatarStatusInscricao(status) {
         const mapa = {
-            confirmada: { label: 'Confirmada', badgeClass: 'badge-success' },
-            pendente_pagamento: { label: 'Pendente de pagamento', badgeClass: 'badge-warning' },
-            lista_espera: { label: 'Lista de espera', badgeClass: 'badge-info' },
-            cancelada: { label: 'Cancelada', badgeClass: 'badge-danger' },
+            confirmada:          { label: 'Confirmada',              badgeClass: 'badge-success', icon: 'ic-check' },
+            pendente_pagamento:  { label: 'Pendente de pagamento',   badgeClass: 'badge-warning', icon: 'ic-clock' },
+            lista_espera:        { label: 'Lista de espera',         badgeClass: 'badge-info',    icon: 'ic-info'  },
+            cancelada:           { label: 'Cancelada',               badgeClass: 'badge-neutral', icon: 'ic-x'    },
         };
         const s = String(status || '').toLowerCase().trim();
-        return mapa[s] || { label: status || 'Indefinido', badgeClass: 'badge-neutral' };
+        return mapa[s] || { label: status || 'Indefinido', badgeClass: 'badge-neutral', icon: 'ic-info' };
     }
 
     function formatarStatusEvento(status) {
         const mapa = {
             rascunho: { label: 'Rascunho', badgeClass: 'badge-neutral' },
             configuracao: { label: 'Configuração', badgeClass: 'badge-info' },
+            'configuração': { label: 'Configuração', badgeClass: 'badge-info' },
             publicado: { label: 'Publicado', badgeClass: 'badge-info' },
             'inscricoes abertas': { label: 'Inscrições abertas', badgeClass: 'badge-success' },
             'inscrições abertas': { label: 'Inscrições abertas', badgeClass: 'badge-success' },
+            'em andamento': { label: 'Em realização', badgeClass: 'badge-warning' },
             'em realizacao': { label: 'Em realização', badgeClass: 'badge-warning' },
             'em realização': { label: 'Em realização', badgeClass: 'badge-warning' },
             finalizado: { label: 'Finalizado', badgeClass: 'badge-neutral' },

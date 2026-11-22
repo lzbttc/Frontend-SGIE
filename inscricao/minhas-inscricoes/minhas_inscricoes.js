@@ -1,28 +1,7 @@
 let todasInscricoes = [];
 let filtroStatusAtivo = '';
 
-const STATUS_CONFIG = {
-    confirmada: {
-        texto: 'Confirmada',
-        badgeClass: 'badge-success',
-        icon: 'ic-check'
-    },
-    pendente_pagamento: {
-        texto: 'Pendente de pagamento',
-        badgeClass: 'badge-warning',
-        icon: 'ic-clock'
-    },
-    lista_espera: {
-        texto: 'Lista de espera',
-        badgeClass: 'badge-info',
-        icon: 'ic-info'
-    },
-    cancelada: {
-        texto: 'Cancelada',
-        badgeClass: 'badge-neutral',
-        icon: 'ic-x'
-    }
-};
+// STATUS_CONFIG removido — usar SGIE_FORMATTERS.formatarStatusInscricao (shared/formatters.js)
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!isAuthenticated()) {
@@ -202,11 +181,7 @@ function renderizarInscricoes(inscricoes, busca = '', statusFiltro = '') {
     lista.style.display = 'flex';
 
     inscricoes.forEach(insc => {
-        const cfg = STATUS_CONFIG[insc.status] || {
-            texto: insc.status_display || insc.status,
-            badgeClass: 'badge-neutral',
-            icon: 'ic-info'
-        };
+        const cfg = SGIE_FORMATTERS.formatarStatusInscricao(insc.status);
 
         const card = document.createElement('div');
         card.className = 'item';
@@ -274,7 +249,7 @@ function renderizarInscricoes(inscricoes, busca = '', statusFiltro = '') {
                 </div>
             </div>
             <div class="row" style="gap: 8px; align-items: center;">
-                <span class="badge ${cfg.badgeClass}"><i class="ic ${cfg.icon}"></i>${insc.status_display || cfg.texto}</span>
+                <span class="badge ${cfg.badgeClass}"><i class="ic ${cfg.icon}"></i>${insc.status_display || cfg.label}</span>
                 ${acoesHtml}
             </div>
         `;
