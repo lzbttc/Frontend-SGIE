@@ -197,7 +197,7 @@ function configurarFormulario(ev) {
         if (contadorDescricao) contadorDescricao.textContent = `${campoDescricao.value.length} / 2000 caracteres`;
         if (prevDescricao) prevDescricao.textContent = desc || 'Descrição do evento...';
 
-        if (prevCategoria) prevCategoria.textContent = (campoCategoria.value || 'Simpósio').toUpperCase();
+        if (prevCategoria) prevCategoria.textContent = (campoCategoria.value || 'Evento').toUpperCase();
         if (prevModalidade) prevModalidade.textContent = campoModalidade.value || 'Presencial';
 
         const containerVirtual = document.getElementById('container-transmissao-virtual');

@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prevDescricao.textContent = desc || 'Descrição preliminar do evento, objetivos formativos e temática central...';
 
         // Categoria
-        const cat = campoCategoria.value || 'Simpósio';
+        const cat = campoCategoria.value || 'Evento';
         prevCategoria.textContent = cat.toUpperCase();
 
         // Modalidade

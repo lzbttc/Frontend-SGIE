@@ -326,7 +326,7 @@ function abrirIngresso(id) {
             <h2 class="h3" style="margin-top: 6px;">${insc.evento_nome}</h2>
             <ul class="meta" style="margin-top: 12px;">
                 <li><i class="ic ic-cal"></i>${formatarData(insc.evento_data)}, ${formatarHora(insc.evento_hora_inicio)}</li>
-                <li><i class="ic ic-pin"></i>${insc.evento_local || 'Auditório Central'}</li>
+                <li><i class="ic ic-pin"></i>${insc.evento_local || 'Local a confirmar'}</li>
             </ul>
         </div>
         <div class="ticket-body">
