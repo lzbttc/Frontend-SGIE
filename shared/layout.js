@@ -125,13 +125,16 @@
 
     function renderBreadcrumbs(crumbs = []) {
         if (!crumbs || crumbs.length === 0) return '';
+        const esc = typeof window.SGIE_DOM?.escapeHTML === 'function'
+            ? window.SGIE_DOM.escapeHTML
+            : (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         const itemsHtml = crumbs
             .map((crumb, idx) => {
                 const isLast = idx === crumbs.length - 1;
                 if (isLast || !crumb.href) {
-                    return `<span>${crumb.label}</span>`;
+                    return `<span>${esc(crumb.label)}</span>`;
                 }
-                return `<a href="${crumb.href}">${crumb.label}</a> <span aria-hidden="true">/</span>`;
+                return `<a href="${esc(crumb.href)}">${esc(crumb.label)}</a> <span aria-hidden="true">/</span>`;
             })
             .join(' ');
 

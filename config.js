@@ -32,17 +32,5 @@ const SGIE_CONFIG = {
 
 if (typeof window !== 'undefined') {
     window.SGIE_CONFIG = SGIE_CONFIG;
-
-    // Remove popups e avisos gerados pelo Live Reload do Five Server em dev
-    if (typeof document !== 'undefined' && window.MutationObserver) {
-        const limparPopupsFiveServer = () => {
-            const popups = document.querySelectorAll('#fiveserver-info-wrapper, [id^="fiveserver-info"]');
-            popups.forEach((el) => el.remove());
-        };
-        const obs = new MutationObserver(limparPopupsFiveServer);
-        if (document.documentElement) {
-            obs.observe(document.documentElement, { childList: true, subtree: true });
-        }
-    }
 }
 
