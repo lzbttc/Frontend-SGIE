@@ -59,7 +59,7 @@
                     </div>
                     <h1 class="h1" id="detalhe-nome" style="font-size: 32px;">Carregando evento...</h1>
                     <p class="muted" id="detalhe-subtitulo" style="margin-top: 6px;">
-                        Organizado por <strong id="detalhe-responsavel">Coordenação Geral</strong> · <a id="detalhe-email" href="mailto:contato@sgie.edu.br">contato@sgie.edu.br</a>
+                        Organizado por <strong id="detalhe-responsavel">Coordenação</strong> <span id="detalhe-email-sep" style="display: none;">·</span> <a id="detalhe-email" href="#" style="display: none;"></a>
                     </p>
                 </div>
             </header>
@@ -118,9 +118,9 @@
                             </div>
                             <p class="small muted" id="sidebar-vagas-restantes">Calculando vagas...</p>
                         </div>
-                        <button type="button" class="btn btn-primary" id="btn-realizar-inscricao" style="width: 100%; min-height: 48px; font-size: 16px;">
+                        <a class="btn btn-primary" id="btn-realizar-inscricao" style="width: 100%; min-height: 48px; font-size: 16px; justify-content: center;" href="#">
                             Realizar Inscrição no Evento
-                        </button>
+                        </a>
                         <p class="small muted" id="sidebar-info-adicional">Sem custo. Se as vagas acabarem, você entra na lista de espera.</p>
                     </section>
 
@@ -133,7 +133,7 @@
                         <ul class="meta">
                             <li><i class="ic ic-cal"></i><span id="sidebar-data">—</span></li>
                             <li><i class="ic ic-clock"></i><span id="sidebar-horario">—</span></li>
-                            <li><i class="ic ic-pin"></i><span id="sidebar-local-designacao">Campus</span> (<span id="sidebar-local-tipo">Auditório</span>)</li>
+                            <li><i class="ic ic-pin"></i><span id="sidebar-local-designacao">—</span> <span id="sidebar-local-tipo-wrap" style="display: none;">(<span id="sidebar-local-tipo"></span>)</span></li>
                             <li><i class="ic ic-repeat"></i>Modalidade: <span id="sidebar-modalidade-texto">Presencial</span></li>
                         </ul>
                     </section>
@@ -153,6 +153,7 @@
     <script src="../../api.js"></script>
     <script src="../../shared/dom.js"></script>
     <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/mocks.js"></script>
     <script src="../../shared/roles.js"></script>
     <script src="../../shared/layout.js"></script>
     <script src="detalhes_do_evento.js"></script>

@@ -39,6 +39,7 @@
 
 /* 2. BASE ------------------------------------------------------------------ */
 html, body { margin: 0; padding: 0; border: 0; }
+[hidden] { display: none !important; }
 .app { font-family: var(--font); font-size: 15px; line-height: 1.55; color: var(--ink); background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; margin: 0; padding: 0; }
 .app *, .app *::before, .app *::after { box-sizing: border-box; }
 :where(.app) h1, :where(.app) h2, :where(.app) h3, :where(.app) h4, :where(.app) p, :where(.app) ul, :where(.app) dl, :where(.app) dd { margin: 0; }

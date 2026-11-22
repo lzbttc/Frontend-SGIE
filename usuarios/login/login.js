@@ -154,6 +154,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         if (response.ok) {
                             setAuth(data);
+                            if (window.SGIE_ROLES && typeof window.SGIE_ROLES.sincronizarPerfilUsuario === 'function') {
+                                try {
+                                    await window.SGIE_ROLES.sincronizarPerfilUsuario();
+                                } catch {}
+                            }
                             window.location.href =
                                 destino;
                             return;

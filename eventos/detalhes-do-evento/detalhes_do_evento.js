@@ -1,61 +1,67 @@
-/* SGIE — detalhes_do_evento.js
- * Visualização e gestão completa dos detalhes de um evento.
- */
+/* ==========================================================================
+   SGIE — Detalhes do Evento (detalhes_do_evento.js)
+   Regras do BLOCO 1 (1.1, 1.2, 1.3, 1.4, 1.7 e Regras Gerais)
+   ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Atualizar cabeçalho da aplicação
+document.addEventListener('DOMContentLoaded', () => {
     atualizarCabecalhoUsuario('eventos');
 
-    // 2. Extrair ID do evento da URL
     const params = new URLSearchParams(window.location.search);
     const eventoId = params.get('id');
 
     if (!eventoId) {
-        mostrarErro('Nenhum evento especificado na URL. Volte à página de eventos.');
+        mostrarErro('Nenhum evento especificado na URL.');
         return;
     }
 
-    // 3. Carregar dados do Evento da API
-    await carregarDetalhesEvento(eventoId);
+    carregarDetalhesEvento(eventoId);
 });
 
-function formatarDataIso(dataIso) {
-    if (!dataIso) return 'A definir';
-    const partes = String(dataIso).split('T')[0].split('-');
-    if (partes.length < 3) return dataIso;
-    const [ano, mes, dia] = partes.map(Number);
-    const d = new Date(ano, mes - 1, dia);
-    return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+function esc(str) {
+    if (typeof window.escapeHTML === 'function') {
+        return window.escapeHTML(str);
+    }
+    return String(str ?? '').replace(/[&<>"']/g, (c) => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
 }
 
-function dataHoraLegivel(isoStr) {
-    if (!isoStr) return '—';
+function formatarDataIso(dataIso) {
+    if (!dataIso) return '—';
+    const partes = String(dataIso).split('T')[0].split('-');
+    if (partes.length < 3) return dataIso;
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function dataHoraLegivel(dtString) {
+    if (!dtString) return 'Data não definida';
     try {
-        const d = new Date(isoStr);
-        return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+        const d = new Date(dtString);
+        if (isNaN(d.getTime())) return dtString;
+        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     } catch {
-        return isoStr;
+        return dtString;
     }
 }
 
 function obterIniciais(nome) {
-    if (!nome) return 'EV';
-    const partes = nome.trim().split(/\s+/);
+    if (!nome) return 'SG';
+    const partes = String(nome).trim().split(/\s+/);
     if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 
 async function carregarDetalhesEvento(id) {
-    const alertaContainer = document.getElementById('mensagem-alerta');
-    if (alertaContainer) alertaContainer.style.display = 'none';
-
+    clearAlert('mensagem-alerta');
     try {
         const resp = await apiFetch(`/eventos/${id}/`);
         if (!resp.ok) {
             if (resp.status === 404) {
-                mostrarErro('O evento solicitado não foi encontrado ou não está disponível.');
+                mostrarErro('O evento solicitado não foi encontrado ou não está mais disponível.');
+            } else if (resp.status === 403) {
+                mostrarErro('Você não possui autorização para visualizar este evento.');
             } else {
-                mostrarErro('Não foi possível carregar os detalhes do evento no momento.');
+                mostrarErro('Falha ao carregar as informações do evento.');
             }
             return;
         }
@@ -72,41 +78,33 @@ function mostrarErro(mensagem) {
     const alerta = document.getElementById('mensagem-alerta');
     if (alerta) {
         alerta.className = 'alert alert-danger';
-        alerta.innerHTML = `<strong>Atenção:</strong> ${mensagem} <br><br><a href="../../index.html" class="btn btn-secondary btn-sm" style="margin-top: 8px;">← Voltar para Explorar Eventos</a>`;
+        alerta.innerHTML = `<strong>Atenção:</strong> ${esc(mensagem)} <br><br><a href="../../index.html" class="btn btn-secondary btn-sm" style="margin-top: 8px;">← Voltar para Explorar Eventos</a>`;
         alerta.style.display = 'block';
     }
     const mainContent = document.querySelector('.detalhes-do-evento__main');
     if (mainContent) {
-        const secoes = mainContent.querySelectorAll('section, .detalhes-do-evento__grid-de-conteudo-detail-grid-em-2-colunas');
+        const secoes = mainContent.querySelectorAll('section, .with-side');
         secoes.forEach(s => { s.style.display = 'none'; });
     }
 }
 
 function renderizarPaginaEvento(ev) {
-    const user = getUser();
-    const logado = Boolean(user && isAuthenticated());
+    // 1.7: Gestão do evento centralizada em SGIE_ROLES
+    const ehGestor = window.SGIE_ROLES && typeof window.SGIE_ROLES.podeGerenciarEvento === 'function'
+        ? window.SGIE_ROLES.podeGerenciarEvento(ev)
+        : false;
 
-    // Verifica se o usuário é o representante OU está na equipe como organizador contextual
-    const ehRepresentante = Boolean(
-        logado && user && user.id && ev.usuario_representante &&
-        String(user.id).toLowerCase() === String(ev.usuario_representante).toLowerCase()
-    );
-    const ehMembroEquipe = Boolean(
-        logado && user && Array.isArray(ev.organizadores) &&
-        ev.organizadores.some(o => String(o.usuario_id || o.usuario).toLowerCase() === String(user.id).toLowerCase())
-    );
-    const ehStaff = Boolean(logado && user && (user.is_staff || user.superusuario || user.acesso_admin));
-    const ehGestor = ehRepresentante || ehMembroEquipe || ehStaff;
-
-    // 1. Título da Página
-    document.title = `${ev.nome} — SGIE`;
+    // 1. Título da Página e Breadcrumb (1.3)
+    document.title = `${ev.nome || 'Evento'} — SGIE`;
+    const elCrumb = document.getElementById('detalhe-crumb-nome');
+    if (elCrumb) elCrumb.textContent = ev.nome || 'Detalhes do evento';
 
     // 2. Hero Badges
     const badgeStatus = document.getElementById('detalhe-status');
     if (badgeStatus) badgeStatus.textContent = (ev.status_display || ev.status || 'Publicado').toUpperCase();
 
     const badgeCategoria = document.getElementById('detalhe-categoria');
-    if (badgeCategoria) badgeCategoria.textContent = ev.categoria_display || ev.categoria || 'Simpósio';
+    if (badgeCategoria) badgeCategoria.textContent = ev.categoria_display || ev.categoria || 'Evento';
 
     const badgeModalidade = document.getElementById('detalhe-modalidade');
     if (badgeModalidade) badgeModalidade.textContent = ev.modalidade_display || ev.modalidade || 'Presencial';
@@ -114,58 +112,67 @@ function renderizarPaginaEvento(ev) {
     const badgeVisibilidade = document.getElementById('detalhe-visibilidade');
     if (badgeVisibilidade) badgeVisibilidade.textContent = ev.visibilidade ? `${ev.visibilidade} (Catálogo)` : 'Público';
 
+    // 1.2: Preço (badge)
     const badgePreco = document.getElementById('detalhe-preco');
+    const precoFormatado = ev.preco ? (typeof formatarMoeda === 'function' ? formatarMoeda(ev.preco) : `R$ ${Number(ev.preco).toFixed(2).replace('.', ',')}`) : 'R$ 0,00';
     if (badgePreco) {
-        badgePreco.textContent = ev.e_gratuito ? '100% Gratuito' : (formatarMoeda ? formatarMoeda(ev.preco) : `R$ ${ev.preco}`);
+        badgePreco.textContent = ev.e_gratuito ? 'Gratuito' : precoFormatado;
     }
 
-    // 3. Título e Coordenação
+    // 3. Título e Coordenação (1.3: Não apagar #detalhe-responsavel e #detalhe-email)
     const elNome = document.getElementById('detalhe-nome');
     if (elNome) elNome.textContent = ev.nome;
 
-    const elSubtitulo = document.getElementById('detalhe-subtitulo');
-    if (elSubtitulo) {
-        const respNome = ev.usuario_representante_nome || 'Coordenação Acadêmica';
-        elSubtitulo.textContent = `Coordenação Geral: ${respNome} • SGIE Eventos Institucionais`;
-    }
-
     const elResponsavel = document.getElementById('detalhe-responsavel');
-    if (elResponsavel) elResponsavel.textContent = ev.usuario_representante_nome || 'Coordenação Geral';
+    if (elResponsavel) {
+        elResponsavel.textContent = ev.usuario_representante_nome || 'Coordenação';
+    }
 
     const elEmail = document.getElementById('detalhe-email');
+    const elEmailSep = document.getElementById('detalhe-email-sep');
     if (elEmail) {
-        elEmail.textContent = ev.usuario_representante_email || 'contato@sgie.edu.br';
-        elEmail.href = `mailto:${ev.usuario_representante_email || ''}`;
+        if (ev.usuario_representante_email) {
+            elEmail.textContent = ev.usuario_representante_email;
+            elEmail.href = `mailto:${ev.usuario_representante_email}`;
+            elEmail.style.display = 'inline';
+            if (elEmailSep) elEmailSep.style.display = 'inline';
+        } else {
+            elEmail.style.display = 'none';
+            if (elEmailSep) elEmailSep.style.display = 'none';
+        }
     }
 
-    // 4. Painel de Gestão do Organizador
+    // 4. Painel de Gestão vs. Card de Inscrição (1.1)
     const painelGestao = document.getElementById('painel-gestao-organizador');
-    const bannerInscricaoPublica = document.getElementById('banner-inscricao-publica');
-    const ocupadas = ev.vagas_ocupadas || 0;
-    const totalVagas = ev.capacidade || 1;
+    const cardInscricao = document.getElementById('card-inscricao-sidebar');
+
+    // Dados de vagas (reais ou calculados de forma defensiva)
+    const totalVagas = Number(ev.capacidade) || 1;
+    let ocupadas = typeof ev.vagas_ocupadas === 'number' ? ev.vagas_ocupadas : 0;
+    let disponiveis = typeof ev.vagas_disponiveis === 'number' ? ev.vagas_disponiveis : Math.max(0, totalVagas - ocupadas);
+
     const taxaOcupacao = Math.min(100, Math.round((ocupadas / totalVagas) * 100));
 
     if (ehGestor) {
+        // Para quem gerencia o evento: mostrar painel de gestão e ocultar card de inscrição
         if (painelGestao) painelGestao.style.display = 'flex';
-        if (bannerInscricaoPublica) bannerInscricaoPublica.style.display = 'none';
+        if (cardInscricao) cardInscricao.style.display = 'none';
 
         const txtTaxa = document.getElementById('painel-taxa-ocupacao');
         if (txtTaxa) txtTaxa.textContent = `${taxaOcupacao}% Ocupado`;
 
         const txtVagas = document.getElementById('painel-vagas-descricao');
         if (txtVagas) {
-            txtVagas.textContent = `Inscrições: ${ocupadas} vagas preenchidas de ${totalVagas} disponíveis (${taxaOcupacao}%).`;
+            txtVagas.textContent = `Inscrições: ${ocupadas} preenchidas de ${totalVagas} vagas (${taxaOcupacao}%).`;
         }
 
-        // Botão Editar
         const btnEditar = document.getElementById('btn-editar-evento');
         if (btnEditar) {
             btnEditar.onclick = () => {
-                window.location.href = `../editar-evento/index.html?id=${ev.id}`;
+                window.location.href = `../editar-evento/index.html?id=${encodeURIComponent(ev.id)}`;
             };
         }
 
-        // Botão Cancelar
         const btnCancelar = document.getElementById('btn-cancelar-evento');
         if (btnCancelar) {
             if (ev.status === 'Cancelado' || ev.status === 'Finalizado') {
@@ -176,65 +183,97 @@ function renderizarPaginaEvento(ev) {
             }
         }
 
-        // Botão Finalizar / Publicar / Ações de Status
         const btnFinalizar = document.getElementById('btn-finalizar-evento');
         const txtBtnFinalizar = document.getElementById('txt-btn-finalizar');
         if (btnFinalizar && txtBtnFinalizar) {
             if (ev.status === 'Configuração' || ev.status === 'Rascunho') {
                 txtBtnFinalizar.textContent = 'Publicar Evento';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'publicar');
+                btnFinalizar.style.display = 'inline-flex';
             } else if (ev.status === 'Publicado') {
                 txtBtnFinalizar.textContent = 'Abrir Inscrições';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'abrir-inscricoes');
+                btnFinalizar.style.display = 'inline-flex';
             } else if (ev.status === 'Inscrições abertas' || ev.status === 'Em realização') {
                 txtBtnFinalizar.textContent = 'Finalizar Evento';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'finalizar');
+                btnFinalizar.style.display = 'inline-flex';
             } else if (ev.status === 'Finalizado') {
                 txtBtnFinalizar.textContent = 'Arquivar Evento';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'arquivar');
+                btnFinalizar.style.display = 'inline-flex';
             } else {
                 btnFinalizar.style.display = 'none';
             }
         }
 
-        // Botão Consultar Participantes
         const btnParticipantes = document.getElementById('btn-consultar-participantes');
         if (btnParticipantes) {
             btnParticipantes.onclick = () => {
-                window.location.href = `../../inscricao/consulta-de-participantes/index.html?evento=${ev.id}`;
+                window.location.href = `../../inscricao/consulta-de-participantes/index.html?evento=${encodeURIComponent(ev.id)}`;
             };
         }
 
     } else {
-        // Visitante / Participante (Não é o dono do evento)
+        // Participante / Visitante (1.1 e 1.2)
         if (painelGestao) painelGestao.style.display = 'none';
+        if (cardInscricao) cardInscricao.style.display = 'flex';
 
-        // Desabilita ações restritas ao coordenador/dono
-        const btnEditar = document.getElementById('btn-editar-evento');
-        if (btnEditar) btnEditar.onclick = null;
-        const btnCancelar = document.getElementById('btn-cancelar-evento');
-        if (btnCancelar) btnCancelar.onclick = null;
-        const btnFinalizar = document.getElementById('btn-finalizar-evento');
-        if (btnFinalizar) btnFinalizar.onclick = null;
-        const btnParticipantes = document.getElementById('btn-consultar-participantes');
-        if (btnParticipantes) btnParticipantes.onclick = null;
+        // 1.2: Preço na sidebar
+        const elSidePreco = document.getElementById('sidebar-preco-display');
+        const elSideInfo = document.getElementById('sidebar-info-adicional');
 
-        if (bannerInscricaoPublica) {
-            bannerInscricaoPublica.style.display = 'flex';
-            const btnInscrever = document.getElementById('btn-realizar-inscricao');
-            if (btnInscrever) {
-                if (ev.status === 'Inscrições abertas' && (ev.vagas_disponiveis === undefined || ev.vagas_disponiveis > 0)) {
-                    btnInscrever.href = `../../inscricao/realizar-inscricao/index.html?evento=${ev.id}`;
+        if (elSidePreco) {
+            if (ev.e_gratuito) {
+                elSidePreco.textContent = 'Gratuito';
+                elSidePreco.className = 'price free';
+            } else {
+                elSidePreco.textContent = precoFormatado;
+                elSidePreco.className = 'price';
+            }
+        }
+
+        // 1.1: Botão de Inscrição <a>
+        const btnInscrever = document.getElementById('btn-realizar-inscricao');
+        const urlInscricao = `../../inscricao/realizar-inscricao/index.html?evento=${encodeURIComponent(ev.id)}`;
+
+        if (btnInscrever) {
+            // Habilitar quando ev.inscricoes_abertas === true
+            if (ev.inscricoes_abertas === true) {
+                if (disponiveis === 0) {
+                    btnInscrever.textContent = 'Entrar na lista de espera';
+                    btnInscrever.className = 'btn btn-secondary';
+                    btnInscrever.href = urlInscricao;
+                    btnInscrever.removeAttribute('disabled');
+                    btnInscrever.removeAttribute('aria-disabled');
+                    if (elSideInfo) {
+                        elSideInfo.textContent = 'Capacidade atingida. Você entrará na fila de espera com prioridade de liberação.';
+                    }
+                } else {
                     btnInscrever.textContent = 'Realizar Inscrição no Evento';
                     btnInscrever.className = 'btn btn-primary';
-                    btnInscrever.style.display = 'inline-flex';
-                } else if (ev.vagas_disponiveis === 0) {
-                    btnInscrever.href = `../../inscricao/realizar-inscricao/index.html?evento=${ev.id}`;
-                    btnInscrever.textContent = 'Entrar na Lista de Espera';
-                    btnInscrever.className = 'btn btn-secondary';
-                    btnInscrever.style.display = 'inline-flex';
-                } else {
-                    btnInscrever.style.display = 'none';
+                    btnInscrever.href = urlInscricao;
+                    btnInscrever.removeAttribute('disabled');
+                    btnInscrever.removeAttribute('aria-disabled');
+                    if (elSideInfo) {
+                        elSideInfo.textContent = ev.e_gratuito
+                            ? 'Sem custo. Confirmação imediata enquanto houver vagas.'
+                            : 'Pagamento via Pix, Cartão ou Boleto. Confirmação após quitação.';
+                    }
+                }
+            } else {
+                // Inscrições fechadas
+                let motivo = 'Inscrições encerradas';
+                if (ev.status === 'Cancelado') motivo = 'Evento cancelado';
+                else if (ev.status === 'Rascunho' || ev.status === 'Configuração') motivo = 'Inscrições em breve';
+                else if (ev.status === 'Finalizado' || ev.status === 'Arquivado') motivo = 'Inscrições encerradas';
+
+                btnInscrever.textContent = motivo;
+                btnInscrever.className = 'btn btn-disabled';
+                btnInscrever.removeAttribute('href');
+                btnInscrever.setAttribute('aria-disabled', 'true');
+                if (elSideInfo) {
+                    elSideInfo.textContent = 'As inscrições para este evento não estão disponíveis no momento.';
                 }
             }
         }
@@ -246,35 +285,51 @@ function renderizarPaginaEvento(ev) {
         elDescricao.textContent = ev.descricao || 'Sem descrição cadastrada.';
     }
 
-    // 6. Submissão de Trabalhos Científicos
+    // 6. Submissão de Trabalhos (1.4)
     const secaoSubmissao = document.getElementById('secao-submissao');
+    const btnSubmeterLink = document.getElementById('btn-submeter-trabalho-link');
+    const txtPrazo = document.getElementById('submissao-prazo-info');
     const regra = ev.regra_submissao;
+
     if (regra && regra.aceita_submissao) {
         if (secaoSubmissao) secaoSubmissao.style.display = 'block';
-        const txtPrazo = document.getElementById('submissao-prazo-info');
-        if (txtPrazo) {
-            txtPrazo.textContent = `Período Aberto até ${dataHoraLegivel(regra.data_hora_fim)}`;
+        if (regra.periodo_aberto === true) {
+            if (btnSubmeterLink) {
+                btnSubmeterLink.style.display = 'inline-flex';
+                btnSubmeterLink.href = `../../submissao/submeter-trabalho/index.html?evento=${encodeURIComponent(ev.id)}`;
+            }
+            if (txtPrazo) {
+                txtPrazo.textContent = regra.data_hora_fim
+                    ? `Período aberto até ${dataHoraLegivel(regra.data_hora_fim)}.`
+                    : 'Período de submissões aberto.';
+            }
+        } else {
+            // Aceita submissão mas período encerrado ou ainda não aberto
+            if (btnSubmeterLink) btnSubmeterLink.style.display = 'none';
+            if (txtPrazo) {
+                txtPrazo.textContent = 'O período de submissões para este evento está encerrado ou ainda não foi aberto.';
+            }
         }
     } else {
         if (secaoSubmissao) secaoSubmissao.style.display = 'none';
     }
 
-    // 7. Programação Geral
+    // 7. Programação Geral (com escape)
     const elProgramacao = document.getElementById('detalhe-programacao-container');
     if (elProgramacao) {
         if (ev.programacao_geral && ev.programacao_geral.trim()) {
             const linhas = ev.programacao_geral.trim().split('\n').filter(Boolean);
             elProgramacao.innerHTML = linhas.map(linha => `
-                <div class="detalhes-do-evento__item-1" style="margin-bottom: 12px; padding: 12px; background: #f8fafc; border-left: 3px solid #006d41; border-radius: 4px;">
-                    <p style="margin: 0; color: #1e293b; font-size: 14px; font-weight: 500;">${linha}</p>
+                <div style="margin-bottom: 12px; padding: 12px; background: var(--bg); border-left: 3px solid var(--primary); border-radius: var(--r-sm);">
+                    <p style="margin: 0; color: var(--ink); font-size: 14px; font-weight: 500;">${esc(linha)}</p>
                 </div>
             `).join('');
         } else {
-            elProgramacao.innerHTML = `<p style="color: #64748b; font-style: italic; margin: 0;">A programação detalhada das sessões será divulgada oportunamente pela comissão organizadora.</p>`;
+            elProgramacao.innerHTML = `<p style="color: var(--muted); font-style: italic; margin: 0;">A programação detalhada será divulgada oportunamente pela comissão organizadora.</p>`;
         }
     }
 
-    // 8. Coluna Lateral: Acesso & Realização
+    // 8. Coluna Lateral: Quando e onde (sem fallbacks proibidos)
     const elSideData = document.getElementById('sidebar-data');
     if (elSideData) elSideData.textContent = formatarDataIso(ev.data);
 
@@ -282,17 +337,25 @@ function renderizarPaginaEvento(ev) {
     if (elSideHorario) {
         const hInicio = ev.hora_inicio ? ev.hora_inicio.slice(0, 5) : '—';
         const hFim = ev.hora_fim ? ev.hora_fim.slice(0, 5) : '—';
-        elSideHorario.textContent = `${hInicio} às ${hFim} BRT`;
+        elSideHorario.textContent = `${hInicio} às ${hFim}`;
     }
 
     const elSideLocal = document.getElementById('sidebar-local-designacao');
-    if (elSideLocal) elSideLocal.textContent = ev.local || 'Campus Darcy Ribeiro';
+    if (elSideLocal) elSideLocal.textContent = ev.local || 'Local não informado';
 
     const elSideLocalTipo = document.getElementById('sidebar-local-tipo');
-    if (elSideLocalTipo) elSideLocalTipo.textContent = ev.local_tipo || 'Auditório';
+    const elSideLocalTipoWrap = document.getElementById('sidebar-local-tipo-wrap');
+    if (elSideLocalTipo && elSideLocalTipoWrap) {
+        if (ev.local_tipo) {
+            elSideLocalTipo.textContent = ev.local_tipo;
+            elSideLocalTipoWrap.style.display = 'inline';
+        } else {
+            elSideLocalTipoWrap.style.display = 'none';
+        }
+    }
 
     const elSideModalidade = document.getElementById('sidebar-modalidade-texto');
-    if (elSideModalidade) elSideModalidade.textContent = ev.modalidade || 'Presencial';
+    if (elSideModalidade) elSideModalidade.textContent = ev.modalidade_display || ev.modalidade || 'Presencial';
 
     const elSideVagasTexto = document.getElementById('sidebar-vagas-texto');
     if (elSideVagasTexto) {
@@ -306,27 +369,26 @@ function renderizarPaginaEvento(ev) {
 
     const elSideRestantes = document.getElementById('sidebar-vagas-restantes');
     if (elSideRestantes) {
-        const restantes = totalVagas - ocupadas;
-        elSideRestantes.textContent = restantes > 0
-            ? `Restam ${restantes} vagas para confirmação imediata.`
+        elSideRestantes.textContent = disponiveis > 0
+            ? `Restam ${disponiveis} vagas para confirmação imediata.`
             : 'Capacidade máxima de inscrições atingida.';
     }
 
-    // 9. Equipe Homologada
+    // 9. Equipe Organizadora (com escape)
     const elEquipe = document.getElementById('lista-equipe-organizadora');
     if (elEquipe) {
         if (ev.organizadores && ev.organizadores.length > 0) {
             elEquipe.innerHTML = ev.organizadores.map(org => {
-                const nomeOrg = org.nome || org.usuario_nome || org.usuario_email || 'Organizador';
-                const email = org.email_publico || org.usuario_email || '';
+                const nomeOrg = org.nome || org.usuario_nome || 'Membro da Equipe';
+                const email = org.email_publico || '';
                 const inicial = obterIniciais(nomeOrg);
-                const papel = org.papel_funcao || org.papel_display || org.papel || 'Membro da Equipe';
+                const papel = org.papel_funcao || 'Organizador(a)';
                 return `
                     <div class="row" style="gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line);">
-                        <span class="avatar">${inicial}</span>
+                        <span class="avatar">${esc(inicial)}</span>
                         <div>
-                            <b>${nomeOrg}</b>
-                            <p class="small muted">${papel}${org.eh_responsavel_principal ? ' · Responsável Principal' : ''}${email ? ` · ${email}` : ''}</p>
+                            <b>${esc(nomeOrg)}</b>
+                            <p class="small muted">${esc(papel)}${email ? ` · ${esc(email)}` : ''}</p>
                         </div>
                     </div>
                 `;
@@ -336,10 +398,10 @@ function renderizarPaginaEvento(ev) {
             const inicial = obterIniciais(respNome);
             elEquipe.innerHTML = `
                 <div class="row" style="gap: 12px; padding: 8px 0;">
-                    <span class="avatar">${inicial}</span>
+                    <span class="avatar">${esc(inicial)}</span>
                     <div>
-                        <b>${respNome}</b>
-                        <p class="small muted">Coordenador(a) Geral do Evento</p>
+                        <b>${esc(respNome)}</b>
+                        <p class="small muted">Coordenação Geral do Evento</p>
                     </div>
                 </div>
             `;

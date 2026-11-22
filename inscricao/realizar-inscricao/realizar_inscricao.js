@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const prevPreco = document.getElementById('preview-preco');
         if (prevPreco) {
             prevPreco.textContent = evento.e_gratuito ? 'Gratuito' : formatarMoeda(evento.preco);
+            prevPreco.classList.toggle('free', Boolean(evento.e_gratuito));
         }
 
         const prevCat = document.getElementById('preview-categoria');

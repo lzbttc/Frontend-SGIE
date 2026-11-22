@@ -3,10 +3,16 @@
  * Endpoints:
  *   - GET /areas/
  *   - GET /eventos/
+ *   - GET /eventos/{id}/ (para obter regra_submissao e status detalhado)
  *   - POST /submissoes/ (cria rascunho JSON)
  *   - PATCH /submissoes/{uuid}/ (atualiza rascunho)
- *   - POST /submissoes/{uuid}/submeter/ (envia arquivo multipart)
+ *   - POST /submissoes/{uuid}/submeter/ (envia arquivo multipart e altera status para SUBMETIDA)
  */
+
+let _arquivoSelecionado = null;
+let _submissaoAtualUuid = null;
+let _submissaoExistente = null;
+let _eventosDisponiveis = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!isAuthenticated()) {
@@ -46,12 +52,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-let _arquivoSelecionado = null;
-let _submissaoAtualUuid = null;
-let _eventosDisponiveis = [];
-
 function preencherDadosAutorPrincipal() {
-    const user = getUser();
+    const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
+        ? window.SGIE_ROLES.getUsuarioLogado()
+        : getUser();
     if (!user) return;
 
     const elNome = document.getElementById('a1-nome');
@@ -74,7 +78,7 @@ async function carregarAreasTematicas() {
             const lista = Array.isArray(areas) ? areas : (areas.results || []);
 
             selectArea.innerHTML = '<option value="">Selecione uma área...</option>';
-            lista.forEach(a => {
+            lista.forEach((a) => {
                 const opt = document.createElement('option');
                 opt.value = a.id;
                 opt.textContent = a.nome;
@@ -95,19 +99,54 @@ async function carregarEventos(eventoPredefinidoId) {
         const resp = await apiFetch('/eventos/');
         if (resp.ok) {
             const dados = await resp.json();
-            _eventosDisponiveis = Array.isArray(dados) ? dados : (dados.results || []);
+            const listaBasica = Array.isArray(dados) ? dados : (dados.results || []);
+
+            // /eventos/ não inclui regra_submissao. Buscamos detalhes de cada evento para filtrar
+            // somente os que aceitam submissão.
+            const detalhes = await Promise.all(
+                listaBasica.map(async (ev) => {
+                    try {
+                        const dResp = await apiFetch(`/eventos/${ev.id}/`);
+                        if (dResp.ok) return await dResp.json();
+                    } catch { /* ignora erro e usa lista básica */ }
+                    return ev;
+                })
+            );
+
+            _eventosDisponiveis = detalhes.filter((ev) => {
+                const regra = ev.regra_submissao || (window.SGIE_MOCKS?.ativo && typeof window.SGIE_MOCKS.obterRegraSubmissao === 'function'
+                    ? window.SGIE_MOCKS.obterRegraSubmissao(ev.id)
+                    : null);
+                return Boolean(regra && regra.aceita_submissao);
+            });
+
+            // Se um evento específico foi passado por URL e não está na lista, tenta buscá-lo diretamente
+            if (eventoPredefinidoId && !_eventosDisponiveis.some((e) => String(e.id) === String(eventoPredefinidoId))) {
+                try {
+                    const singleResp = await apiFetch(`/eventos/${eventoPredefinidoId}/`);
+                    if (singleResp.ok) {
+                        const singleEv = await singleResp.json();
+                        _eventosDisponiveis.push(singleEv);
+                    }
+                } catch { /* ignora */ }
+            }
 
             selectEvento.innerHTML = '<option value="">Selecione um evento...</option>';
-            _eventosDisponiveis.forEach(ev => {
+            _eventosDisponiveis.forEach((ev) => {
                 const opt = document.createElement('option');
                 opt.value = ev.id;
-                opt.textContent = `${ev.nome} (${formatarDataSimples(ev.data)})`;
+                const dataFmt = typeof window.formatarData === 'function' ? formatarData(ev.data) : formatarDataSimples(ev.data);
+                opt.textContent = `${ev.nome} (${dataFmt})`;
                 selectEvento.appendChild(opt);
             });
 
-            if (eventoPredefinidoId && _eventosDisponiveis.some(e => String(e.id) === String(eventoPredefinidoId))) {
+            if (_eventosDisponiveis.length === 0) {
+                selectEvento.innerHTML = '<option value="">Nenhum evento com submissões abertas no momento</option>';
+            }
+
+            if (eventoPredefinidoId && _eventosDisponiveis.some((e) => String(e.id) === String(eventoPredefinidoId))) {
                 selectEvento.value = eventoPredefinidoId;
-                atualizarResumoEvento(eventoPredefinidoId);
+                await atualizarResumoEvento(eventoPredefinidoId);
             }
         }
     } catch (e) {
@@ -116,10 +155,11 @@ async function carregarEventos(eventoPredefinidoId) {
     }
 }
 
-function atualizarResumoEvento(eventoId) {
+async function atualizarResumoEvento(eventoId) {
     const asideNome = document.getElementById('aside-evento-nome');
     const asideAlerta = document.getElementById('aside-evento-alerta');
     const asidePrazo = document.getElementById('aside-evento-prazo');
+    const btnSubmeter = document.getElementById('btn-submeter-final');
 
     if (!eventoId) {
         if (asideNome) asideNome.textContent = 'Selecione um evento';
@@ -127,18 +167,55 @@ function atualizarResumoEvento(eventoId) {
         return;
     }
 
-    const ev = _eventosDisponiveis.find(e => String(e.id) === String(eventoId));
+    let ev = _eventosDisponiveis.find((e) => String(e.id) === String(eventoId));
+    if (!ev || !ev.regra_submissao) {
+        try {
+            const resp = await apiFetch(`/eventos/${eventoId}/`);
+            if (resp.ok) {
+                const dados = await resp.json();
+                ev = dados;
+                const idx = _eventosDisponiveis.findIndex((e) => String(e.id) === String(eventoId));
+                if (idx >= 0) _eventosDisponiveis[idx] = dados;
+                else _eventosDisponiveis.push(dados);
+            }
+        } catch { /* continua com o que tiver */ }
+    }
+
     if (!ev) return;
 
     if (asideNome) asideNome.textContent = ev.nome;
 
-    if (ev.regra_submissao && ev.regra_submissao.data_hora_fim) {
+    const regra = ev.regra_submissao || (window.SGIE_MOCKS?.ativo && typeof window.SGIE_MOCKS.obterRegraSubmissao === 'function'
+        ? window.SGIE_MOCKS.obterRegraSubmissao(ev.id)
+        : null);
+
+    if (!regra || !regra.aceita_submissao) {
+        if (asideAlerta) {
+            asideAlerta.style.display = 'flex';
+            asideAlerta.className = 'alert alert-warning';
+        }
+        if (asidePrazo) asidePrazo.textContent = 'Este evento não aceita submissão de trabalhos acadêmicos.';
+        if (btnSubmeter) btnSubmeter.disabled = true;
+        return;
+    }
+
+    if (regra.data_hora_fim) {
         if (asideAlerta) asideAlerta.style.display = 'flex';
-        const dataFim = new Date(ev.regra_submissao.data_hora_fim);
-        const fimFmt = dataFim.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-        if (asidePrazo) asidePrazo.innerHTML = `<b>Prazo de submissão:</b> até ${fimFmt}`;
+        const dataFim = new Date(regra.data_hora_fim);
+        const fimFmt = isNaN(dataFim.getTime())
+            ? regra.data_hora_fim
+            : dataFim.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+        if (regra.periodo_aberto === false) {
+            if (asidePrazo) asidePrazo.innerHTML = `<b>Período encerrado:</b> encerrou-se em ${fimFmt}`;
+            if (btnSubmeter) btnSubmeter.disabled = true;
+        } else {
+            if (asidePrazo) asidePrazo.innerHTML = `<b>Prazo de submissão:</b> até ${fimFmt}`;
+            if (btnSubmeter) btnSubmeter.disabled = false;
+        }
     } else {
         if (asideAlerta) asideAlerta.style.display = 'none';
+        if (btnSubmeter) btnSubmeter.disabled = false;
     }
 }
 
@@ -152,6 +229,7 @@ async function carregarSubmissaoExistente(uuid) {
         }
 
         const sub = await resp.json();
+        _submissaoExistente = sub;
 
         // Preenche campos
         const elEvento = document.getElementById('sub-evento');
@@ -163,40 +241,43 @@ async function carregarSubmissaoExistente(uuid) {
         const elKw = document.getElementById('t-kw');
         const elDesc = document.getElementById('t-desc');
 
-        if (elEvento && sub.evento) {
-            elEvento.value = sub.evento.id || sub.evento;
-            atualizarResumoEvento(elEvento.value);
+        const evId = sub.evento?.id || sub.evento;
+        if (elEvento && evId) {
+            elEvento.value = evId;
+            await atualizarResumoEvento(evId);
         }
         if (elTitulo) elTitulo.value = sub.titulo || '';
         if (elTipo && sub.tipo) elTipo.value = sub.tipo;
-        if (elArea && sub.area) elArea.value = sub.area.id || sub.area;
+        if (elArea && sub.area) elArea.value = sub.area?.id || sub.area;
         if (elAbstract) elAbstract.value = sub.abstract || '';
         if (elResumo) elResumo.value = sub.resumo || '';
         if (elKw) elKw.value = sub.palavras_chave || '';
         if (elDesc) elDesc.value = sub.descricao || '';
 
         // Campos do autor
-        if (sub.afiliacao_institucional) {
-            const elAfil = document.getElementById('a1-afil');
-            if (elAfil) elAfil.value = sub.afiliacao_institucional;
-        }
-        if (sub.maior_titulacao) {
-            const elTit = document.getElementById('a1-tit');
-            if (elTit) elTit.value = sub.maior_titulacao;
-        }
-        if (sub.lattes_url) {
-            const elLattes = document.getElementById('a1-lattes');
-            if (elLattes) elLattes.value = sub.lattes_url;
-        }
-        if (sub.linkedin_url) {
-            const elIn = document.getElementById('a1-in');
-            if (elIn) elIn.value = sub.linkedin_url;
+        if (Array.isArray(sub.autores) && sub.autores.length > 0) {
+            const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
+                ? window.SGIE_ROLES.getUsuarioLogado()
+                : getUser();
+            const autor = sub.autores.find((a) => String(a.usuario) === String(user?.id)) || sub.autores[0];
+            if (autor) {
+                const elAfil = document.getElementById('a1-afil');
+                const elTit = document.getElementById('a1-tit');
+                const elLattes = document.getElementById('a1-lattes');
+                const elIn = document.getElementById('a1-in');
+
+                if (elAfil && autor.afiliacao_institucional) elAfil.value = autor.afiliacao_institucional;
+                if (elTit && (autor.maior_titulacao || autor.maiór_titulacao)) elTit.value = autor.maior_titulacao || autor.maiór_titulacao;
+                if (elLattes && autor.lattes_url) elLattes.value = autor.lattes_url;
+                if (elIn && autor.linkedin_url) elIn.value = autor.linkedin_url;
+            }
         }
 
-        // Se já tem arquivo enviado
-        if (sub.arquivo) {
+        // Se já tem arquivo enviado nas versões anteriores
+        if (Array.isArray(sub.versoes) && sub.versoes.length > 0) {
+            const ultimaVersao = sub.versoes[sub.versoes.length - 1];
             exibirArquivoSelecionado({
-                name: 'Arquivo já vinculado à submissão',
+                name: `Versão ${ultimaVersao.numero_versao} já anexada ao sistema`,
                 size: 0
             });
         }
@@ -224,7 +305,7 @@ function configurarUploadArquivo() {
     if (dropArea && inputArquivo) {
         dropArea.addEventListener('click', () => inputArquivo.click());
 
-        ['dragenter', 'dragover'].forEach(ev => {
+        ['dragenter', 'dragover'].forEach((ev) => {
             dropArea.addEventListener(ev, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -232,7 +313,7 @@ function configurarUploadArquivo() {
             });
         });
 
-        ['dragleave', 'drop'].forEach(ev => {
+        ['dragleave', 'drop'].forEach((ev) => {
             dropArea.addEventListener(ev, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -259,7 +340,8 @@ function configurarUploadArquivo() {
             e.stopPropagation();
             _arquivoSelecionado = null;
             if (inputArquivo) inputArquivo.value = '';
-            document.getElementById('preview-arquivo').style.display = 'none';
+            const preview = document.getElementById('preview-arquivo');
+            if (preview) preview.style.display = 'none';
         });
     }
 }
@@ -275,7 +357,7 @@ function validarEGuardarArquivo(file) {
 
     const extensoesValidas = ['.pdf', '.doc', '.docx'];
     const nome = file.name.toLowerCase();
-    const valida = extensoesValidas.some(ext => nome.endsWith(ext));
+    const valida = extensoesValidas.some((ext) => nome.endsWith(ext));
 
     if (!valida) {
         showAlert('mensagem-alerta', 'Formato de arquivo inválido. Por favor, envie arquivos nos formatos PDF, DOC ou DOCX.', 'danger');
@@ -351,17 +433,26 @@ async function salvarSubmissao(submeterDefinitivo) {
         return;
     }
 
-    if (submeterDefinitivo && !_arquivoSelecionado && !_submissaoAtualUuid) {
-        showAlert('mensagem-alerta', 'Para submeter definitivamente, é necessário anexar o arquivo do trabalho (PDF, DOC ou DOCX).', 'warning');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
+    // Validação explícita de arquivo no envio definitivo
+    if (submeterDefinitivo) {
+        const jaPossuiVersao = Boolean(_submissaoExistente?.versoes && _submissaoExistente.versoes.length > 0);
+        if (!_arquivoSelecionado) {
+            if (jaPossuiVersao) {
+                showAlert('mensagem-alerta', 'O envio definitivo requer um arquivo atualizado (PDF, DOC ou DOCX). Por favor, anexe o arquivo do trabalho.', 'warning');
+            } else {
+                showAlert('mensagem-alerta', 'Para submeter definitivamente, é necessário anexar o arquivo do trabalho (PDF, DOC ou DOCX).', 'warning');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
     }
 
+    // Área usa UUID no backend: enviamos como String
     const payload = {
         evento: Number(eventoId),
         titulo,
-        tipo, // Artigo, Palestra, Minicurso, Poster
-        area: Number(areaId),
+        tipo,
+        area: String(areaId).trim(),
         abstract,
         palavras_chave: palavrasChave
     };
@@ -379,7 +470,7 @@ async function salvarSubmissao(submeterDefinitivo) {
         let uuid = _submissaoAtualUuid;
         let responseJson = null;
 
-        // ETAPA 1: Criar ou atualizar rascunho JSON
+        // ETAPA 1: Criar ou atualizar rascunho via JSON (sempre como rascunho)
         if (uuid) {
             const respPatch = await apiFetch(`/submissoes/${encodeURIComponent(uuid)}/`, {
                 method: 'PATCH',
@@ -404,8 +495,10 @@ async function salvarSubmissao(submeterDefinitivo) {
             _submissaoAtualUuid = uuid;
         }
 
-        // ETAPA 2: Upload do arquivo se houver
-        if (_arquivoSelecionado && uuid) {
+        // ETAPA 2: Upload do arquivo e submissão definitiva
+        // ATENÇÃO: SubmissaoService.submeter_trabalho altera o status para SUBMETIDA.
+        // Portanto, a chamada para /submeter/ só ocorre quando o usuário clicou em Submeter Definitivamente.
+        if (submeterDefinitivo && _arquivoSelecionado && uuid) {
             const formData = new FormData();
             formData.append('arquivo', _arquivoSelecionado);
 
@@ -422,13 +515,22 @@ async function salvarSubmissao(submeterDefinitivo) {
 
         const msgSucesso = submeterDefinitivo
             ? 'Trabalho submetido com sucesso para avaliação!'
-            : 'Rascunho salvo com sucesso!';
+            : (_arquivoSelecionado
+                ? 'Rascunho salvo com sucesso! O arquivo selecionado será enviado quando você clicar em Submeter Trabalho.'
+                : 'Rascunho salvo com sucesso!');
 
         showAlert('mensagem-alerta', msgSucesso, 'success');
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         setTimeout(() => {
-            window.location.href = `../detalhe-submissao/index.html?id=${encodeURIComponent(uuid)}`;
+            if (submeterDefinitivo) {
+                window.location.href = `../detalhe-submissao/index.html?id=${encodeURIComponent(uuid)}`;
+            } else {
+                // Ao salvar rascunho de nova submissão, atualiza a URL para permitir edições subsequentes
+                if (!window.location.search.includes('id=')) {
+                    history.replaceState(null, '', `?id=${encodeURIComponent(uuid)}`);
+                }
+            }
         }, 1200);
 
     } catch (e) {
