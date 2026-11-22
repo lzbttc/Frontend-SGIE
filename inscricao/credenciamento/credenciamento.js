@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectEvento) {
         selectEvento.addEventListener('change', () => {
             clearAlert('mensagem-alerta');
+            if (selectEvento.value) {
+                history.replaceState(null, '', `?evento=${encodeURIComponent(selectEvento.value)}`);
+            }
             const divResultado = document.getElementById('resultado-container');
             if (divResultado) divResultado.style.display = 'none';
             const listaSugestoes = document.getElementById('lista-sugestoes');
@@ -66,6 +69,44 @@ async function carregarEventos() {
         }
 
         const eventos = await response.json();
+        if (eventos.length === 0) {
+            sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                mensagem: 'Você não possui eventos sob sua gestão para credenciamento.',
+                tipo: 'warning'
+            }));
+            window.location.href = resolveAppUrl('index.html');
+            return;
+        }
+
+        // Se veio evento na URL mas não está na lista de meus eventos, valida permissão
+        if (eventoUrlId && !eventos.some(ev => String(ev.id) === String(eventoUrlId))) {
+            try {
+                const respSingle = await apiFetch(`/eventos/${eventoUrlId}/`);
+                if (respSingle.ok) {
+                    const evData = await respSingle.json();
+                    const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function' ? window.SGIE_ROLES.getUsuarioLogado() : getUser();
+                    const podeGerenciar = typeof window.SGIE_ROLES?.podeGerenciarEvento === 'function'
+                        ? window.SGIE_ROLES.podeGerenciarEvento(evData, user)
+                        : Boolean(user && evData.usuario_representante && String(user.id) === String(evData.usuario_representante));
+                    if (!podeGerenciar) {
+                        sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                            mensagem: 'Você não possui permissão para acessar o credenciamento deste evento.',
+                            tipo: 'danger'
+                        }));
+                        window.location.href = resolveAppUrl('index.html');
+                        return;
+                    }
+                    eventos.push(evData);
+                } else {
+                    sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                        mensagem: 'Evento não encontrado ou acesso não autorizado.',
+                        tipo: 'danger'
+                    }));
+                    window.location.href = resolveAppUrl('index.html');
+                    return;
+                }
+            } catch { /* continua */ }
+        }
 
         selectEvento.innerHTML = '<option value="">Selecione um evento para credenciar...</option>';
 

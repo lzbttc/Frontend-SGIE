@@ -214,6 +214,20 @@ function renderizarPaginaEvento(ev) {
             };
         }
 
+        const btnCredenciamento = document.getElementById('btn-credenciamento-evento');
+        if (btnCredenciamento) {
+            btnCredenciamento.onclick = () => {
+                window.location.href = `../../inscricao/credenciamento/index.html?evento=${encodeURIComponent(ev.id)}`;
+            };
+        }
+
+        const btnSubmissoes = document.getElementById('btn-submissoes-evento');
+        if (btnSubmissoes) {
+            btnSubmissoes.onclick = () => {
+                window.location.href = `../../eventos/gestao-submissoes/index.html?evento=${encodeURIComponent(ev.id)}`;
+            };
+        }
+
     } else {
         // Participante / Visitante (1.1 e 1.2)
         if (painelGestao) painelGestao.style.display = 'none';

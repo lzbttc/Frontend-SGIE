@@ -32,6 +32,10 @@
             ? window.SGIE_ROLES.podeAcessarMeusEventos(user)
             : false;
 
+        const podeCriarEvento = typeof window.SGIE_ROLES?.podeCriarEvento === 'function'
+            ? window.SGIE_ROLES.podeCriarEvento(user)
+            : false;
+
         const links = [];
 
         // Link padrão disponível para todos
@@ -48,7 +52,7 @@
                 href: getAppUrl('inscricao/minhas-inscricoes/index.html'),
             });
 
-            // Submissões do autor (quando criada a pasta/tela na Fase 8)
+            // Submissões do autor
             links.push({
                 id: 'minhas-submissoes',
                 label: 'Minhas submissões',
@@ -61,6 +65,15 @@
                     id: 'meus-eventos',
                     label: 'Meus eventos',
                     href: getAppUrl('eventos/meus-eventos/index.html'),
+                });
+            }
+
+            // Cadastrar evento para quem tem permissão
+            if (podeCriarEvento) {
+                links.push({
+                    id: 'cadastrar-evento',
+                    label: 'Cadastrar evento',
+                    href: getAppUrl('eventos/cadastrar-evento/index.html'),
                 });
             }
         }

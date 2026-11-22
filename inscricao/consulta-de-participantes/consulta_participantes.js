@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectEvento) {
         selectEvento.addEventListener('change', (e) => {
             eventoSelecionadoId = e.target.value || null;
+            if (eventoSelecionadoId) {
+                history.replaceState(null, '', `?evento=${encodeURIComponent(eventoSelecionadoId)}`);
+            }
             carregarParticipantes();
         });
     }
@@ -90,16 +93,42 @@ async function carregarMeusEventos() {
 
         const eventos = await response.json();
         if (eventos.length === 0) {
-            select.innerHTML = '<option value="">Nenhum evento encontrado</option>';
-            const semEv = document.getElementById('sem-participantes');
-            if (semEv) {
-                semEv.style.display = 'block';
-                semEv.innerHTML = `
-                    <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0;">Nenhum Evento Encontrado</h3>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">Você ainda não possui eventos cadastrados para visualizar participantes.</p>
-                `;
-            }
+            sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                mensagem: 'Você não possui eventos sob sua gestão para consulta de participantes.',
+                tipo: 'warning'
+            }));
+            window.location.href = resolveAppUrl('index.html');
             return;
+        }
+
+        // Se veio evento na URL mas não está na lista de meus eventos, valida permissão
+        if (eventoDaUrl && !eventos.some(ev => String(ev.id) === String(eventoDaUrl))) {
+            try {
+                const respSingle = await apiFetch(`/eventos/${eventoDaUrl}/`);
+                if (respSingle.ok) {
+                    const evData = await respSingle.json();
+                    const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function' ? window.SGIE_ROLES.getUsuarioLogado() : getUser();
+                    const podeGerenciar = typeof window.SGIE_ROLES?.podeGerenciarEvento === 'function'
+                        ? window.SGIE_ROLES.podeGerenciarEvento(evData, user)
+                        : Boolean(user && evData.usuario_representante && String(user.id) === String(evData.usuario_representante));
+                    if (!podeGerenciar) {
+                        sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                            mensagem: 'Você não possui permissão para consultar os participantes deste evento.',
+                            tipo: 'danger'
+                        }));
+                        window.location.href = resolveAppUrl('index.html');
+                        return;
+                    }
+                    eventos.push(evData);
+                } else {
+                    sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                        mensagem: 'Evento não encontrado ou acesso não autorizado.',
+                        tipo: 'danger'
+                    }));
+                    window.location.href = resolveAppUrl('index.html');
+                    return;
+                }
+            } catch { /* continua */ }
         }
 
         select.innerHTML = '<option value="">Selecione um evento...</option>';
@@ -168,6 +197,7 @@ async function carregarParticipantes() {
     if (lista) lista.style.display = 'none';
 
     const params = new URLSearchParams();
+    params.append('evento_id', eventoSelecionadoId);
     const busca = document.getElementById('filtro-busca') ? document.getElementById('filtro-busca').value.trim() : '';
     const statusFiltro = document.getElementById('filtro-status') ? document.getElementById('filtro-status').value : '';
 

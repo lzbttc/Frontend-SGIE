@@ -53,7 +53,11 @@ async function carregarSeletorEventos() {
         const lista = Array.isArray(eventos) ? eventos : (eventos.results || []);
 
         if (lista.length === 0) {
-            select.innerHTML = '<option value="">Você não possui eventos sob sua gestão.</option>';
+            sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                mensagem: 'Você não possui eventos sob sua gestão para curadoria de submissões.',
+                tipo: 'warning'
+            }));
+            window.location.href = resolveAppUrl('index.html');
             return;
         }
 
@@ -87,6 +91,24 @@ async function inicializarGestaoEvento(id) {
         }
 
         _eventoAtual = await respEvento.json();
+
+        const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
+            ? window.SGIE_ROLES.getUsuarioLogado()
+            : getUser();
+
+        const podeGerenciar = typeof window.SGIE_ROLES?.podeGerenciarEvento === 'function'
+            ? window.SGIE_ROLES.podeGerenciarEvento(_eventoAtual, user)
+            : Boolean(user && _eventoAtual.usuario_representante && String(user.id) === String(_eventoAtual.usuario_representante));
+
+        if (!podeGerenciar) {
+            sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                mensagem: 'Você não possui permissão para gerenciar as submissões deste evento.',
+                tipo: 'danger'
+            }));
+            window.location.href = resolveAppUrl('index.html');
+            return;
+        }
+
         atualizarCabecalhoETabs(_eventoAtual);
 
         await carregarSubmissoesDoEvento(id);

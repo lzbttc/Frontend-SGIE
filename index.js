@@ -1,7 +1,5 @@
 /* SGIE — index.js (tela Explorar Eventos) */
 
-let abaAtual = 'todos';
-
 const $ = (id) => document.getElementById(id);
 
 function esc(valor) {
@@ -24,15 +22,21 @@ function dataCurta(dataIso) {
 document.addEventListener('DOMContentLoaded', () => {
     atualizarCabecalhoUsuario('eventos');
 
-    // Registro de ouvintes primeiro para que parâmetros de URL não impeçam o registro
-    const tabTodos = $('tab-todos');
-    const tabMeus = $('tab-meus-eventos');
+    // Alerta repassado por redirecionamento de tela restrita
+    const alertaRedirect = sessionStorage.getItem('sgie_alerta_redirect');
+    if (alertaRedirect) {
+        sessionStorage.removeItem('sgie_alerta_redirect');
+        try {
+            const { mensagem, tipo } = JSON.parse(alertaRedirect);
+            showAlert('mensagem-alerta', mensagem, tipo || 'danger');
+        } catch { /* ignora */ }
+    }
+
+    // Registro de ouvintes
     const btnFiltrar = $('btn-aplicar-filtros');
     const btnLimpar = $('btn-limpar-filtros');
     const filtroBusca = $('filtro-busca');
 
-    if (tabTodos) tabTodos.addEventListener('click', () => alternarAba('todos'));
-    if (tabMeus) tabMeus.addEventListener('click', () => alternarAba('meus-eventos'));
     if (btnFiltrar) btnFiltrar.addEventListener('click', carregarEventos);
     if (btnLimpar) {
         btnLimpar.addEventListener('click', () => {
@@ -53,57 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.addEventListener('change', carregarEventos);
     });
 
-    const isAuth = typeof window.SGIE_ROLES?.isAutenticado === 'function'
-        ? window.SGIE_ROLES.isAutenticado()
-        : isAuthenticated();
-
-    const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
-        ? window.SGIE_ROLES.getUsuarioLogado()
-        : getUser();
-
-    const podeVerMeus = typeof window.SGIE_ROLES?.podeAcessarMeusEventos === 'function'
-        ? window.SGIE_ROLES.podeAcessarMeusEventos(user)
-        : Boolean(isAuth);
-
-    if (isAuth && podeVerMeus) {
-        const tabsNav = $('tabs-nav');
-        if (tabsNav) tabsNav.hidden = false;
-        atualizarContadorMeusEventos();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const tabParam = urlParams.get('tab');
-        if (tabParam === 'meus' || tabParam === 'meus-eventos') {
-            alternarAba('meus-eventos');
-            return;
-        }
-    }
-
     carregarEventos();
 });
-
-function alternarAba(aba) {
-    abaAtual = aba;
-    const tabTodos = $('tab-todos');
-    const tabMeus = $('tab-meus-eventos');
-    const toolbar = $('toolbar-filtros');
-
-    if (tabTodos) tabTodos.classList.toggle('is-active', aba === 'todos');
-    if (tabMeus) tabMeus.classList.toggle('is-active', aba === 'meus-eventos');
-    if (toolbar) toolbar.hidden = (aba !== 'todos');
-
-    carregarEventos();
-}
-
-async function atualizarContadorMeusEventos() {
-    try {
-        const resp = await apiFetch('/eventos/meus-eventos/');
-        if (resp.ok) {
-            const lista = await resp.json();
-            const badge = $('badge-total-meus');
-            if (badge) badge.textContent = Array.isArray(lista) ? lista.length : (lista.results?.length || 0);
-        }
-    } catch { /* contador é opcional */ }
-}
 
 /* ---------- Carregamento ---------- */
 
@@ -113,18 +68,15 @@ async function carregarEventos() {
     $('grid-eventos').hidden = true;
     $('sem-eventos').hidden = true;
 
-    let url = '/eventos/meus-eventos/';
-    if (abaAtual === 'todos') {
-        const params = new URLSearchParams();
-        const filtros = {
-            search: $('filtro-busca')?.value?.trim() || '',
-            categoria: $('filtro-categoria')?.value || '',
-            modalidade: $('filtro-modalidade')?.value || '',
-            e_gratuito: $('filtro-preco')?.value || ''
-        };
-        Object.entries(filtros).forEach(([k, v]) => { if (v) params.append(k, v); });
-        url = `/eventos/${params.toString() ? `?${params}` : ''}`;
-    }
+    const params = new URLSearchParams();
+    const filtros = {
+        search: $('filtro-busca')?.value?.trim() || '',
+        categoria: $('filtro-categoria')?.value || '',
+        modalidade: $('filtro-modalidade')?.value || '',
+        e_gratuito: $('filtro-preco')?.value || ''
+    };
+    Object.entries(filtros).forEach(([k, v]) => { if (v) params.append(k, v); });
+    const url = `/eventos/${params.toString() ? `?${params}` : ''}`;
 
     try {
         const resp = await apiFetch(url);
@@ -139,13 +91,8 @@ async function carregarEventos() {
         const dados = await resp.json();
         let eventos = Array.isArray(dados) ? dados : (dados.results || []);
 
-        if (abaAtual === 'meus-eventos') {
-            const badge = $('badge-total-meus');
-            if (badge) badge.textContent = eventos.length;
-        } else {
-            // Na aba Explorar, ocultar eventos com status Rascunho ou Configuração
-            eventos = eventos.filter((ev) => ev.status !== 'Rascunho' && ev.status !== 'Configuração');
-        }
+        // Na aba Explorar, ocultar eventos com status Rascunho ou Configuração
+        eventos = eventos.filter((ev) => ev.status !== 'Rascunho' && ev.status !== 'Configuração');
 
         if (!eventos.length) return mostrarVazio();
         renderizarEventos(eventos);
@@ -157,11 +104,8 @@ async function carregarEventos() {
 }
 
 function mostrarVazio() {
-    const meus = abaAtual === 'meus-eventos';
-    $('titulo-vazio').textContent = meus ? 'Você ainda não cadastrou eventos' : 'Nenhum evento encontrado';
-    $('desc-vazio').innerHTML = meus
-        ? 'Crie seu primeiro evento em <a href="eventos/cadastrar-evento/index.html">Cadastrar Evento</a>.'
-        : 'Tente ajustar os filtros aplicados.';
+    $('titulo-vazio').textContent = 'Nenhum evento encontrado';
+    $('desc-vazio').innerHTML = 'Tente ajustar os filtros aplicados.';
     $('sem-eventos').hidden = false;
 }
 

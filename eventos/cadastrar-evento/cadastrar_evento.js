@@ -12,11 +12,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Atualiza o cabeçalho global padrão do SGIE
     atualizarCabecalhoUsuario('novo');
 
-    // 3. Verificação de perfil de Organizador
-    const usuario = getUser();
+    // 3. Verificação de permissão de Organizador (Telas restritas)
+    const usuario = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
+        ? window.SGIE_ROLES.getUsuarioLogado()
+        : getUser();
+
+    const podeCriar = typeof window.SGIE_ROLES?.podeCriarEvento === 'function'
+        ? window.SGIE_ROLES.podeCriarEvento(usuario)
+        : Boolean(usuario && (usuario.eh_organizador || usuario.is_organizador || usuario.acesso_admin || usuario.superusuario));
+
+    if (!podeCriar) {
+        sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+            mensagem: 'Apenas organizadores homologados ou administradores têm permissão para cadastrar eventos.',
+            tipo: 'danger'
+        }));
+        window.location.href = resolveAppUrl('index.html');
+        return;
+    }
+
     const bannerAviso = document.getElementById('banner-aviso-organizador');
-    const ehOrganizador = usuario && (usuario.eh_organizador || usuario.is_organizador || usuario.acesso_admin || usuario.superusuario);
-    if (bannerAviso && ehOrganizador) {
+    if (bannerAviso) {
         bannerAviso.style.display = 'none';
     }
 

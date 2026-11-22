@@ -46,16 +46,21 @@ async function carregarDadosEvento(id) {
         }
 
         const ev = await resp.json();
-        const user = getUser();
+        const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
+            ? window.SGIE_ROLES.getUsuarioLogado()
+            : getUser();
 
-        // Verificação de Permissão: apenas o dono (representante) pode editar
-        const ehRepresentante = Boolean(
-            user && user.id && ev.usuario_representante &&
-            String(user.id).toLowerCase() === String(ev.usuario_representante).toLowerCase()
-        );
+        // Verificação de Permissão unificada (shared/roles.js)
+        const podeGerenciar = typeof window.SGIE_ROLES?.podeGerenciarEvento === 'function'
+            ? window.SGIE_ROLES.podeGerenciarEvento(ev, user)
+            : Boolean(user && ev.usuario_representante && String(user.id) === String(ev.usuario_representante));
 
-        if (!ehRepresentante) {
-            mostrarErro('Você não possui autorização para editar este evento acadêmico. Apenas o organizador responsável pelo evento pode realizar alterações.');
+        if (!podeGerenciar) {
+            sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                mensagem: 'Você não possui permissão para editar este evento acadêmico.',
+                tipo: 'danger'
+            }));
+            window.location.href = resolveAppUrl('index.html');
             return;
         }
 

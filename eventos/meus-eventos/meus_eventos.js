@@ -66,6 +66,15 @@ async function carregarMeusEventos() {
         // Suporte a paginação DRF (results) ou array direto
         _todosEventos = Array.isArray(dados) ? dados : (dados.results || []);
 
+        if (_todosEventos.length === 0 && !podeCriar) {
+            sessionStorage.setItem('sgie_alerta_redirect', JSON.stringify({
+                mensagem: 'Você não possui permissão para acessar o painel de gestão de eventos.',
+                tipo: 'warning'
+            }));
+            window.location.href = resolveAppUrl('index.html');
+            return;
+        }
+
         renderLista(_todosEventos);
 
         // Mostrar filtros só se houver eventos
@@ -180,6 +189,10 @@ function renderLista(eventos) {
                    class="btn btn-outline btn-sm">Ver detalhes</a>
                 <a href="../editar-evento/index.html?id=${esc(ev.id)}"
                    class="btn btn-ghost btn-sm">Editar</a>
+                <a href="../../inscricao/consulta-de-participantes/index.html?evento=${esc(ev.id)}"
+                   class="btn btn-ghost btn-sm">Participantes</a>
+                <a href="../../inscricao/credenciamento/index.html?evento=${esc(ev.id)}"
+                   class="btn btn-ghost btn-sm">Credenciamento</a>
             </div>
         </div>
         `;
