@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (novoId) {
                     window.location.href = `../detalhes-do-evento/index.html?id=${novoId}`;
                 } else {
-                    window.location.href = '../../index.html?tab=meus-eventos';
+                    window.location.href = '../meus-eventos/index.html';
                 }
             }, 1200);
 
