@@ -188,7 +188,7 @@ function renderLista(eventos) {
 
             <div class="evento-card__actions">
                 <a href="../detalhes-do-evento/index.html?id=${esc(ev.id)}"
-                   class="btn btn-outline btn-sm">Ver detalhes</a>
+                   class="btn btn-secondary btn-sm">Ver detalhes</a>
                 <a href="../editar-evento/index.html?id=${esc(ev.id)}"
                    class="btn btn-ghost btn-sm">Editar</a>
                 <a href="../../inscricao/consulta-de-participantes/index.html?evento=${esc(ev.id)}"

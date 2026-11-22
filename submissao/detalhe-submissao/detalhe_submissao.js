@@ -291,9 +291,11 @@ function renderizarArquivo(sub) {
     const secaoNova = document.getElementById('secao-nova-versao');
 
     if (secaoAtual) {
-        if (sub.arquivo) {
-            const nomeArquivo = sub.arquivo.split('/').pop() || 'trabalho.pdf';
-            const versao = sub.versao_atual ? `v${sub.versao_atual}` : 'v1';
+        const versaoAtual = obterVersaoAtualSubmissao(sub);
+        if (versaoAtual && versaoAtual.arquivo) {
+            const urlArquivo = versaoAtual.arquivo;
+            const nomeArquivo = decodeURIComponent(urlArquivo.split('?')[0].split('/').pop() || 'trabalho.pdf');
+            const versao = `v${versaoAtual.numero}`;
             secaoAtual.innerHTML = `
                 <div class="file-item" style="padding:12px 14px;background:var(--bg)">
                     <i class="ic ic-file" style="color:var(--primary-ink);font-size:22px;"></i>
@@ -301,7 +303,7 @@ function renderizarArquivo(sub) {
                         <b>${escapeHtml(nomeArquivo)}</b>
                         <p class="small muted">Versão ativa: ${versao}</p>
                     </div>
-                    <a href="${escapeHtml(sub.arquivo)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" aria-label="Baixar arquivo">
+                    <a href="${escapeHtml(urlArquivo)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" aria-label="Baixar arquivo">
                         <i class="ic ic-download"></i>Baixar
                     </a>
                 </div>

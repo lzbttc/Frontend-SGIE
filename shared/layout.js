@@ -122,7 +122,7 @@
         return links
             .map((item) => {
                 const isActive = paginaAtiva === item.id ? 'is-active' : '';
-                return `<a class="nav-link ${isActive}" href="${item.href}">${item.label}</a>`;
+                return `<a class="nav-link ${isActive}" data-page="${item.id}" href="${item.href}"${isActive ? ' aria-current="page"' : ''}>${item.label}</a>`;
             })
             .join('');
     }
@@ -187,7 +187,7 @@
             <header class="nav" id="app-nav">
                 <div class="container nav-in">
                     <a class="brand" href="${getAppUrl('index.html')}">
-                        <span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE
+                        <img class="brand-logo" src="${getAppUrl('assets/img/sgie-logo-horizontal.svg')}" alt="SGIE">
                     </a>
                     <nav aria-label="Principal" class="nav-links">
                         ${renderNavLinks(activePage)}
@@ -265,7 +265,7 @@
             if (brand) {
                 brand.className = 'brand';
                 brand.href = getAppUrl('index.html');
-                brand.innerHTML = '<span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE';
+                brand.innerHTML = `<img class="brand-logo" src="${getAppUrl('assets/img/sgie-logo-horizontal.svg')}" alt="SGIE">`;
             }
             atualizarNavegacao(activePage);
         } else {

@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu perfil — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
     <link rel="stylesheet" href="../../sgie.css">
 </head>
 <body class="app">
     <!-- Navbar compartilhada -->
     <header class="nav">
         <div class="container nav-in">
-            <a href="../../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
             <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
@@ -27,7 +28,7 @@
 
             <div id="mensagem-alerta" style="display: none;"></div>
 
-            <div class="with-side" style="grid-template-columns: 300px minmax(0, 1fr);">
+            <div class="with-side side-left">
                 <!-- Sidebar lateral -->
                 <aside class="card stack" style="align-items: center; text-align: center;">
                     <div style="position: relative; display: inline-block;">
@@ -65,7 +66,7 @@
 
                     <hr class="sep" style="width: 100%;">
 
-                    <div class="card" style="width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line); padding: 12px; border-radius: var(--radius-sm);">
+                    <div class="card" style="width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line); padding: 12px; border-radius: var(--r-sm);">
                         <div class="small muted">Eventos sob gestão</div>
                         <div class="h2" id="painel-total" style="margin: 4px 0;">0</div>
                         <div class="small muted" id="painel-descricao">Nenhum evento ativo</div>
@@ -141,7 +142,7 @@
                                         <div class="row" style="gap: 8px; margin-top: 6px;">
                                             <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('input-banner').click()">Escolher imagem</button>
                                         </div>
-                                        <img id="banner-preview" style="display: none; max-width: 100%; max-height: 60px; object-fit: cover; margin-top: 8px; border-radius: var(--radius-sm);" alt="Preview do banner">
+                                        <img id="banner-preview" style="display: none; max-width: 100%; max-height: 60px; object-fit: cover; margin-top: 8px; border-radius: var(--r-sm);" alt="Preview do banner">
                                     </div>
                                 </div>
                             </div>

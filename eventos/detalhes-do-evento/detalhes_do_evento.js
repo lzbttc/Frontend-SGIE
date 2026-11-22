@@ -140,7 +140,7 @@ function renderizarPaginaEvento(ev) {
     if (elEmail) {
         if (ev.usuario_representante_email) {
             elEmail.textContent = ev.usuario_representante_email;
-            elEmail.href = `mailto:${ev.usuario_representante_email}`;
+            elEmail.href = `mailto:${encodeURIComponent(ev.usuario_representante_email).replace(/%40/g, '@')}`;
             elEmail.style.display = 'inline';
             if (elEmailSep) elEmailSep.style.display = 'inline';
         } else {
@@ -173,6 +173,9 @@ function renderizarPaginaEvento(ev) {
         }
 
         const btnEditar = document.getElementById('btn-editar-evento');
+        if (btnEditar && ev.pode_alterar_data === false && ev.pode_alterar_detalhes === false) {
+            btnEditar.style.display = 'none';
+        }
         if (btnEditar) {
             btnEditar.onclick = () => {
                 window.location.href = `../editar-evento/index.html?id=${encodeURIComponent(ev.id)}`;
@@ -183,7 +186,7 @@ function renderizarPaginaEvento(ev) {
 
         const btnCancelar = document.getElementById('btn-cancelar-evento');
         if (btnCancelar) {
-            if (stNorm === 'cancelado' || stNorm === 'finalizado') {
+            if (stNorm === 'cancelado' || stNorm === 'finalizado' || stNorm === 'arquivado' || ev.pode_cancelar === false) {
                 btnCancelar.style.display = 'none';
             } else {
                 btnCancelar.style.display = 'inline-flex';
@@ -459,12 +462,15 @@ async function mudarStatusEvento(id, acao) {
 }
 
 async function confirmarCancelamento(id) {
-    const motivo = prompt('Informe a justificativa acadêmica para o cancelamento deste evento:');
+    const motivo = await window.SGIE_DOM.confirmar({
+        titulo: 'Cancelar evento',
+        mensagem: 'Os inscritos serão notificados. Esta ação não pode ser desfeita.',
+        confirmarTexto: 'Cancelar evento',
+        cancelarTexto: 'Voltar',
+        perigo: true,
+        campo: { label: 'Justificativa acadêmica', placeholder: 'Informe o motivo do cancelamento', obrigatorio: true, maxLength: 500 },
+    });
     if (motivo === null) return;
-    if (!motivo.trim()) {
-        alert('O motivo do cancelamento é obrigatório.');
-        return;
-    }
 
     try {
         const resp = await apiFetch(`/eventos/${id}/cancelar/`, {

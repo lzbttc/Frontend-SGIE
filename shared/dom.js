@@ -175,6 +175,100 @@
         }
     }
 
+    /**
+     * Diálogo de confirmação acessível (substitui confirm/prompt/alert nativos).
+     * Retorna uma Promise:
+     *  - sem `campo`: true (confirmou) | false (cancelou)
+     *  - com `campo` ({ label, placeholder, obrigatorio, maxLength }): texto digitado | null (cancelou)
+     * Opções: titulo, mensagem, confirmarTexto, cancelarTexto, perigo, campo, somenteOk
+     */
+    function confirmar(options = {}) {
+        const {
+            titulo = 'Confirmar ação',
+            mensagem = '',
+            confirmarTexto = 'Confirmar',
+            cancelarTexto = 'Cancelar',
+            perigo = false,
+            somenteOk = false,
+            campo = null,
+        } = options;
+
+        return new Promise((resolve) => {
+            const anterior = document.activeElement;
+            const uid = `dlg-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal';
+            overlay.innerHTML = `
+                <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="${uid}-t" ${mensagem ? `aria-describedby="${uid}-m"` : ''}>
+                    <h2 class="h2" id="${uid}-t">${escapeHTML(titulo)}</h2>
+                    ${mensagem ? `<p class="muted" id="${uid}-m" style="margin-top: 8px;">${escapeHTML(mensagem)}</p>` : ''}
+                    ${campo ? `
+                        <div class="field" style="margin-top: 16px;">
+                            <label class="label" for="${uid}-c">${escapeHTML(campo.label || 'Informe o motivo')}</label>
+                            <textarea class="textarea" id="${uid}-c" rows="3" ${campo.maxLength ? `maxlength="${Number(campo.maxLength)}"` : ''} placeholder="${escapeHTML(campo.placeholder || '')}"></textarea>
+                            <span class="error-msg" id="${uid}-e" hidden></span>
+                        </div>` : ''}
+                    <div class="modal-actions">
+                        ${somenteOk ? '' : `<button type="button" class="btn btn-secondary" data-dlg-cancelar>${escapeHTML(cancelarTexto)}</button>`}
+                        <button type="button" class="btn ${perigo ? 'btn-danger' : 'btn-primary'}" data-dlg-ok>${escapeHTML(confirmarTexto)}</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(overlay);
+
+            const input = campo ? overlay.querySelector('textarea') : null;
+            const erro = campo ? overlay.querySelector(`#${uid}-e`) : null;
+            const btnOk = overlay.querySelector('[data-dlg-ok]');
+            const btnCancelar = overlay.querySelector('[data-dlg-cancelar]');
+
+            function fechar(resultado) {
+                document.removeEventListener('keydown', aoTeclar, true);
+                overlay.remove();
+                if (anterior && typeof anterior.focus === 'function') anterior.focus();
+                resolve(resultado);
+            }
+
+            function aoConfirmar() {
+                if (!campo) return fechar(true);
+                const valor = input.value.trim();
+                if (campo.obrigatorio !== false && !valor) {
+                    erro.textContent = 'Este campo é obrigatório.';
+                    erro.hidden = false;
+                    input.classList.add('is-error');
+                    input.focus();
+                    return;
+                }
+                fechar(valor);
+            }
+
+            function aoTeclar(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    fechar(campo ? null : false);
+                } else if (e.key === 'Tab') {
+                    const focaveis = overlay.querySelectorAll('button, textarea, input, [href]');
+                    if (!focaveis.length) return;
+                    const primeiro = focaveis[0];
+                    const ultimo = focaveis[focaveis.length - 1];
+                    if (e.shiftKey && document.activeElement === primeiro) {
+                        e.preventDefault();
+                        ultimo.focus();
+                    } else if (!e.shiftKey && document.activeElement === ultimo) {
+                        e.preventDefault();
+                        primeiro.focus();
+                    }
+                }
+            }
+
+            btnOk.addEventListener('click', aoConfirmar);
+            if (btnCancelar) btnCancelar.addEventListener('click', () => fechar(campo ? null : false));
+            overlay.addEventListener('mousedown', (e) => {
+                if (e.target === overlay && !somenteOk) fechar(campo ? null : false);
+            });
+            document.addEventListener('keydown', aoTeclar, true);
+            (input || btnCancelar || btnOk).focus();
+        });
+    }
+
     window.SGIE_DOM = {
         escapeHTML,
         createElement,
@@ -184,5 +278,6 @@
         showAlert,
         clearAlert,
         extrairMensagemErro,
+        confirmar,
     };
 })(window);

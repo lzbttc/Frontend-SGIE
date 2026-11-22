@@ -303,13 +303,16 @@ function renderizarPainelCuradoria(sub) {
         const autor = sub.autor_nome || 'Autor';
         const tipo = sub.tipo_display || sub.tipo || 'Artigo';
         const area = sub.area_nome || (sub.area && sub.area.nome) || 'Área';
-        const versao = sub.versao_atual ? `versão ${sub.versao_atual}` : 'versão 1';
+        const versaoAtual = obterVersaoAtualSubmissao(sub);
+        const versao = versaoAtual ? `versão ${versaoAtual.numero}` : 'sem arquivo enviado';
         elMeta.textContent = `${autor} · ${tipo} · ${area} · ${versao}`;
     }
 
     if (btnBaixar) {
-        if (sub.arquivo) {
-            btnBaixar.href = sub.arquivo;
+        if (versaoAtual && versaoAtual.arquivo) {
+            btnBaixar.href = versaoAtual.arquivo;
+            btnBaixar.target = '_blank';
+            btnBaixar.rel = 'noopener noreferrer';
             btnBaixar.style.display = 'inline-flex';
         } else {
             btnBaixar.style.display = 'none';

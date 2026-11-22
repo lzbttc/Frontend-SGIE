@@ -109,7 +109,8 @@ function renderizarTabela(lista) {
         const tipo = escapeHtml(sub.tipo_display || sub.tipo || 'Artigo');
         const area = escapeHtml(sub.area_nome || (sub.area && sub.area.nome) || 'Área Geral');
         const eventoNome = escapeHtml(sub.evento_nome || (sub.evento && sub.evento.nome) || 'Evento');
-        const versao = sub.versao_atual ? `v${sub.versao_atual}` : (sub.versao ? `v${sub.versao}` : '—');
+        const versaoAtual = obterVersaoAtualSubmissao(sub);
+        const versao = versaoAtual ? `v${versaoAtual.numero}` : '—';
         const dataFmt = fmt ? fmt.formatarData(sub.atualizado_em || sub.criado_em) : (sub.atualizado_em || '—');
         const statusBadge = getStatusBadge(sub.status);
 

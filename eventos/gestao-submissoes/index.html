@@ -5,52 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gestão de Submissões — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
     <link rel="stylesheet" href="../../sgie.css">
-    <style>
-        .filters {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .table-wrap {
-            overflow-x: auto;
-        }
-        .table th.actions, .table td.actions {
-            text-align: right;
-            white-space: nowrap;
-        }
-        .table tr.is-selected td {
-            background: var(--primary-soft);
-        }
-        .choice {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 16px;
-            border: 1px solid var(--line);
-            border-radius: var(--r-sm);
-            background: var(--surface);
-            cursor: pointer;
-            margin-bottom: 8px;
-            transition: border-color 0.15s, background-color 0.15s;
-        }
-        .choice input[type="radio"] {
-            margin-top: 3px;
-        }
-        .choice:has(input:checked) {
-            border-color: var(--primary);
-            background: var(--primary-soft);
-        }
-        .choice.is-warn:has(input:checked) {
-            border-color: #f59e0b;
-            background: #fffbeb;
-        }
-        .choice.is-danger:has(input:checked) {
-            border-color: var(--danger);
-            background: var(--danger-bg);
-        }
-    </style>
 </head>
 
 <body class="app">
@@ -58,7 +14,7 @@
     <!-- NAVBAR COMPARTILHADA -->
     <header class="nav">
         <div class="container nav-in">
-            <a href="../../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
             <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>

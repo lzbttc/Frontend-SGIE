@@ -291,6 +291,14 @@ async function carregarSubmissaoExistente(uuid) {
 function configurarUploadArquivo() {
     const dropArea = document.getElementById('drop-area');
     const inputArquivo = document.getElementById('input-arquivo');
+    if (dropArea && inputArquivo) {
+        dropArea.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter' || ev.key === ' ') {
+                ev.preventDefault();
+                inputArquivo.click();
+            }
+        });
+    }
     const btnEscolher = document.getElementById('btn-escolher-arquivo');
     const btnRemover = document.getElementById('btn-remover-arquivo');
 

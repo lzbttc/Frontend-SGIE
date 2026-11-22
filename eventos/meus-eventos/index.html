@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus eventos — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
     <link rel="stylesheet" href="../../sgie.css">
 </head>
 <body class="app">
     <header class="nav">
         <div class="container nav-in">
-            <a href="../../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
             <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
@@ -36,7 +37,7 @@
                         <i class="ic ic-search"></i>
                         <input aria-label="Buscar eventos" class="input" id="filtro-busca" placeholder="Buscar pelo nome do evento" type="search">
                     </div>
-                    <select aria-label="Status" class="input" id="filtro-status">
+                    <select aria-label="Status" class="select" id="filtro-status">
                         <option value="">Todos os status</option>
                         <option value="Rascunho">Rascunho</option>
                         <option value="Configuração">Configuração</option>
@@ -50,7 +51,7 @@
                 </form>
 
                 <!-- Lista de eventos -->
-                <div id="lista-meus-eventos">
+                <div id="lista-meus-eventos" class="stack">
                     <!-- preenchido dinamicamente -->
                 </div>
             </div>

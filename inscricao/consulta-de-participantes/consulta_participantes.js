@@ -328,18 +328,18 @@ function renderizarParticipantes(participantes) {
             : '';
 
         card.innerHTML = `
-            <span class="avatar">${iniciais}</span>
+            <span class="avatar">${window.SGIE_DOM.escapeHTML(iniciais)}</span>
             <div class="grow" style="min-width: 240px;">
                 <div class="row" style="gap: 8px;">
-                    <b class="h3">${nome}</b>
-                    <span class="small muted num">#${p.id}</span>
+                    <b class="h3">${window.SGIE_DOM.escapeHTML(nome)}</b>
+                    <span class="small muted num">#${window.SGIE_DOM.escapeHTML(p.id)}</span>
                     ${badgePresenca}
                 </div>
-                <p class="small muted" style="margin-top: 2px;">${email} · Inscrito em ${dataFmt}</p>
+                <p class="small muted" style="margin-top: 2px;">${window.SGIE_DOM.escapeHTML(email)} · Inscrito em ${window.SGIE_DOM.escapeHTML(dataFmt)}</p>
                 <div id="detalhes-participante-${p.id}" style="display: none; margin-top: 12px; padding: 12px; background-color: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);">
                     <p class="small" style="margin: 0 0 4px 0;"><strong>Presença / Credenciamento:</strong> ${presencaConfirmada ? 'Presença confirmada' : 'Pendente de credenciamento'}</p>
-                    <p class="small" style="margin: 0 0 4px 0;"><strong>Dados adicionais:</strong> ${formatarDadosAdicionais(p.dados_adicionais)}</p>
-                    ${comprovanteUrl ? `<p class="small" style="margin: 0;"><a href="${comprovanteUrl}" target="_blank" rel="noopener noreferrer">Visualizar comprovante de vínculo</a></p>` : '<p class="small muted" style="margin: 0;">Nenhum comprovante anexado.</p>'}
+                    <p class="small" style="margin: 0 0 4px 0;"><strong>Dados adicionais:</strong> ${window.SGIE_DOM.escapeHTML(formatarDadosAdicionais(p.dados_adicionais))}</p>
+                    ${comprovanteUrl ? `<p class="small" style="margin: 0;"><a href="${window.SGIE_DOM.escapeHTML(comprovanteUrl)}" target="_blank" rel="noopener noreferrer">Visualizar comprovante de vínculo</a></p>` : '<p class="small muted" style="margin: 0;">Nenhum comprovante anexado.</p>'}
                 </div>
             </div>
 

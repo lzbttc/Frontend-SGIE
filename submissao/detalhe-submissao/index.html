@@ -5,61 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Detalhe da submissão — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
     <link rel="stylesheet" href="../../sgie.css">
-    <style>
-        .dl {
-            display: grid;
-            grid-template-columns: 140px minmax(0, 1fr);
-            gap: 12px 16px;
-            font-size: 14px;
-        }
-        .dl dt {
-            color: var(--muted);
-            font-weight: 600;
-        }
-        .dl dd {
-            margin: 0;
-            color: var(--ink);
-        }
-        .steps {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
-        .step {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        .step-dot {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: var(--line);
-            color: var(--muted);
-            font-size: 11px;
-            font-weight: 700;
-            display: grid;
-            place-items: center;
-            flex-shrink: 0;
-        }
-        .step.is-done .step-dot {
-            background: var(--primary);
-            color: #fff;
-        }
-        .step.is-current .step-dot {
-            background: var(--action);
-            color: #fff;
-            box-shadow: 0 0 0 3px rgba(0, 168, 104, 0.2);
-        }
-        .sticky-aside {
-            position: sticky;
-            top: 24px;
-        }
-    </style>
 </head>
 
 <body class="app">
@@ -67,7 +14,7 @@
     <!-- NAVBAR COMPARTILHADA -->
     <header class="nav">
         <div class="container nav-in">
-            <a href="../../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
             <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>

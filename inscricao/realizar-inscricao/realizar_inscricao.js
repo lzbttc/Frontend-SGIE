@@ -69,9 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const elEventoSubtitulo = document.getElementById('evento-subtitulo');
         if (elEventoSubtitulo) {
-            const dataFmt = formatarData(evento.data);
-            const horaFmt = formatarHora(evento.hora_inicio);
-            elEventoSubtitulo.textContent = `${evento.nome} • ${dataFmt} às ${horaFmt} • ${evento.local}`;
+            elEventoSubtitulo.textContent = evento.nome;
         }
 
         // Atualiza comprovante (obrigatório / opcional / oculto)

@@ -5,45 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Submeter trabalho — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
     <link rel="stylesheet" href="../../sgie.css">
-    <style>
-        .opt {
-            font-size: 12px;
-            font-weight: 400;
-            color: var(--muted);
-        }
-        .drop {
-            border: 2px dashed var(--line-strong);
-            border-radius: var(--r-md);
-            padding: 32px 20px;
-            text-align: center;
-            background: var(--surface);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
-        .drop.dragover {
-            border-color: var(--primary);
-            background: var(--primary-soft);
-        }
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border: 1px solid var(--line);
-            border-radius: var(--r-sm);
-            background: var(--surface);
-            margin-top: 12px;
-        }
-        .sticky-aside {
-            position: sticky;
-            top: 24px;
-        }
-    </style>
 </head>
 
 <body class="app">
@@ -51,7 +14,7 @@
     <!-- NAVBAR COMPARTILHADA -->
     <header class="nav">
         <div class="container nav-in">
-            <a href="../../index.html" class="brand"><span class="brand-mark"><i class="ic ic-cap"></i></span>SGIE<span class="brand-tag">Eventos</span></a>
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
             <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
             <div class="nav-user" id="nav-user-area"></div>
         </div>
@@ -246,7 +209,7 @@
                             </div>
                         </div>
 
-                        <div class="drop" id="drop-area">
+                        <div class="drop" id="drop-area" role="button" tabindex="0" aria-label="Escolher arquivo do trabalho">
                             <i class="ic ic-upload" style="font-size: 28px;"></i>
                             <b style="color: var(--ink);">Arraste o arquivo ou escolha no computador</b>
                             <span class="small muted">Formatos aceitos: PDF, DOC ou DOCX até 20 MB</span>

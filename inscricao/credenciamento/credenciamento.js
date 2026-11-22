@@ -1,3 +1,4 @@
+const esc = (v) => window.SGIE_DOM.escapeHTML(v);
 let html5QrCode = null;
 let cameraAtiva = false;
 let participanteAtual = null;
@@ -185,30 +186,27 @@ function renderizarSugestoes(participantes) {
             : (partes[0] ? partes[0].slice(0, 2).toUpperCase() : 'SG');
 
         itensHtml += `
-            <div class="credenciamento__suggestion-item-${idx === 0 ? '1-selected' : '2'}" onclick="selecionarParticipante(${idx})" style="cursor: pointer; margin-bottom: 8px;">
-                <div class="credenciamento__container-30">
-                    <div class="credenciamento__background-4"><p class="credenciamento__text-12">${iniciais}</p></div>
-                    <div class="credenciamento__container-31">
-                        <div class="credenciamento__container-32">
-                            <p class="credenciamento__text-13">${nome}</p>
-                        </div>
-                        <div class="credenciamento__container-33">
-                            <p class="credenciamento__text-14">#${p.id} • ${p.usuario_email}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button type="button" class="item${idx === 0 ? ' is-selected' : ''}" data-idx="${idx}" style="width: 100%; text-align: left; cursor: pointer; margin-bottom: 8px; font: inherit; color: inherit;">
+                <span class="avatar">${esc(iniciais)}</span>
+                <span class="grow">
+                    <b style="display: block;">${esc(nome)}</b>
+                    <span class="small muted">#${esc(p.id)} • ${esc(p.usuario_email || '')}</span>
+                </span>
+            </button>
         `;
     });
 
     listaSugestoes.innerHTML = `
         <div style="margin-top: 16px;">
-            <p style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">Resultados encontrados (${participantes.length})</p>
+            <p class="small muted" style="font-weight: 700; margin-bottom: 8px;">Resultados encontrados (${participantes.length})</p>
             ${itensHtml}
         </div>
     `;
 
     window.__participantesCache = participantes;
+    listaSugestoes.querySelectorAll('[data-idx]').forEach((el) => {
+        el.addEventListener('click', () => selecionarParticipante(Number(el.dataset.idx)));
+    });
 }
 
 function selecionarParticipante(idx) {
@@ -271,16 +269,16 @@ function exibirParticipante(p) {
         <div class="card-head">
             <div>
                 <span class="eyebrow">Participante identificado</span>
-                <h2 class="h2" style="margin-top: 4px;">${nome}</h2>
+                <h2 class="h2" style="margin-top: 4px;">${esc(nome)}</h2>
             </div>
             <span class="badge ${statusBadge}"><i class="ic ic-check"></i>${statusTexto}</span>
         </div>
         <div class="row" style="gap: 16px; margin: 16px 0; padding: 16px; background: var(--bg); border-radius: var(--r-md); border: 1px solid var(--line);">
-            <span class="avatar lg">${iniciais}</span>
+            <span class="avatar lg">${esc(iniciais)}</span>
             <div class="grow">
-                <b class="h3">${nome}</b>
-                <p class="small muted" style="margin-top: 2px;">${p.usuario_email || 'E-mail não informado'}</p>
-                <p class="small muted" style="margin-top: 2px;">Código da inscrição: <strong class="num">#${p.id}</strong></p>
+                <b class="h3">${esc(nome)}</b>
+                <p class="small muted" style="margin-top: 2px;">${esc(p.usuario_email || 'E-mail não informado')}</p>
+                <p class="small muted" style="margin-top: 2px;">Código da inscrição: <strong class="num">#${esc(p.id)}</strong></p>
             </div>
         </div>
         <div>

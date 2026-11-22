@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function descreverSituacaoCobranca(cobranca) {
 
-        if (!cobranca) return 'Não informado pelo sistema';
+        if (!cobranca) return 'Sem cobrança (inscrição gratuita)';
 
         const situacoes = {
             PAGA: 'Pago',
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             CANCELADA: 'Cobrança cancelada'
         };
 
-        return situacoes[cobranca.status] || 'Não informado pelo sistema';
+        return situacoes[cobranca.status] || 'Não disponível';
     }
 
     // =========================================
@@ -348,14 +348,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         preencher(
             'comprovante-data-emissao',
-            `Inscrição registrada em ${formatarDataHora(inscricao.data_inscricao)}`
+            formatarDataHora(inscricao.data_inscricao)
         );
 
         // =====================================
         // EXIBIR DOCUMENTO
         // =====================================
 
-        documento.style.display = 'block';
+        documento.style.display = '';
         acoes.style.display = 'flex';
 
     }

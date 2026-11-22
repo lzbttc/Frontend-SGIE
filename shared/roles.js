@@ -49,10 +49,24 @@
                 const perfil = await resp.json();
                 const atual = getUsuarioLogado() || {};
                 const mesclado = Object.assign({}, atual, perfil);
+                // Organizador contextual (papel por evento) também precisa ver "Meus eventos"
+                try {
+                    const respEv = await window.apiFetch('/eventos/meus-eventos/');
+                    if (respEv.ok) {
+                        const lista = await respEv.json();
+                        const itens = Array.isArray(lista) ? lista : (lista.results || []);
+                        mesclado.tem_eventos_organizados = itens.length > 0;
+                        mesclado.eventos_gerenciados_ids = itens.map((e) => String(e.id));
+                    }
+                } catch { /* mantém valor anterior */ }
                 if (typeof window.setUser === 'function') {
                     window.setUser(mesclado);
                 } else {
                     localStorage.setItem('sgie_user', JSON.stringify(mesclado));
+                }
+                if (window.SGIE_LAYOUT && typeof window.SGIE_LAYOUT.atualizarNavegacao === 'function' && document.getElementById('nav-user-area')) {
+                    const ativo = document.querySelector('.nav-link.is-active');
+                    window.SGIE_LAYOUT.atualizarNavegacao(ativo ? ativo.getAttribute('data-page') || '' : '');
                 }
                 return mesclado;
             }
@@ -102,6 +116,9 @@
 
         // Flag vinda do backend (quando houver)
         if (evento.pode_gerenciar === true) return true;
+
+        // Organizador contextual: o evento consta na lista /eventos/meus-eventos/ do usuário
+        if (Array.isArray(u.eventos_gerenciados_ids) && u.eventos_gerenciados_ids.includes(String(evento.id))) return true;
 
         // Representante principal do evento
         const repId = evento.usuario_representante?.id || evento.usuario_representante || evento.representante;

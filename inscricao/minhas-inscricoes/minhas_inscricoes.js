@@ -238,8 +238,8 @@ function renderizarInscricoes(inscricoes, busca = '', statusFiltro = '') {
         card.innerHTML = `
             <div class="datebox"><small>${mesAbrev}</small>${diaNum}</div>
             <div class="grow" style="min-width: 240px;">
-                <b class="h3">${insc.evento_nome}</b>
-                <p class="small muted" style="margin-top: 2px;">${local} · ${dataFmt} às ${horaFmt} · ${codigoIngresso}</p>
+                <b class="h3">${window.SGIE_DOM.escapeHTML(insc.evento_nome)}</b>
+                <p class="small muted" style="margin-top: 2px;">${window.SGIE_DOM.escapeHTML(local)} · ${window.SGIE_DOM.escapeHTML(dataFmt)} às ${window.SGIE_DOM.escapeHTML(horaFmt)} · ${window.SGIE_DOM.escapeHTML(codigoIngresso)}</p>
                 ${badgeExtra}
                 <div id="detalhes-${insc.id}" style="display: none; margin-top: 12px; padding: 12px; background-color: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);">
                     <p class="small" style="margin: 0 0 4px 0;"><strong>Data da inscrição:</strong> ${formatarDataHora(insc.data_inscricao)}</p>
@@ -291,7 +291,14 @@ async function cancelarInscricao(id) {
         ? 'Deseja realmente desistir da lista de espera deste evento?'
         : 'Deseja realmente cancelar esta inscrição? Esta ação liberará a vaga para outros participantes.';
 
-    if (!window.confirm(mensagem)) return;
+    const confirmado = await window.SGIE_DOM.confirmar({
+        titulo: insc && insc.status === 'lista_espera' ? 'Sair da lista de espera' : 'Cancelar inscrição',
+        mensagem: mensagem,
+        confirmarTexto: 'Sim, cancelar',
+        cancelarTexto: 'Voltar',
+        perigo: true,
+    });
+    if (!confirmado) return;
 
     try {
         const res = await apiFetch(`/inscricoes/${id}/`, { method: 'DELETE' });
@@ -319,24 +326,25 @@ function abrirIngresso(id) {
 
     const conteudo = document.getElementById('conteudo-ingresso');
     if (!conteudo) return;
+    const e = window.SGIE_DOM.escapeHTML;
 
     conteudo.innerHTML = `
         <div class="ticket-top">
             <p class="eyebrow" style="color: var(--primary-ink);">Ingresso digital oficial</p>
-            <h2 class="h3" style="margin-top: 6px;">${insc.evento_nome}</h2>
+            <h2 class="h3" style="margin-top: 6px;">${e(insc.evento_nome)}</h2>
             <ul class="meta" style="margin-top: 12px;">
                 <li><i class="ic ic-cal"></i>${formatarData(insc.evento_data)}, ${formatarHora(insc.evento_hora_inicio)}</li>
-                <li><i class="ic ic-pin"></i>${insc.evento_local || 'Local a confirmar'}</li>
+                <li><i class="ic ic-pin"></i>${e(insc.evento_local || 'Local a confirmar')}</li>
             </ul>
         </div>
         <div class="ticket-body">
-            <div aria-label="QR Code da inscrição ${insc.codigo_ingresso}" class="qr" role="img" style="margin: 0 auto; text-align: center;">
+            <div aria-label="QR Code da inscrição ${e(insc.codigo_ingresso)}" class="qr" role="img" style="margin: 0 auto; text-align: center;">
                 <img src="${qrUrl}" alt="QR Code do ingresso" style="width: 160px; height: 160px; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--line);">
             </div>
-            <b class="num" style="font-size: 18px;">${insc.codigo_ingresso}</b>
-            <p class="small muted" style="text-align: center;">${nomeParticipante} · apresente na entrada do evento</p>
+            <b class="num" style="font-size: 18px;">${e(insc.codigo_ingresso)}</b>
+            <p class="small muted" style="text-align: center;">${e(nomeParticipante)} · apresente na entrada do evento</p>
             <span class="badge badge-success"><i class="ic ic-check"></i>Confirmada</span>
-            <div class="row" style="gap: 12px; margin-top: 8px;">
+            <div class="row no-print" style="gap: 12px; margin-top: 8px;">
                 <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="ic ic-download"></i>Imprimir</button>
                 <button type="button" class="btn btn-secondary btn-sm" onclick="fecharIngresso()">Fechar</button>
             </div>
@@ -344,10 +352,18 @@ function abrirIngresso(id) {
     `;
 
     const overlay = document.getElementById('overlay-ingresso');
-    if (overlay) overlay.style.display = 'flex';
+    if (overlay) {
+        overlay.hidden = false;
+        const fechar = document.getElementById('btn-fechar-ingresso');
+        if (fechar) fechar.focus();
+    }
 }
 
 function fecharIngresso() {
     const overlay = document.getElementById('overlay-ingresso');
-    if (overlay) overlay.style.display = 'none';
+    if (overlay) overlay.hidden = true;
 }
+
+document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') fecharIngresso();
+});

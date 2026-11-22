@@ -260,6 +260,29 @@ function formatarMoeda(valor) {
     return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+// Arquivos enviados ficam em /media/ na raiz do servidor (fora de /api/sgie/v1).
+function resolverUrlMidia(caminho) {
+    if (!caminho) return '';
+    const texto = String(caminho);
+    if (/^https?:\/\//i.test(texto)) return texto;
+    try {
+        return new URL(texto.startsWith('/') ? texto : `/media/${texto}`, new URL(API_BASE_URL).origin).href;
+    } catch {
+        return texto;
+    }
+}
+
+// Submissão: a API devolve `versoes` [{numero_versao, caminho_arquivo}]; a versão ativa é a de maior número.
+function obterVersaoAtualSubmissao(sub) {
+    const versoes = sub && Array.isArray(sub.versoes) ? sub.versoes : [];
+    if (!versoes.length) return null;
+    const atual = versoes.reduce((a, b) => (Number(b.numero_versao) > Number(a.numero_versao) ? b : a));
+    return {
+        numero: Number(atual.numero_versao) || 1,
+        arquivo: atual.caminho_arquivo ? resolverUrlMidia(atual.caminho_arquivo) : '',
+    };
+}
+
 function mascaraTelefone(valor) {
     if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.mascaraTelefone === 'function') {
         return window.SGIE_FORMATTERS.mascaraTelefone(valor);
