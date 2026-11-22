@@ -102,32 +102,13 @@
               })();
 
         if (isAuth) {
-            const iniciais = (user && user.nome_completo)
-                ? user.nome_completo.split(' ').filter(Boolean).slice(0, 2).map((n) => n[0].toUpperCase()).join('')
-                : (user && user.nome ? user.nome.slice(0, 2).toUpperCase() : 'US');
-            const primeiroNome = (user && user.nome_completo)
-                ? user.nome_completo.split(' ')[0]
-                : (user && user.nome ? user.nome : 'Usuário');
-            const nomeCompleto = (user && (user.nome_completo || user.nome)) || 'Usuário SGIE';
-            const email = (user && user.email) || '';
-
             return `
                 <details class="menu" id="menu-conta">
-                    <summary aria-label="Menu da conta" class="user-chip">
-                        <span class="avatar">${iniciais}</span>${primeiroNome}<i class="ic ic-down"></i>
-                    </summary>
+                    <summary class="user-btn" aria-label="Menu da conta"><i class="ic ic-user"></i></summary>
                     <div class="menu-pop">
-                        <div class="menu-head">
-                            <div style="font-weight:700">${nomeCompleto}</div>
-                            <div class="small muted">${email}</div>
-                        </div>
                         <a class="menu-item" href="${getAppUrl('usuarios/perfil/perfil.html')}">
                             <i class="ic ic-user"></i>Meu perfil
                         </a>
-                        <a class="menu-item" href="${getAppUrl('submissao/minhas-submissoes/index.html')}">
-                            <i class="ic ic-file"></i>Minhas submissões
-                        </a>
-                        <div class="sep" style="margin:4px 0"></div>
                         <a class="menu-item danger" href="#" data-logout-action>
                             <i class="ic ic-out"></i>Sair
                         </a>
@@ -185,7 +166,12 @@
         `;
     }
 
+    let _menuEventsConfigured = false;
+
     function setupMenuEvents() {
+        if (_menuEventsConfigured) return;
+        _menuEventsConfigured = true;
+
         // Fechar menu ao clicar fora
         document.addEventListener('click', (event) => {
             const menu = document.getElementById('menu-conta');
@@ -194,9 +180,10 @@
             }
         });
 
-        // Ação de logout
-        document.querySelectorAll('[data-logout-action]').forEach((btn) => {
-            btn.addEventListener('click', (e) => {
+        // Ação de logout idempotente via delegação de evento
+        document.addEventListener('click', (e) => {
+            const btnLogout = e.target.closest('[data-logout-action]');
+            if (btnLogout) {
                 e.preventDefault();
                 if (typeof window.logout === 'function') {
                     window.logout();
@@ -206,7 +193,7 @@
                     localStorage.removeItem('sgie_user');
                     window.location.href = getAppUrl('usuarios/login/login.html');
                 }
-            });
+            }
         });
     }
 
