@@ -78,15 +78,18 @@
             publicado: { label: 'Publicado', badgeClass: 'badge-info' },
             'inscricoes abertas': { label: 'Inscrições abertas', badgeClass: 'badge-success' },
             'inscrições abertas': { label: 'Inscrições abertas', badgeClass: 'badge-success' },
+            'inscricoes_abertas': { label: 'Inscrições abertas', badgeClass: 'badge-success' },
             'em andamento': { label: 'Em realização', badgeClass: 'badge-warning' },
             'em realizacao': { label: 'Em realização', badgeClass: 'badge-warning' },
             'em realização': { label: 'Em realização', badgeClass: 'badge-warning' },
+            'em_realizacao': { label: 'Em realização', badgeClass: 'badge-warning' },
             finalizado: { label: 'Finalizado', badgeClass: 'badge-neutral' },
             arquivado: { label: 'Arquivado', badgeClass: 'badge-neutral' },
             cancelado: { label: 'Cancelado', badgeClass: 'badge-danger' },
         };
         const s = String(status || '').toLowerCase().trim();
-        return mapa[s] || { label: status || 'Indefinido', badgeClass: 'badge-neutral' };
+        const sSemUnderscore = s.replace(/_/g, ' ');
+        return mapa[s] || mapa[sSemUnderscore] || { label: status || 'Indefinido', badgeClass: 'badge-neutral' };
     }
 
     function formatarStatusPagamento(status) {

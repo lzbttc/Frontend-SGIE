@@ -81,7 +81,7 @@ function mostrarErro(mensagem) {
         alerta.innerHTML = `<strong>Atenção:</strong> ${esc(mensagem)} <br><br><a href="../../index.html" class="btn btn-secondary btn-sm" style="margin-top: 8px;">← Voltar para Explorar Eventos</a>`;
         alerta.style.display = 'block';
     }
-    const mainContent = document.querySelector('.detalhes-do-evento__main');
+    const mainContent = document.querySelector('.main') || document.querySelector('.detalhes-do-evento__main');
     if (mainContent) {
         const secoes = mainContent.querySelectorAll('section, .with-side');
         secoes.forEach(s => { s.style.display = 'none'; });
@@ -149,7 +149,7 @@ function renderizarPaginaEvento(ev) {
         }
     }
 
-    // 4. Painel de Gestão vs. Card de Inscrição (1.1)
+    // 4. Painel de Gestão e Card de Inscrição (1.1)
     const painelGestao = document.getElementById('painel-gestao-organizador');
     const cardInscricao = document.getElementById('card-inscricao-sidebar');
 
@@ -161,9 +161,8 @@ function renderizarPaginaEvento(ev) {
     const taxaOcupacao = Math.min(100, Math.round((ocupadas / totalVagas) * 100));
 
     if (ehGestor) {
-        // Para quem gerencia o evento: mostrar painel de gestão e ocultar card de inscrição
+        // Para quem gerencia o evento: mostrar painel de gestão
         if (painelGestao) painelGestao.style.display = 'flex';
-        if (cardInscricao) cardInscricao.style.display = 'none';
 
         const txtTaxa = document.getElementById('painel-taxa-ocupacao');
         if (txtTaxa) txtTaxa.textContent = `${taxaOcupacao}% Ocupado`;
@@ -180,9 +179,11 @@ function renderizarPaginaEvento(ev) {
             };
         }
 
+        const stNorm = String(ev.status || '').toLowerCase().trim().replace(/_/g, ' ');
+
         const btnCancelar = document.getElementById('btn-cancelar-evento');
         if (btnCancelar) {
-            if (ev.status === 'Cancelado' || ev.status === 'Finalizado') {
+            if (stNorm === 'cancelado' || stNorm === 'finalizado') {
                 btnCancelar.style.display = 'none';
             } else {
                 btnCancelar.style.display = 'inline-flex';
@@ -193,19 +194,19 @@ function renderizarPaginaEvento(ev) {
         const btnFinalizar = document.getElementById('btn-finalizar-evento');
         const txtBtnFinalizar = document.getElementById('txt-btn-finalizar');
         if (btnFinalizar && txtBtnFinalizar) {
-            if (ev.status === 'Configuração' || ev.status === 'Rascunho') {
+            if (stNorm === 'configuracao' || stNorm === 'configuração' || stNorm === 'rascunho') {
                 txtBtnFinalizar.textContent = 'Publicar Evento';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'publicar');
                 btnFinalizar.style.display = 'inline-flex';
-            } else if (ev.status === 'Publicado') {
+            } else if (stNorm === 'publicado') {
                 txtBtnFinalizar.textContent = 'Abrir Inscrições';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'abrir-inscricoes');
                 btnFinalizar.style.display = 'inline-flex';
-            } else if (ev.status === 'Inscrições abertas' || ev.status === 'Em realização') {
+            } else if (stNorm === 'inscricoes abertas' || stNorm === 'inscrições abertas' || stNorm === 'em realizacao' || stNorm === 'em realização' || stNorm === 'em andamento') {
                 txtBtnFinalizar.textContent = 'Finalizar Evento';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'finalizar');
                 btnFinalizar.style.display = 'inline-flex';
-            } else if (ev.status === 'Finalizado') {
+            } else if (stNorm === 'finalizado') {
                 txtBtnFinalizar.textContent = 'Arquivar Evento';
                 btnFinalizar.onclick = () => mudarStatusEvento(ev.id, 'arquivar');
                 btnFinalizar.style.display = 'inline-flex';
@@ -236,66 +237,75 @@ function renderizarPaginaEvento(ev) {
         }
 
     } else {
-        // Participante / Visitante (1.1 e 1.2)
         if (painelGestao) painelGestao.style.display = 'none';
-        if (cardInscricao) cardInscricao.style.display = 'flex';
+    }
 
-        // 1.2: Preço na sidebar
-        const elSidePreco = document.getElementById('sidebar-preco-display');
-        const elSideInfo = document.getElementById('sidebar-info-adicional');
+    // Card de Inscrição na sidebar SEMPRE visível e funcional
+    if (cardInscricao) cardInscricao.style.display = 'flex';
 
-        if (elSidePreco) {
-            if (ev.e_gratuito) {
-                elSidePreco.textContent = 'Gratuito';
-                elSidePreco.className = 'price free';
-            } else {
-                elSidePreco.textContent = precoFormatado;
-                elSidePreco.className = 'price';
-            }
+    // 1.2: Preço na sidebar
+    const elSidePreco = document.getElementById('sidebar-preco-display');
+    const elSideInfo = document.getElementById('sidebar-info-adicional');
+
+    if (elSidePreco) {
+        if (ev.e_gratuito) {
+            elSidePreco.textContent = 'Gratuito';
+            elSidePreco.className = 'price free';
+        } else {
+            elSidePreco.textContent = precoFormatado;
+            elSidePreco.className = 'price';
         }
+    }
 
-        // 1.1: Botão de Inscrição <a>
-        const btnInscrever = document.getElementById('btn-realizar-inscricao');
-        const urlInscricao = `../../inscricao/realizar-inscricao/index.html?evento=${encodeURIComponent(ev.id)}`;
+    // 1.1: Botão de Inscrição <a>
+    const btnInscrever = document.getElementById('btn-realizar-inscricao');
+    const urlInscricao = `../../inscricao/realizar-inscricao/index.html?evento=${encodeURIComponent(ev.id)}`;
 
-        if (btnInscrever) {
-            // Habilitar quando ev.inscricoes_abertas === true
-            if (ev.inscricoes_abertas === true) {
-                if (disponiveis === 0) {
-                    btnInscrever.textContent = 'Entrar na lista de espera';
-                    btnInscrever.className = 'btn btn-secondary';
-                    btnInscrever.href = urlInscricao;
-                    btnInscrever.removeAttribute('disabled');
-                    btnInscrever.removeAttribute('aria-disabled');
-                    if (elSideInfo) {
-                        elSideInfo.textContent = 'Capacidade atingida. Você entrará na fila de espera com prioridade de liberação.';
-                    }
-                } else {
-                    btnInscrever.textContent = 'Realizar Inscrição no Evento';
-                    btnInscrever.className = 'btn btn-primary';
-                    btnInscrever.href = urlInscricao;
-                    btnInscrever.removeAttribute('disabled');
-                    btnInscrever.removeAttribute('aria-disabled');
-                    if (elSideInfo) {
-                        elSideInfo.textContent = ev.e_gratuito
-                            ? 'Sem custo. Confirmação imediata enquanto houver vagas.'
-                            : 'Pagamento via Pix, Cartão ou Boleto. Confirmação após quitação.';
-                    }
+    const stNormParticipante = String(ev.status || '').toLowerCase().trim().replace(/_/g, ' ');
+    const inscricoesAbertas = ev.inscricoes_abertas === true ||
+        stNormParticipante === 'inscricoes abertas' ||
+        stNormParticipante === 'inscrições abertas' ||
+        stNormParticipante === 'em realizacao' ||
+        stNormParticipante === 'em realização' ||
+        stNormParticipante === 'publicado';
+
+    if (btnInscrever) {
+        // Habilitar quando inscricoesAbertas
+        if (inscricoesAbertas) {
+            if (disponiveis === 0) {
+                btnInscrever.textContent = 'Entrar na lista de espera';
+                btnInscrever.className = 'btn btn-secondary';
+                btnInscrever.href = urlInscricao;
+                btnInscrever.removeAttribute('disabled');
+                btnInscrever.removeAttribute('aria-disabled');
+                if (elSideInfo) {
+                    elSideInfo.textContent = 'Capacidade atingida. Você entrará na fila de espera com prioridade de liberação.';
                 }
             } else {
-                // Inscrições fechadas
-                let motivo = 'Inscrições encerradas';
-                if (ev.status === 'Cancelado') motivo = 'Evento cancelado';
-                else if (ev.status === 'Rascunho' || ev.status === 'Configuração') motivo = 'Inscrições em breve';
-                else if (ev.status === 'Finalizado' || ev.status === 'Arquivado') motivo = 'Inscrições encerradas';
-
-                btnInscrever.textContent = motivo;
-                btnInscrever.className = 'btn btn-disabled';
-                btnInscrever.removeAttribute('href');
-                btnInscrever.setAttribute('aria-disabled', 'true');
+                btnInscrever.textContent = 'Realizar Inscrição no Evento';
+                btnInscrever.className = 'btn btn-primary';
+                btnInscrever.href = urlInscricao;
+                btnInscrever.removeAttribute('disabled');
+                btnInscrever.removeAttribute('aria-disabled');
                 if (elSideInfo) {
-                    elSideInfo.textContent = 'As inscrições para este evento não estão disponíveis no momento.';
+                    elSideInfo.textContent = ev.e_gratuito
+                        ? 'Sem custo. Confirmação imediata enquanto houver vagas.'
+                        : 'Pagamento via Pix, Cartão ou Boleto. Confirmação após quitação.';
                 }
+            }
+        } else {
+            // Inscrições fechadas
+            let motivo = 'Inscrições encerradas';
+            if (stNormParticipante === 'cancelado') motivo = 'Evento cancelado';
+            else if (stNormParticipante === 'rascunho' || stNormParticipante === 'configuracao' || stNormParticipante === 'configuração') motivo = 'Inscrições em breve';
+            else if (stNormParticipante === 'finalizado' || stNormParticipante === 'arquivado') motivo = 'Inscrições encerradas';
+
+            btnInscrever.textContent = motivo;
+            btnInscrever.className = 'btn btn-disabled';
+            btnInscrever.removeAttribute('href');
+            btnInscrever.setAttribute('aria-disabled', 'true');
+            if (elSideInfo) {
+                elSideInfo.textContent = 'As inscrições para este evento não estão disponíveis no momento.';
             }
         }
     }

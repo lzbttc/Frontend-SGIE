@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    atualizarCabecalhoUsuario('submissoes');
+    atualizarCabecalhoUsuario('minhas-submissoes');
 
     const params = new URLSearchParams(window.location.search);
     const submissaoId = params.get('id');

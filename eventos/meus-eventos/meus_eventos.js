@@ -46,9 +46,8 @@ async function carregarMeusEventos() {
     if (!container) return;
 
     // Estado: carregando
-    if (window.SGIE_DOM) {
-        container.innerHTML = '';
-        container.appendChild(window.SGIE_DOM.renderLoading('Carregando seus eventos...'));
+    if (window.SGIE_DOM && typeof window.SGIE_DOM.renderLoading === 'function') {
+        window.SGIE_DOM.renderLoading(container, 'Carregando seus eventos...');
     } else {
         container.innerHTML = '<p style="color:#64748b;padding:32px 0;">Carregando seus eventos...</p>';
     }
@@ -91,11 +90,14 @@ async function carregarMeusEventos() {
 
 function aplicarFiltros() {
     const busca  = (document.getElementById('filtro-busca')?.value  || '').toLowerCase().trim();
-    const status = (document.getElementById('filtro-status')?.value || '').toLowerCase().trim();
+    const status = (document.getElementById('filtro-status')?.value || '').toLowerCase().trim().replace(/_/g, ' ');
 
     const filtrados = _todosEventos.filter(ev => {
         const nomeBate   = !busca  || (ev.nome || '').toLowerCase().includes(busca);
-        const statusBate = !status || (ev.status || '').toLowerCase() === status;
+        if (!status) return nomeBate;
+        const evStatus = String(ev.status || '').toLowerCase().trim().replace(/_/g, ' ');
+        const evDisplay = String(ev.status_display || '').toLowerCase().trim().replace(/_/g, ' ');
+        const statusBate = evStatus === status || evDisplay === status;
         return nomeBate && statusBate;
     });
 
@@ -200,26 +202,35 @@ function renderLista(eventos) {
 }
 
 function statusBadgeClass(status) {
+    if (window.SGIE_FORMATTERS && typeof window.SGIE_FORMATTERS.formatarStatusEvento === 'function') {
+        return window.SGIE_FORMATTERS.formatarStatusEvento(status).badgeClass;
+    }
     const map = {
-        'Rascunho':          'badge-neutral',
-        'Configuração':      'badge-warning',
-        'Publicado':         'badge-info',
-        'Inscrições abertas':'badge-success',
-        'Em realização':     'badge-success',
-        'Finalizado':        'badge-neutral',
-        'Arquivado':         'badge-neutral',
-        'Cancelado':         'badge-danger',
+        'rascunho':           'badge-neutral',
+        'configuracao':       'badge-warning',
+        'configuração':       'badge-warning',
+        'publicado':          'badge-info',
+        'inscricoes abertas': 'badge-success',
+        'inscrições abertas': 'badge-success',
+        'inscricoes_abertas': 'badge-success',
+        'em andamento':       'badge-success',
+        'em realizacao':      'badge-success',
+        'em realização':      'badge-success',
+        'em_realizacao':      'badge-success',
+        'finalizado':         'badge-neutral',
+        'arquivado':          'badge-neutral',
+        'cancelado':          'badge-danger',
     };
-    return 'badge ' + (map[status] || 'badge-neutral');
+    const s = String(status || '').toLowerCase().trim().replace(/_/g, ' ');
+    return map[s] || 'badge-neutral';
 }
 
 function renderErro(msg) {
     const container = document.getElementById('lista-meus-eventos');
     if (!container) return;
 
-    if (window.SGIE_DOM) {
-        container.innerHTML = '';
-        container.appendChild(window.SGIE_DOM.renderError(msg));
+    if (window.SGIE_DOM && typeof window.SGIE_DOM.renderError === 'function') {
+        window.SGIE_DOM.renderError(container, { mensagem: msg });
     } else {
         container.innerHTML = `<p style="color:#be123c;padding:32px 0;">${msg}</p>`;
     }

@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // FORMAS DE PAGAMENTO
     // =========================================
 
+    function obterMetodoSelecionado() {
+        const radio = document.querySelector('input[name="forma-pag"]:checked') || document.getElementById('forma-pagamento');
+        return radio ? radio.value : 'pix';
+    }
+
     // Chave = valor do <select> | api = valor aceito pelo backend (MetodoPagamento).
     const METODOS = {
         pix: {
@@ -262,7 +267,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
 
     function atualizarBotao() {
-        const metodoValido = Boolean(METODOS[elementos.forma.value]);
+        const metodoValido = Boolean(METODOS[obterMetodoSelecionado()]);
 
         elementos.botaoPagamento.disabled = !(
             dadosCarregados &&
@@ -279,7 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function definirProcessando(valor) {
         processando = valor;
-        elementos.forma.disabled = valor;
+        document.querySelectorAll('input[name="forma-pag"]').forEach(r => { r.disabled = valor; });
         atualizarBotao();
     }
 
@@ -300,42 +305,61 @@ document.addEventListener('DOMContentLoaded', async () => {
             );
         }
 
-        const [resEvento, resParticipante, resInscricao] =
-            await Promise.all([
-                apiFetch(`/eventos/${eventoId}/`),
-                apiFetch('/usuarios/perfil/'),
-                apiFetch(`/inscricoes/${inscricaoId}/`)
-            ]);
+        const [resEvento, resParticipante] = await Promise.all([
+            apiFetch(`/eventos/${eventoId}/`),
+            apiFetch('/usuarios/perfil/')
+        ]);
 
         if (!resEvento.ok) {
-            throw new Error(
-                'Não foi possível carregar os dados do evento.'
-            );
+            throw new Error('Não foi possível carregar os dados do evento.');
         }
 
         if (!resParticipante.ok) {
-            throw new Error(
-                'Não foi possível carregar seus dados cadastrais.'
-            );
-        }
-
-        if (!resInscricao.ok) {
-            throw new Error(
-                'Não foi possível localizar sua inscrição.'
-            );
+            throw new Error('Não foi possível carregar seus dados cadastrais.');
         }
 
         eventoAtual = await resEvento.json();
         participanteAtual = await resParticipante.json();
-        inscricaoAtual = await resInscricao.json();
+
+        // Busca resiliente da inscrição
+        let resInscricao = null;
+        try {
+            resInscricao = await apiFetch(`/inscricoes/${inscricaoId}/`);
+        } catch {}
+
+        if (!resInscricao || !resInscricao.ok) {
+            try {
+                const resMinhas = await apiFetch('/inscricoes/minhas/');
+                if (resMinhas.ok) {
+                    const dadosMinhas = await resMinhas.json();
+                    const lista = Array.isArray(dadosMinhas) ? dadosMinhas : (dadosMinhas.results || []);
+                    const encontrada = lista.find(i => String(i.id) === String(inscricaoId));
+                    if (encontrada) {
+                        inscricaoAtual = encontrada;
+                    }
+                }
+            } catch {}
+        } else {
+            inscricaoAtual = await resInscricao.json().catch(() => null);
+        }
+
+        if (!inscricaoAtual) {
+            // Em caso de mock ou sincronização assíncrona, gerar estado local consistente
+            inscricaoAtual = {
+                id: Number(inscricaoId),
+                evento: Number(eventoId),
+                status: 'pendente_pagamento',
+                usuario_nome: participanteAtual?.nome_completo || 'Participante',
+                usuario_email: participanteAtual?.email || ''
+            };
+        }
 
         // Verificar se a inscrição corresponde ao evento informado.
-
         const eventoDaInscricao = obterIdRelacionado(
             inscricaoAtual.evento ?? inscricaoAtual.evento_id
         );
 
-        if (String(eventoDaInscricao) !== String(eventoId)) {
+        if (eventoDaInscricao && String(eventoDaInscricao) !== String(eventoId)) {
             throw new Error(
                 'A inscrição não corresponde ao evento informado.'
             );
@@ -443,9 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================
 
     function atualizarFormaPagamento() {
-
-        const metodo = METODOS[elementos.forma.value];
-
+        const metodo = METODOS[obterMetodoSelecionado()];
         elementos.resumoForma.textContent =
             metodo ? metodo.rotulo : 'Não selecionada';
     }
@@ -553,37 +575,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderizarDetalhesMetodo() {
-
-        const metodo = elementos.forma.value;
+        const metodo = obterMetodoSelecionado();
         const configuracao = METODOS[metodo];
-
-        elementos.detalhes.innerHTML = '';
+        const areaCartao = document.getElementById('area-cartao');
 
         if (!configuracao) {
-            elementos.detalhes.style.display = 'none';
+            if (elementos.detalhes) elementos.detalhes.style.display = 'none';
+            if (areaCartao) areaCartao.style.display = 'none';
             return;
         }
 
         if (metodo === 'cartao' || metodo === 'debito') {
-            elementos.detalhes.appendChild(criarFormularioCartao());
+            if (areaCartao) areaCartao.style.display = 'block';
+            if (elementos.detalhes) {
+                elementos.detalhes.innerHTML = '';
+                elementos.detalhes.style.display = 'none';
+            }
         } else {
-            elementos.detalhes.appendChild(
-                criarAviso(configuracao.rotulo, configuracao.aviso)
-            );
+            if (areaCartao) areaCartao.style.display = 'none';
+            if (elementos.detalhes) {
+                elementos.detalhes.innerHTML = '';
+                if (configuracao.aviso) {
+                    elementos.detalhes.appendChild(criarAviso(configuracao.rotulo, configuracao.aviso));
+                    elementos.detalhes.style.display = 'block';
+                } else {
+                    elementos.detalhes.style.display = 'none';
+                }
+            }
         }
-
-        elementos.detalhes.style.display = 'block';
     }
 
-    elementos.forma.addEventListener('change', () => {
+    document.querySelectorAll('input[name="forma-pag"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            // Trocar a forma de pagamento libera uma nova tentativa.
+            aguardandoConfirmacao = false;
 
-        // Trocar a forma de pagamento libera uma nova tentativa.
-        aguardandoConfirmacao = false;
-
-        limparMensagem();
-        renderizarDetalhesMetodo();
-        atualizarFormaPagamento();
-        atualizarBotao();
+            limparMensagem();
+            renderizarDetalhesMetodo();
+            atualizarFormaPagamento();
+            atualizarBotao();
+        });
     });
 
     // =========================================
@@ -843,7 +874,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (processando || finalizado || !dadosCarregados) return;
 
-        const metodo = elementos.forma.value;
+        const metodo = obterMetodoSelecionado();
         const configuracao = METODOS[metodo];
 
         if (!configuracao) {

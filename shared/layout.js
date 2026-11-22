@@ -13,6 +13,46 @@
         return pathRelativo;
     }
 
+    function normalizarPaginaAtiva(activePage = '') {
+        const aliases = {
+            'submissoes': 'minhas-submissoes',
+            'submissao': 'minhas-submissoes',
+            'minhas-submissoes': 'minhas-submissoes',
+            'novo': 'cadastrar-evento',
+            'novo-evento': 'cadastrar-evento',
+            'cadastrar-evento': 'cadastrar-evento',
+            'inscricoes': 'minhas-inscricoes',
+            'minhas-inscricoes': 'minhas-inscricoes',
+            'realizar-inscricao': 'minhas-inscricoes',
+            'meus-eventos': 'meus-eventos',
+            'participantes': 'meus-eventos',
+            'credenciamento': 'meus-eventos',
+            'gestao-submissoes': 'meus-eventos',
+            'eventos': 'eventos',
+            'explorar': 'eventos',
+            'home': 'eventos',
+        };
+
+        let resolved = aliases[activePage] || activePage;
+
+        // Se ainda não resolveu para nenhum dos links, tenta inferir pelo pathname da URL
+        if (!resolved && typeof window !== 'undefined' && window.location) {
+            const p = window.location.pathname.toLowerCase();
+            if (p.includes('/submissao/') || p.includes('minhas-submissoes') || p.includes('submeter-trabalho')) {
+                resolved = 'minhas-submissoes';
+            } else if (p.includes('/inscricao/minhas-inscricoes')) {
+                resolved = 'minhas-inscricoes';
+            } else if (p.includes('/eventos/meus-eventos') || p.includes('gestao-submissoes') || p.includes('consulta-de-participantes') || p.includes('credenciamento')) {
+                resolved = 'meus-eventos';
+            } else if (p.includes('/eventos/cadastrar-evento')) {
+                resolved = 'cadastrar-evento';
+            } else if (p.endsWith('/') || p.endsWith('/index.html') || p.includes('detalhes-do-evento')) {
+                resolved = 'eventos';
+            }
+        }
+        return resolved;
+    }
+
     function renderNavLinks(activePage = '') {
         const isAuth = typeof window.SGIE_ROLES?.isAutenticado === 'function'
             ? window.SGIE_ROLES.isAutenticado()
@@ -78,9 +118,10 @@
             }
         }
 
+        const paginaAtiva = normalizarPaginaAtiva(activePage);
         return links
             .map((item) => {
-                const isActive = activePage === item.id ? 'is-active' : '';
+                const isActive = paginaAtiva === item.id ? 'is-active' : '';
                 return `<a class="nav-link ${isActive}" href="${item.href}">${item.label}</a>`;
             })
             .join('');

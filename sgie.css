@@ -211,8 +211,11 @@ html, body { margin: 0; padding: 0; border: 0; }
 .qr .ic { width: 128px; height: 128px; color: var(--ink); }
 .empty { text-align: center; padding: 48px 24px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .sw { height: 64px; border-radius: var(--r-sm); border: 1px solid var(--line); }
-.sticky { position: sticky; top: 16px; }
-.sticky-aside { position: sticky; top: 24px; }
+.sticky { position: sticky; top: 16px; align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; }
+.sticky-aside { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; }
+@media (max-height: 860px) {
+  .sticky, .sticky-aside { position: static !important; max-height: none !important; overflow-y: visible !important; }
+}
 .file-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); margin-top: 12px; }
 
 /* 9. TABELAS --------------------------------------------------------------- */
@@ -447,10 +450,12 @@ body.app > .container:not(.nav-in),
 body > main,
 body > article,
 body > .container:not(.nav-in),
+main.main,
 .main {
     flex: 1 0 auto !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    padding-bottom: 64px !important;
 }
 
 /* Remove min-height: 100vh de wrappers legados para não forçar barra de rolagem artificial */
@@ -468,11 +473,11 @@ body > .container:not(.nav-in),
     left: auto !important;
 }
 
-/* O Footer é SEMPRE o último bloco: margin-top: auto garante que fica colado ao fim da tela */
+/* O Footer é SEMPRE o último bloco: margin-top: auto garante que fica colado ao fim da tela sem cobrir conteúdos */
 footer.footer,
 .footer {
     flex-shrink: 0 !important;
-    margin-top: auto !important;
+    margin-top: 48px !important;
     margin-bottom: 0 !important;
     width: 100% !important;
     background: var(--surface) !important;
@@ -482,6 +487,9 @@ footer.footer,
     font-size: 13px !important;
     text-align: center !important;
     box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 2 !important;
+    clear: both !important;
 }
 
 footer.footer .container,
@@ -519,4 +527,86 @@ footer.footer p,
         overflow-x: auto !important;
         padding-bottom: 4px !important;
     }
+}
+
+/* 14. LISTAGEM DE GESTÃO DE EVENTOS (meus-eventos) --------------------------- */
+.evento-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    flex-wrap: wrap;
+    transition: var(--t);
+}
+
+.evento-card:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-sm);
+}
+
+.evento-card__info {
+    flex: 1 1 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.evento-card__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.evento-card__nome {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    word-break: break-word;
+}
+
+.evento-card__nome:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.evento-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    flex-wrap: wrap;
+}
+
+.evento-card__meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.evento-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.meus-eventos-empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
 }

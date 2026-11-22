@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    atualizarCabecalhoUsuario('submissoes');
+    atualizarCabecalhoUsuario('minhas-submissoes');
 
     const inputBusca = document.getElementById('filtro-busca');
     const selectStatus = document.getElementById('filtro-status');

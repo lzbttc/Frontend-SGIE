@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Atualiza o cabeçalho global padrão do SGIE
-    atualizarCabecalhoUsuario('novo');
+    atualizarCabecalhoUsuario('cadastrar-evento');
 
     // 3. Verificação de permissão de Organizador (Telas restritas)
     const usuario = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'

@@ -87,10 +87,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (inputComprovante) inputComprovante.required = false;
         }
 
+        // Cálculo defensivo de vagas disponíveis
+        let vagasDisp = null;
+        if (typeof evento.vagas_disponiveis === 'number') {
+            vagasDisp = evento.vagas_disponiveis;
+        } else if (typeof evento.capacidade === 'number' && typeof evento.vagas_ocupadas === 'number') {
+            vagasDisp = Math.max(0, evento.capacidade - evento.vagas_ocupadas);
+        } else if (window.SGIE_MOCKS?.ativo && typeof window.SGIE_MOCKS.obterVagasDisponiveis === 'function') {
+            vagasDisp = window.SGIE_MOCKS.obterVagasDisponiveis(evento);
+        }
+
         // Atualiza card de prévia lateral
         const prevStatus = document.getElementById('preview-status');
         if (prevStatus) {
-            if (evento.vagas_disponiveis === 0) {
+            if (vagasDisp === 0) {
                 prevStatus.textContent = 'Fila de Espera';
             } else {
                 prevStatus.textContent = evento.status_display || evento.status || 'Inscrições abertas';
@@ -135,10 +145,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const prevVagas = document.getElementById('preview-vagas');
         if (prevVagas) {
-            if (evento.vagas_disponiveis === 0) {
+            if (vagasDisp === 0) {
                 prevVagas.textContent = 'Vagas esgotadas (Lista de espera)';
+            } else if (vagasDisp !== null && vagasDisp !== undefined) {
+                prevVagas.textContent = `${vagasDisp} vaga(s) restante(s)`;
+            } else if (evento.capacidade) {
+                prevVagas.textContent = `Capacidade: ${evento.capacidade} vagas`;
             } else {
-                prevVagas.textContent = `${evento.vagas_disponiveis} vaga(s) restante(s)`;
+                prevVagas.textContent = 'Vagas abertas';
             }
         }
 
@@ -149,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const btnSubmitTexto = document.getElementById('texto-btn-submit');
         if (btnSubmitTexto) {
-            if (evento.vagas_disponiveis === 0) {
+            if (vagasDisp === 0) {
                 btnSubmitTexto.textContent = 'Entrar na Lista de Espera';
             } else {
                 btnSubmitTexto.textContent = 'Confirmar e Realizar Inscrição';
