@@ -7,6 +7,8 @@
  *             shared/roles.js, shared/layout.js
  */
 
+let podeCriar = false;
+
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Autenticação obrigatória
     if (!isAuthenticated()) {
@@ -19,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Verificar permissão para criar evento
     const user = getUser();
-    const podeCriar = window.SGIE_ROLES
+    podeCriar = window.SGIE_ROLES
         ? window.SGIE_ROLES.podeCriarEvento(user)
         : Boolean(user && (user.eh_organizador || user.is_organizador || user.acesso_admin || user.superusuario));
 

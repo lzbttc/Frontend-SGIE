@@ -389,11 +389,4 @@ function getStatusBadgeClass(status) {
     return map[status] || 'badge-neutral';
 }
 
-function escapeHtml(texto) {
-    if (window.SGIE_DOM && window.SGIE_DOM.escapeHTML) {
-        return window.SGIE_DOM.escapeHTML(texto);
-    }
-    return String(texto ?? '').replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
-}
+const escapeHtml = (texto) => window.SGIE_DOM.escapeHTML(texto);

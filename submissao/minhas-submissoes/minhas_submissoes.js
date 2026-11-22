@@ -152,11 +152,4 @@ function getStatusBadge(status) {
     return `<span class="badge ${cls}">${escapeHtml(s || '—')}</span>`;
 }
 
-function escapeHtml(texto) {
-    if (window.SGIE_DOM && window.SGIE_DOM.escapeHTML) {
-        return window.SGIE_DOM.escapeHTML(texto);
-    }
-    return String(texto ?? '').replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
-}
+const escapeHtml = (texto) => window.SGIE_DOM.escapeHTML(texto);

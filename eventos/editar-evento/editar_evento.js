@@ -91,7 +91,6 @@ function configurarFormulario(ev) {
     const campoHoraFim = document.getElementById('campo-hora-fim');
     const campoLocalTipo = document.getElementById('campo-local-tipo');
     const campoLocal = document.getElementById('campo-local');
-    const campoLinkTransmissao = document.getElementById('campo-link-transmissao');
     const campoCapacidade = document.getElementById('campo-capacidade');
     const campoProgramacao = document.getElementById('campo-programacao');
     const contadorDescricao = document.getElementById('contador-descricao');

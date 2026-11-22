@@ -295,7 +295,7 @@ function renderizarPainelCuradoria(sub) {
     const elMeta = document.getElementById('cur-meta');
     const btnBaixar = document.getElementById('btn-baixar-arquivo-cur');
     const cardParecer = document.getElementById('card-parecer-curadoria');
-    const elSemParecer = document.getElementById('cur-sem-parecer');
+    const versaoAtual = obterVersaoAtualSubmissao(sub);
 
     if (elTitulo) elTitulo.textContent = sub.titulo || 'Trabalho';
 
@@ -303,7 +303,6 @@ function renderizarPainelCuradoria(sub) {
         const autor = sub.autor_nome || 'Autor';
         const tipo = sub.tipo_display || sub.tipo || 'Artigo';
         const area = sub.area_nome || (sub.area && sub.area.nome) || 'Área';
-        const versaoAtual = obterVersaoAtualSubmissao(sub);
         const versao = versaoAtual ? `versão ${versaoAtual.numero}` : 'sem arquivo enviado';
         elMeta.textContent = `${autor} · ${tipo} · ${area} · ${versao}`;
     }
@@ -473,11 +472,4 @@ function getStatusBadgeClass(status) {
     return map[status] || 'badge-neutral';
 }
 
-function escapeHtml(texto) {
-    if (window.SGIE_DOM && window.SGIE_DOM.escapeHTML) {
-        return window.SGIE_DOM.escapeHTML(texto);
-    }
-    return String(texto ?? '').replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
-}
+const escapeHtml = (texto) => window.SGIE_DOM.escapeHTML(texto);

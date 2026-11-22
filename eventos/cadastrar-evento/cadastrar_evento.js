@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const campoHoraFim = document.getElementById('campo-hora-fim');
     const campoLocalTipo = document.getElementById('campo-local-tipo');
     const campoLocal = document.getElementById('campo-local');
-    const campoLinkTransmissao = document.getElementById('campo-link-transmissao');
     const campoCapacidade = document.getElementById('campo-capacidade');
     const campoGratuito = document.getElementById('campo-gratuito');
     const campoPreco = document.getElementById('campo-preco');
@@ -62,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackCap = document.getElementById('texto-capitalizacao');
 
     // 5. Elementos de Prévia (Live Preview Card)
-    const prevStatus = document.getElementById('preview-status');
     const prevPreco = document.getElementById('preview-preco');
     const prevCategoria = document.getElementById('preview-categoria');
     const prevNome = document.getElementById('preview-nome');

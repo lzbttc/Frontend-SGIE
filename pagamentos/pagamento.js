@@ -472,64 +472,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             metodo ? metodo.rotulo : 'Não selecionada';
     }
 
-    function mascararNumeroCartao(valor) {
-        return apenasDigitos(valor)
-            .slice(0, 19)
-            .replace(/(\d{4})(?=\d)/g, '$1 ');
-    }
-
-    function mascararValidade(valor) {
-        const digitos = apenasDigitos(valor).slice(0, 4);
-
-        return digitos.length > 2
-            ? `${digitos.slice(0, 2)}/${digitos.slice(2)}`
-            : digitos;
-    }
-
-    function criarFormularioCartao() {
-
-        const formulario = criarElemento('div');
-
-        const campoNome = criarCampo('cartao-nome', 'Nome impresso no cartão', {
-            autocomplete: 'cc-name',
-            maxlength: '60'
-        });
-
-        const grade = criarElemento('div', { classe: 'pay-grid-dados' });
-
-        const campoNumero = criarCampo('cartao-numero', 'Número do cartão', {
-            inputmode: 'numeric',
-            autocomplete: 'cc-number',
-            maxlength: '23',
-            placeholder: '0000 0000 0000 0000'
-        });
-
-        const campoValidade = criarCampo('cartao-validade', 'Validade', {
-            inputmode: 'numeric',
-            autocomplete: 'cc-exp',
-            maxlength: '5',
-            placeholder: 'MM/AA'
-        });
-
-        campoNumero.querySelector('input').addEventListener('input', evento => {
-            evento.target.value = mascararNumeroCartao(evento.target.value);
-        });
-
-        campoValidade.querySelector('input').addEventListener('input', evento => {
-            evento.target.value = mascararValidade(evento.target.value);
-        });
-
-        grade.appendChild(campoNumero);
-        grade.appendChild(campoValidade);
-
-        campoNome.style.marginBottom = '12px';
-
-        formulario.appendChild(campoNome);
-        formulario.appendChild(grade);
-
-        return formulario;
-    }
-
     // Valida os campos do cartão. Retorna os dados prontos para a API
     // ou null (exibindo a mensagem de erro) quando algo está inválido.
     // O CVV não é coletado nem enviado: o gateway atual não o utiliza.

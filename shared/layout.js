@@ -132,16 +132,6 @@
             ? window.SGIE_ROLES.isAutenticado()
             : Boolean(localStorage.getItem('sgie_access_token'));
 
-        const user = typeof window.SGIE_ROLES?.getUsuarioLogado === 'function'
-            ? window.SGIE_ROLES.getUsuarioLogado()
-            : (function () {
-                  try {
-                      return JSON.parse(localStorage.getItem('sgie_user'));
-                  } catch {
-                      return null;
-                  }
-              })();
-
         if (isAuth) {
             return `
                 <details class="menu" id="menu-conta">
