@@ -91,8 +91,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             vagasDisp = evento.vagas_disponiveis;
         } else if (typeof evento.capacidade === 'number' && typeof evento.vagas_ocupadas === 'number') {
             vagasDisp = Math.max(0, evento.capacidade - evento.vagas_ocupadas);
-        } else if (window.SGIE_MOCKS?.ativo && typeof window.SGIE_MOCKS.obterVagasDisponiveis === 'function') {
-            vagasDisp = window.SGIE_MOCKS.obterVagasDisponiveis(evento);
         }
 
         // Atualiza card de prévia lateral

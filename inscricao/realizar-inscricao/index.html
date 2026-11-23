@@ -57,7 +57,7 @@
                             <div>
                                 <b class="h3" id="usuario-nome">Carregando...</b>
                                 <p class="small muted" id="usuario-email-info">carregando...</p>
-                                <span class="badge badge-success" style="margin-top: 4px;"><i class="ic ic-check"></i>Identificação verificada</span>
+                                <span class="badge badge-success mt-1"><i class="ic ic-check"></i>Identificação verificada</span>
                             </div>
                         </div>
                         <div class="grid cols-2 gap-4">
@@ -76,15 +76,15 @@
                     <section class="card" id="secao-comprovante">
                         <div class="card-head">
                             <div>
-                                <h2 class="h2">Comprovante <span id="comprovante-obrigatorio" style="color: var(--danger);">*</span></h2>
+                                <h2 class="h2">Comprovante <span class="text-danger" id="comprovante-obrigatorio">*</span></h2>
                                 <p class="muted">Validação de categoria institucional ou documento de vínculo exigido pelo evento.</p>
                             </div>
                         </div>
-                        <div class="drop" id="dropzone-comprovante" style="cursor: pointer;">
+                        <div class="drop is-clickable" id="dropzone-comprovante">
                             <i class="ic ic-upload"></i>
                             <b style="color: var(--ink);">Arraste o arquivo ou escolha no computador</b>
                             <span class="small muted" id="nome-arquivo-selecionado">Formatos recomendados: PDF, PNG ou JPG até 5MB</span>
-                            <button type="button" class="btn btn-secondary btn-sm" id="btn-selecionar-arquivo" style="margin-top: 4px;">Escolher arquivo</button>
+                            <button type="button" class="btn btn-secondary btn-sm mt-1" id="btn-selecionar-arquivo">Escolher arquivo</button>
                             <input type="file" id="campo-comprovante" name="comprovante" style="display: none;" />
                         </div>
                     </section>
@@ -100,7 +100,7 @@
                         <div class="field">
                             <label class="label" for="campo-adicionais">Necessidades especiais ou comentários <span class="muted" style="font-weight: 400;">(opcional)</span></label>
                             <textarea id="campo-adicionais" name="adicionais" class="textarea" maxlength="500" placeholder="Ex.: preciso de intérprete de Libras, guia vidente ou assento acessível."></textarea>
-                            <div class="row between small muted" style="margin-top: 4px;">
+                            <div class="row between small muted mt-1">
                                 <span>Máximo de 500 caracteres</span>
                                 <span id="contador-caracteres">0 / 500</span>
                             </div>
@@ -112,11 +112,11 @@
                 <aside aria-label="Resumo" class="stack sticky">
                     <section class="card stack">
                         <div>
-                            <div class="row between" style="margin-bottom: 8px;">
+                            <div class="row between mb-2">
                                 <span class="eyebrow" id="preview-categoria">EVENTO</span>
                                 <span class="badge badge-success" id="preview-status">Inscrições abertas</span>
                             </div>
-                            <h2 class="h3" id="preview-nome" style="margin-top: 4px;">Carregando...</h2>
+                            <h2 class="h3 mt-1" id="preview-nome">Carregando...</h2>
                             <p class="small muted" id="preview-descricao" style="margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Carregando...</p>
                         </div>
                         <ul class="meta">
@@ -133,7 +133,7 @@
                         <button type="submit" id="btn-submit-inscricao" class="btn btn-primary btn-block" style="width: 100%; min-height: 48px; font-size: 16px;">
                             <span id="texto-btn-submit">Realizar Inscrição</span>
                         </button>
-                        <a href="#" id="preview-link-detalhes" class="btn btn-ghost btn-sm" style="text-align: center;">Ver detalhes do evento</a>
+                        <a href="#" id="preview-link-detalhes" class="btn btn-ghost btn-sm text-center">Ver detalhes do evento</a>
                     </section>
                 </aside>
             </form>

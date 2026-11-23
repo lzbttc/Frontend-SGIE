@@ -243,7 +243,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         elementos.alerta.innerHTML = '';
 
         const alerta = document.createElement('div');
-        alerta.className = `pay-alert-message pay-alert-${tipo}`;
+        alerta.className = `alert alert-${tipo}`;
+        alerta.setAttribute('role', tipo === 'danger' ? 'alert' : 'status');
         alerta.textContent = mensagem;
 
         elementos.alerta.appendChild(alerta);

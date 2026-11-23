@@ -197,7 +197,7 @@ function renderizarSugestoes(participantes) {
     });
 
     listaSugestoes.innerHTML = `
-        <div style="margin-top: 16px;">
+        <div class="mt-4">
             <p class="small muted" style="font-weight: 700; margin-bottom: 8px;">Resultados encontrados (${participantes.length})</p>
             ${itensHtml}
         </div>
@@ -237,7 +237,7 @@ function exibirParticipante(p) {
         statusTexto = 'Presença Já Registrada';
         statusBadge = 'badge-info';
         acaoHtml = `
-            <div class="alert alert-info" style="width: 100%;">
+            <div class="alert alert-info w-full">
                 <div>
                     <b>Presença Registrada</b>
                     <p style="margin-top: 2px;">Este participante já realizou o credenciamento para este evento.</p>
@@ -256,7 +256,7 @@ function exibirParticipante(p) {
         statusTexto = `Inscrição ${p.status} (Não Apta)`;
         statusBadge = 'badge-danger';
         acaoHtml = `
-            <div class="alert alert-danger" style="width: 100%;">
+            <div class="alert alert-danger w-full">
                 <div>
                     <b>Inscrição Não Regular</b>
                     <p style="margin-top: 2px;">Apenas participantes com inscrição confirmada podem ser credenciados.</p>
@@ -269,7 +269,7 @@ function exibirParticipante(p) {
         <div class="card-head">
             <div>
                 <span class="eyebrow">Participante identificado</span>
-                <h2 class="h2" style="margin-top: 4px;">${esc(nome)}</h2>
+                <h2 class="h2 mt-1">${esc(nome)}</h2>
             </div>
             <span class="badge ${statusBadge}"><i class="ic ic-check"></i>${statusTexto}</span>
         </div>

@@ -41,7 +41,7 @@
             <div id="banner-aviso-organizador" class="alert alert-warning" style="display: none; margin-bottom: 20px;">
                 <div>
                     <b>Atenção: Perfil de Organizador Necessário</b>
-                    <p style="margin-top: 4px;">A criação de eventos é permitida para organizadores homologados. Acesse <a href="../../usuarios/perfil/perfil.html" style="font-weight: 700; text-decoration: underline;">Meu Perfil</a> para solicitar homologação.</p>
+                    <p class="mt-1">A criação de eventos é permitida para organizadores homologados. Acesse <a href="../../usuarios/perfil/perfil.html" style="font-weight: 700; text-decoration: underline;">Meu Perfil</a> para solicitar homologação.</p>
                 </div>
             </div>
 
@@ -56,20 +56,20 @@
                     </div>
                     <div class="stack">
                         <div class="field">
-                            <label class="label" for="campo-nome">Nome do evento <span style="color: var(--danger);">*</span></label>
+                            <label class="label" for="campo-nome">Nome do evento <span class="text-danger">*</span></label>
                             <input class="input" type="text" id="campo-nome" placeholder="Ex.: Simpósio de Inteligência Artificial e Ética na Educação" required maxlength="100" />
                             <span class="hint" id="texto-capitalizacao">Capitalização automática identificada e válida para o catálogo.</span>
                         </div>
                         <div class="field">
                             <div class="row between">
-                                <label class="label" for="campo-descricao">Descrição do evento <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-descricao">Descrição do evento <span class="text-danger">*</span></label>
                                 <span class="small muted" id="contador-descricao">0 / 2000 caracteres</span>
                             </div>
                             <textarea class="textarea" id="campo-descricao" placeholder="Objetivo, público-alvo e o que o participante vai encontrar no evento" rows="4" required maxlength="2000"></textarea>
                         </div>
                         <div class="grid cols-3 gap-4">
                             <div class="field">
-                                <label class="label" for="campo-categoria">Categoria <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-categoria">Categoria <span class="text-danger">*</span></label>
                                 <select class="select" id="campo-categoria" required>
                                     <option value="Simpósio">Simpósio</option>
                                     <option value="Congresso">Congresso</option>
@@ -90,7 +90,7 @@
                                 </select>
                             </div>
                             <div class="field">
-                                <label class="label" for="campo-modalidade">Modalidade <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-modalidade">Modalidade <span class="text-danger">*</span></label>
                                 <select class="select" id="campo-modalidade" required>
                                     <option value="Presencial">Presencial</option>
                                     <option value="On-line">On-line</option>
@@ -119,15 +119,15 @@
                     <div class="stack">
                         <div class="grid cols-3 gap-4">
                             <div class="field">
-                                <label class="label" for="campo-data">Data <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-data">Data <span class="text-danger">*</span></label>
                                 <input class="input" type="date" id="campo-data" required />
                             </div>
                             <div class="field">
-                                <label class="label" for="campo-hora-inicio">Horário de início <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-hora-inicio">Horário de início <span class="text-danger">*</span></label>
                                 <input class="input" type="time" id="campo-hora-inicio" value="08:30" required />
                             </div>
                             <div class="field">
-                                <label class="label" for="campo-hora-fim">Horário de término <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-hora-fim">Horário de término <span class="text-danger">*</span></label>
                                 <input class="input" type="time" id="campo-hora-fim" value="17:30" required />
                             </div>
                         </div>
@@ -145,7 +145,7 @@
                                 </select>
                             </div>
                             <div class="field">
-                                <label class="label" for="campo-local">Local / Endereço <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-local">Local / Endereço <span class="text-danger">*</span></label>
                                 <div class="input-icon">
                                     <i class="ic ic-pin"></i>
                                     <input class="input" type="text" id="campo-local" placeholder="Ex.: Auditório Central, Bloco B" required />
@@ -173,7 +173,7 @@
                     <div class="stack">
                         <div class="grid cols-2 gap-4">
                             <div class="field">
-                                <label class="label" for="campo-capacidade">Capacidade máxima <span style="color: var(--danger);">*</span></label>
+                                <label class="label" for="campo-capacidade">Capacidade máxima <span class="text-danger">*</span></label>
                                 <input class="input" type="number" id="campo-capacidade" min="1" max="10000" value="250" required />
                                 <span class="hint">De 1 a 10.000 vagas.</span>
                             </div>

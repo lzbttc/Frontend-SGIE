@@ -231,6 +231,62 @@
         });
     }
 
+    /**
+     * Menu hambúrguer (visível só em telas estreitas, via CSS).
+     * Idempotente: pode ser chamado várias vezes sem duplicar o botão.
+     */
+    function configurarMenuMobile() {
+        const header = document.querySelector('header.nav');
+        const navIn = header && header.querySelector('.nav-in');
+        const navLinks = header && header.querySelector('.nav-links');
+        if (!header || !navIn || !navLinks || header.querySelector('.nav-toggle')) return;
+
+        if (!navLinks.id) navLinks.id = 'nav-links-principal';
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'nav-toggle';
+        btn.setAttribute('aria-controls', navLinks.id);
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Abrir menu');
+        btn.innerHTML = '<i class="ic ic-menu" aria-hidden="true"></i>';
+        navIn.appendChild(btn);
+        header.classList.add('has-toggle');
+
+        const definirAberto = (aberto) => {
+            header.classList.toggle('is-open', aberto);
+            btn.setAttribute('aria-expanded', String(aberto));
+            btn.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+            const icone = btn.querySelector('.ic');
+            icone.classList.toggle('ic-menu', !aberto);
+            icone.classList.toggle('ic-x', aberto);
+        };
+
+        btn.addEventListener('click', () => definirAberto(!header.classList.contains('is-open')));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && header.classList.contains('is-open')) {
+                definirAberto(false);
+                btn.focus();
+            }
+        });
+    }
+
+    /** Link "Pular para o conteúdo" para navegação por teclado. */
+    function adicionarSkipLink() {
+        if (document.querySelector('.skip-link')) return;
+        const main = document.querySelector('main');
+        if (!main) return;
+
+        if (!main.id) main.id = 'conteudo-principal';
+        main.setAttribute('tabindex', '-1');
+
+        const link = document.createElement('a');
+        link.className = 'skip-link';
+        link.href = `#${main.id}`;
+        link.textContent = 'Pular para o conteúdo';
+        document.body.insertBefore(link, document.body.firstChild);
+    }
+
     function atualizarNavegacao(activePage = '') {
         const navLinks = document.querySelector('.nav-links');
         const navUser = document.getElementById('nav-user-area');
@@ -243,6 +299,8 @@
         }
 
         setupMenuEvents();
+        configurarMenuMobile();
+        adicionarSkipLink();
     }
 
     function montarShell(options = {}) {
@@ -292,6 +350,13 @@
             footerDiv.innerHTML = montarFooter();
             app.appendChild(footerDiv.firstElementChild);
         }
+    }
+
+    // Skip-link em todas as páginas, inclusive as que não montam a navegação (login, cadastro...).
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', adicionarSkipLink);
+    } else {
+        adicionarSkipLink();
     }
 
     window.SGIE_LAYOUT = {

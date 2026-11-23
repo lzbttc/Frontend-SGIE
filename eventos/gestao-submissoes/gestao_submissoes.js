@@ -143,13 +143,13 @@ function atualizarCabecalhoETabs(ev) {
 async function carregarSubmissoesDoEvento(eventoId) {
     const tbody = document.getElementById('lista-gestao-corpo');
     if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px 0;">Carregando submissões...</td></tr>';
+        tbody.innerHTML = '<tr><td class="state-empty-sm" colspan="6">Carregando submissões...</td></tr>';
     }
 
     try {
         const resp = await apiFetch(`/submissoes/?evento_id=${encodeURIComponent(eventoId)}`);
         if (!resp.ok) {
-            if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:32px 0;">Não foi possível carregar as submissões deste evento.</td></tr>';
+            if (tbody) tbody.innerHTML = '<tr><td class="state-error" colspan="6">Não foi possível carregar as submissões deste evento.</td></tr>';
             return;
         }
 
@@ -161,7 +161,7 @@ async function carregarSubmissoesDoEvento(eventoId) {
 
     } catch (e) {
         console.error('[gestao_submissoes] Erro ao listar submissões:', e);
-        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:32px 0;">Erro ao conectar com o servidor.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td class="state-error" colspan="6">Erro ao conectar com o servidor.</td></tr>';
     }
 }
 
@@ -222,7 +222,7 @@ function renderizarTabelaGestao(lista) {
     if (!lista || lista.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" style="text-align: center; color: var(--muted); padding: 48px 0;">
+                <td class="state-empty" colspan="6">
                     Nenhuma submissão encontrada com os critérios informados.
                 </td>
             </tr>
@@ -327,7 +327,7 @@ function renderizarPainelCuradoria(sub) {
             cardParecer.innerHTML = `
                 <div class="row between">
                     <b>${escapeHtml(av.avaliador_nome || 'Avaliador')}</b>
-                    <span class="row" style="gap:8px;">
+                    <span class="row gap-2">
                         <span class="badge ${getStatusBadgeClass(av.status_parecer)}">${escapeHtml(av.status_parecer || 'Parecer')}</span>
                         ${pontuacao}
                     </span>

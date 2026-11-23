@@ -121,20 +121,12 @@ function renderizarEventos(eventos) {
 
     const grid = $('grid-eventos');
     grid.innerHTML = eventos.map((ev) => htmlCard(ev, user, logado)).join('');
-
-    if (window.SGIE_MOCKS?.ativo && typeof window.SGIE_MOCKS.exibirSeloDadosExemplo === 'function') {
-        const usouMock = eventos.some((ev) => ev.vagas_disponiveis === undefined && window.SGIE_MOCKS.obterVagasDisponiveis(ev.id, ev.capacidade) !== undefined);
-        if (usouMock) {
-            window.SGIE_MOCKS.exibirSeloDadosExemplo('grid-eventos');
-        }
-    }
 }
 
 function htmlCard(ev, user, logado) {
-    let vagasDisponiveis = ev.vagas_disponiveis;
-    if (vagasDisponiveis === undefined && window.SGIE_MOCKS?.ativo && typeof window.SGIE_MOCKS.obterVagasDisponiveis === 'function') {
-        vagasDisponiveis = window.SGIE_MOCKS.obterVagasDisponiveis(ev.id, ev.capacidade);
-    }
+    // A listagem da API não traz vagas_disponiveis (só o detalhe traz):
+    // sem o dado real, o card mostra apenas a capacidade, sem simular vagas.
+    const vagasDisponiveis = ev.vagas_disponiveis;
 
     const temVagas = Number.isFinite(vagasDisponiveis);
     const esgotado = temVagas && vagasDisponiveis <= 0 && ev.status !== 'Finalizado' && ev.status !== 'Cancelado';

@@ -153,8 +153,8 @@ async function carregarMeusEventos() {
             if (semEv) {
                 semEv.style.display = 'block';
                 semEv.innerHTML = `
-                    <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0;">Selecione um Evento</h3>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">Selecione um dos seus eventos no filtro acima para visualizar a lista de inscritos.</p>
+                    <h3 class="empty-title">Selecione um Evento</h3>
+                    <p class="empty-text">Selecione um dos seus eventos no filtro acima para visualizar a lista de inscritos.</p>
                 `;
             }
         }
@@ -177,13 +177,13 @@ async function carregarParticipantes() {
             const semEventosCadastrados = selectEvento && selectEvento.options.length <= 1 && selectEvento.value === '' && selectEvento.options[0]?.text.includes('Nenhum evento');
             if (semEventosCadastrados) {
                 vazio.innerHTML = `
-                    <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0;">Nenhum Evento Encontrado</h3>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">Você ainda não possui eventos cadastrados para visualizar participantes.</p>
+                    <h3 class="empty-title">Nenhum Evento Encontrado</h3>
+                    <p class="empty-text">Você ainda não possui eventos cadastrados para visualizar participantes.</p>
                 `;
             } else {
                 vazio.innerHTML = `
-                    <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0;">Selecione um Evento</h3>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">Selecione um dos seus eventos no filtro acima para visualizar a lista de inscritos.</p>
+                    <h3 class="empty-title">Selecione um Evento</h3>
+                    <p class="empty-text">Selecione um dos seus eventos no filtro acima para visualizar a lista de inscritos.</p>
                 `;
             }
         }
@@ -234,8 +234,8 @@ async function carregarParticipantes() {
                 if (vazio) {
                     vazio.style.display = 'block';
                     vazio.innerHTML = `
-                        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0;">Nenhum participante encontrado</h3>
-                        <p style="font-size: 14px; color: #64748b; margin: 0;">${busca || statusFiltro ? 'Tente ajustar os filtros informados.' : 'Quando alguém se inscrever neste evento, a inscrição aparecerá aqui.'}</p>
+                        <h3 class="empty-title">Nenhum participante encontrado</h3>
+                        <p class="empty-text">${busca || statusFiltro ? 'Tente ajustar os filtros informados.' : 'Quando alguém se inscrever neste evento, a inscrição aparecerá aqui.'}</p>
                     `;
                 }
                 if (lista) lista.style.display = 'none';
@@ -330,7 +330,7 @@ function renderizarParticipantes(participantes) {
         card.innerHTML = `
             <span class="avatar">${window.SGIE_DOM.escapeHTML(iniciais)}</span>
             <div class="grow" style="min-width: 240px;">
-                <div class="row" style="gap: 8px;">
+                <div class="row gap-2">
                     <b class="h3">${window.SGIE_DOM.escapeHTML(nome)}</b>
                     <span class="small muted num">#${window.SGIE_DOM.escapeHTML(p.id)}</span>
                     ${badgePresenca}
@@ -339,7 +339,7 @@ function renderizarParticipantes(participantes) {
                 <div id="detalhes-participante-${p.id}" style="display: none; margin-top: 12px; padding: 12px; background-color: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);">
                     <p class="small" style="margin: 0 0 4px 0;"><strong>Presença / Credenciamento:</strong> ${presencaConfirmada ? 'Presença confirmada' : 'Pendente de credenciamento'}</p>
                     <p class="small" style="margin: 0 0 4px 0;"><strong>Dados adicionais:</strong> ${window.SGIE_DOM.escapeHTML(formatarDadosAdicionais(p.dados_adicionais))}</p>
-                    ${comprovanteUrl ? `<p class="small" style="margin: 0;"><a href="${window.SGIE_DOM.escapeHTML(comprovanteUrl)}" target="_blank" rel="noopener noreferrer">Visualizar comprovante de vínculo</a></p>` : '<p class="small muted" style="margin: 0;">Nenhum comprovante anexado.</p>'}
+                    ${comprovanteUrl ? `<p class="small m-0"><a href="${window.SGIE_DOM.escapeHTML(comprovanteUrl)}" target="_blank" rel="noopener noreferrer">Visualizar comprovante de vínculo</a></p>` : '<p class="small muted m-0">Nenhum comprovante anexado.</p>'}
                 </div>
             </div>
 

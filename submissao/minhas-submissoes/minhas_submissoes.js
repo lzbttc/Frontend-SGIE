@@ -38,7 +38,7 @@ async function carregarSubmissoes() {
         const resp = await apiFetch('/submissoes/');
         if (!resp.ok) {
             const err = await resp.json().catch(() => ({}));
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:32px 0;">${err.detail || 'Não foi possível carregar suas submissões.'}</td></tr>`;
+            tbody.innerHTML = `<tr><td class="state-error" colspan="6">${err.detail || 'Não foi possível carregar suas submissões.'}</td></tr>`;
             return;
         }
 
@@ -50,7 +50,7 @@ async function carregarSubmissoes() {
 
     } catch (e) {
         console.error('[minhas_submissoes] Erro:', e);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:32px 0;">Erro de conexão com o servidor do SGIE.</td></tr>';
+        tbody.innerHTML = '<tr><td class="state-error" colspan="6">Erro de conexão com o servidor do SGIE.</td></tr>';
     }
 }
 
@@ -92,7 +92,7 @@ function renderizarTabela(lista) {
     if (!lista || lista.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" style="text-align: center; color: var(--muted); padding: 48px 0;">
+                <td class="state-empty" colspan="6">
                     Nenhuma submissão encontrada.<br><br>
                     <a href="../submeter-trabalho/index.html" class="btn btn-primary btn-sm">Submeter meu primeiro trabalho</a>
                 </td>

@@ -38,8 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!alerta) return;
 
         alerta.textContent = texto;
-        alerta.style.display = 'block';
-        alerta.className = `pay-alert-message pay-alert-${tipo}`;
+        alerta.style.display = 'flex';
+        alerta.className = `alert alert-${tipo}`;
+        alerta.setAttribute('role', tipo === 'danger' ? 'alert' : 'status');
 
         alerta.scrollIntoView({
             behavior: 'smooth',

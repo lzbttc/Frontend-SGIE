@@ -50,7 +50,7 @@
             <!-- Mensagem de Alerta -->
             <div id="mensagem-alerta" style="display: none; margin-top: 16px;"></div>
 
-            <div class="with-side" style="margin-top: 24px;">
+            <div class="with-side mt-5">
                 <div class="stack lg">
                     <!-- Card de Busca Manual -->
                     <section class="card">
@@ -69,7 +69,7 @@
 
                             <div class="field">
                                 <label class="label" for="input-query">Participante ou código do ingresso</label>
-                                <div class="row" style="gap: 8px;">
+                                <div class="row gap-2">
                                     <div class="input-icon grow">
                                         <i class="ic ic-search"></i>
                                         <input type="text" id="input-query" class="input" placeholder="Digite nome, CPF, e-mail ou código #SGIE..." autocomplete="off">
@@ -93,16 +93,16 @@
                     <section class="card stack">
                         <div>
                             <h2 class="h3">Leitor de QR Code</h2>
-                            <p class="small muted" style="margin-top: 4px;">Aponte a câmera para o QR Code do ingresso do participante para credenciamento automático.</p>
+                            <p class="small muted mt-1">Aponte a câmera para o QR Code do ingresso do participante para credenciamento automático.</p>
                         </div>
 
                         <div id="status-camera" style="display: none; width: 100%; border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--line); background: #000; min-height: 240px;"></div>
 
-                        <button type="button" class="btn btn-secondary btn-block" id="btn-toggle-camera" style="width: 100%;">
+                        <button type="button" class="btn btn-secondary btn-block w-full" id="btn-toggle-camera">
                             <i class="ic ic-camera"></i><span id="txt-camera">Ativar Câmera</span>
                         </button>
 
-                        <p class="small muted" style="text-align: center;">Requer permissão de acesso à câmera no navegador.</p>
+                        <p class="small muted text-center">Requer permissão de acesso à câmera no navegador.</p>
                     </section>
                 </aside>
             </div>
@@ -116,7 +116,9 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
+        integrity="sha384-c9d8RFSL+u3exBOJ4Yp3HUJXS4znl9f+z66d1y54ig+ea249SpqR+w1wyvXz/lk+"
+        crossorigin="anonymous"></script>
     <script src="../../config.js"></script>
     <script src="../../api.js"></script>
     <script src="../../shared/dom.js"></script>

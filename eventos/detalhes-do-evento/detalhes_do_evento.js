@@ -78,7 +78,7 @@ function mostrarErro(mensagem) {
     const alerta = document.getElementById('mensagem-alerta');
     if (alerta) {
         alerta.className = 'alert alert-danger';
-        alerta.innerHTML = `<strong>Atenção:</strong> ${esc(mensagem)} <br><br><a href="../../index.html" class="btn btn-secondary btn-sm" style="margin-top: 8px;">← Voltar para Explorar Eventos</a>`;
+        alerta.innerHTML = `<strong>Atenção:</strong> ${esc(mensagem)} <br><br><a href="../../index.html" class="btn btn-secondary btn-sm mt-2">← Voltar para Explorar Eventos</a>`;
         alerta.style.display = 'block';
     }
     const mainContent = document.querySelector('.main') || document.querySelector('.detalhes-do-evento__main');
@@ -304,7 +304,7 @@ function renderizarPaginaEvento(ev) {
             else if (stNormParticipante === 'finalizado' || stNormParticipante === 'arquivado') motivo = 'Inscrições encerradas';
 
             btnInscrever.textContent = motivo;
-            btnInscrever.className = 'btn btn-disabled';
+            btnInscrever.className = 'btn btn-secondary disabled';
             btnInscrever.removeAttribute('href');
             btnInscrever.setAttribute('aria-disabled', 'true');
             if (elSideInfo) {

@@ -30,27 +30,27 @@
             </header>
 
             <!-- Cards de Estatísticas / Filtros Rápidos -->
-            <div class="grid cols-4 gap-4" style="margin-bottom: 24px;">
-                <div class="card stat" id="card-stat-confirmadas" style="cursor: pointer;">
-                    <div class="stat-n num" id="stat-confirmadas" style="color: var(--primary-ink);">0</div>
+            <div class="grid cols-4 gap-4 mb-5">
+                <div class="card stat is-clickable" id="card-stat-confirmadas">
+                    <div class="stat-n num text-primary" id="stat-confirmadas">0</div>
                     <div class="stat-l">Confirmadas</div>
                 </div>
-                <div class="card stat" id="card-stat-pendentes" style="cursor: pointer;">
+                <div class="card stat is-clickable" id="card-stat-pendentes">
                     <div class="stat-n num" id="stat-pendentes" style="color: var(--warn-ink);">0</div>
                     <div class="stat-l">Pendentes</div>
                 </div>
-                <div class="card stat" id="card-stat-espera" style="cursor: pointer;">
+                <div class="card stat is-clickable" id="card-stat-espera">
                     <div class="stat-n num" id="stat-lista-espera" style="color: var(--info-ink);">0</div>
                     <div class="stat-l">Lista de espera</div>
                 </div>
-                <div class="card stat" id="card-stat-canceladas" style="cursor: pointer;">
-                    <div class="stat-n num" id="stat-canceladas" style="color: var(--danger);">0</div>
+                <div class="card stat is-clickable" id="card-stat-canceladas">
+                    <div class="stat-n num text-danger" id="stat-canceladas">0</div>
                     <div class="stat-l">Canceladas</div>
                 </div>
             </div>
 
             <!-- Filtros -->
-            <form aria-label="Filtros" class="filters" style="margin-bottom: 24px;" onsubmit="return false">
+            <form aria-label="Filtros" class="filters mb-5" onsubmit="return false">
                 <div class="input-icon">
                     <i class="ic ic-search"></i>
                     <input type="text" id="filtro-busca" class="input" placeholder="Buscar pelo nome do evento" aria-label="Buscar inscrições">
@@ -76,7 +76,7 @@
 
             <div id="sem-inscricoes" class="card" style="display: none; text-align: center; padding: 48px 24px;">
                 <h3 id="titulo-vazio" class="h2">Você ainda não possui inscrições</h3>
-                <p id="desc-vazio" class="muted" style="margin-top: 8px;">Explore os eventos acadêmicos disponíveis no SGIE na página inicial.</p>
+                <p id="desc-vazio" class="muted mt-2">Explore os eventos acadêmicos disponíveis no SGIE na página inicial.</p>
             </div>
         </div>
     </main>

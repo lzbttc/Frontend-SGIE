@@ -55,7 +55,7 @@
 
                         <div class="stack">
                             <div class="field">
-                                <label class="label" for="sub-evento">Evento <span style="color:var(--danger)">*</span></label>
+                                <label class="label" for="sub-evento">Evento <span class="text-danger">*</span></label>
                                 <select class="select" id="sub-evento" required>
                                     <option value="">Carregando eventos disponíveis...</option>
                                 </select>
@@ -75,14 +75,14 @@
 
                         <div class="stack">
                             <div class="field">
-                                <label class="label" for="t-titulo">Título <span style="color:var(--danger)">*</span></label>
+                                <label class="label" for="t-titulo">Título <span class="text-danger">*</span></label>
                                 <input class="input" id="t-titulo" maxlength="300" required placeholder="Ex.: Detecção de plágio em textos acadêmicos com modelos de linguagem" />
                                 <span class="hint">Até 300 caracteres.</span>
                             </div>
 
                             <div class="grid cols-2 gap-4">
                                 <div class="field">
-                                    <label class="label" for="t-tipo">Tipo de trabalho <span style="color:var(--danger)">*</span></label>
+                                    <label class="label" for="t-tipo">Tipo de trabalho <span class="text-danger">*</span></label>
                                     <select class="select" id="t-tipo" required>
                                         <option value="Artigo">Artigo</option>
                                         <option value="Palestra">Palestra</option>
@@ -92,7 +92,7 @@
                                 </div>
 
                                 <div class="field">
-                                    <label class="label" for="t-area">Área temática <span style="color:var(--danger)">*</span></label>
+                                    <label class="label" for="t-area">Área temática <span class="text-danger">*</span></label>
                                     <select class="select" id="t-area" required>
                                         <option value="">Carregando áreas...</option>
                                     </select>
@@ -100,7 +100,7 @@
                             </div>
 
                             <div class="field">
-                                <label class="label" for="t-abstract">Abstract <span style="color:var(--danger)">*</span></label>
+                                <label class="label" for="t-abstract">Abstract <span class="text-danger">*</span></label>
                                 <textarea class="textarea" id="t-abstract" style="min-height: 140px;" required placeholder="Texto acadêmico do abstract..."></textarea>
                                 <span class="hint">Em português ou inglês, conforme as normas do evento.</span>
                             </div>
@@ -111,7 +111,7 @@
                             </div>
 
                             <div class="field">
-                                <label class="label" for="t-kw">Palavras-chave <span style="color:var(--danger)">*</span></label>
+                                <label class="label" for="t-kw">Palavras-chave <span class="text-danger">*</span></label>
                                 <input class="input" id="t-kw" maxlength="500" required placeholder="Ex.: inteligência artificial, educação, integridade acadêmica" />
                                 <span class="hint">Separe por vírgula (até 500 caracteres).</span>
                             </div>
@@ -236,7 +236,7 @@
                     <section class="card stack">
                         <div>
                             <p class="eyebrow">Evento selecionado</p>
-                            <h2 class="h3" id="aside-evento-nome" style="margin-top: 4px;">Selecione um evento</h2>
+                            <h2 class="h3 mt-1" id="aside-evento-nome">Selecione um evento</h2>
                         </div>
 
                         <div id="aside-evento-alerta" class="alert alert-info" style="display: none;">

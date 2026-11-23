@@ -231,6 +231,8 @@ html, body { margin: 0; padding: 0; border: 0; }
 .ic-mail { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-10 6L2 7'/%3E%3C/svg%3E"); }
 .ic-lock { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E"); }
 .ic-eye { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+.ic-eye-off { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.7 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.5 17.5 0 0 1-2.2 3.2M6.6 6.6A17.5 17.5 0 0 0 2 12s3.5 7 10 7a10.7 10.7 0 0 0 5.4-1.5M14.1 14.1a3 3 0 1 1-4.2-4.2M2 2l20 20'/%3E%3C/svg%3E"); }
+.ic-menu { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16M4 12h16M4 18h16'/%3E%3C/svg%3E"); }
 .ic-out { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9'/%3E%3C/svg%3E"); }
 .ic-filter { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 3H2l8 9.5V19l4 2v-8.5L22 3Z'/%3E%3C/svg%3E"); }
 .ic-ticket { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z'/%3E%3Cpath d='M13 5v2M13 17v2M13 11v2'/%3E%3C/svg%3E"); }
@@ -256,8 +258,6 @@ html, body { margin: 0; padding: 0; border: 0; }
 @media (max-width: 640px) {
   .container { padding: 0 16px; }
   .events, .cols-2, .cols-3 { grid-template-columns: minmax(0, 1fr); }
-  .nav-in { flex-wrap: wrap; gap: 12px; padding-top: 12px; padding-bottom: 12px; }
-  .nav-links { order: 3; width: 100%; flex: none; overflow-x: auto; }
   .dl { grid-template-columns: minmax(0, 1fr); gap: 2px 0; }
   .dl dd { margin-bottom: 10px; }
   .item { flex-wrap: wrap; }
@@ -493,25 +493,23 @@ footer.footer p,
     font-size: 13px !important;
 }
 
-/* Responsivo: mobile nav */
+/* Navegação mobile (menu hambúrguer) ------------------------------------------
+   Fica aqui, depois da seção 13, porque aquelas regras usam !important. */
+.nav-toggle { display: none; }
 @media (max-width: 640px) {
-    header.nav .container,
-    .nav .container,
-    .nav-in {
-        min-height: 56px !important;
-        flex-wrap: wrap !important;
-        gap: 8px !important;
-        padding-top: 8px !important;
-        padding-bottom: 8px !important;
-    }
-    .nav-links {
-        order: 3 !important;
-        width: 100% !important;
-        flex: none !important;
-        overflow-x: auto !important;
-        padding-bottom: 4px !important;
-    }
+    header.nav .container.nav-in, .nav .container.nav-in { min-height: 56px !important; flex-wrap: wrap !important; gap: 8px !important; padding: 8px 16px !important; }
+    .nav-user { margin-left: auto; }
+    .nav-toggle { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; background: #fff; border: 1px solid var(--header-line); color: var(--ink-2); cursor: pointer; }
+    .nav-toggle:hover { border-color: var(--secondary); color: var(--ink); }
+    .nav-links { order: 3 !important; width: 100% !important; flex: none !important; flex-direction: column !important; align-items: stretch !important; gap: 4px !important; padding-bottom: 8px !important; }
+    .nav.has-toggle:not(.is-open) .nav-links { display: none !important; }
+    .nav-links .nav-link { padding: 12px 16px !important; }
 }
+
+/* Acessibilidade: link "pular para o conteúdo" -------------------------------- */
+.skip-link { position: absolute; left: 12px; top: -48px; z-index: 1000; padding: 10px 16px; background: var(--ink); color: #fff; border-radius: var(--r-sm); font-weight: 700; text-decoration: none; transition: top .15s; }
+main:focus { outline: none; }
+.skip-link:focus { top: 12px; outline: 3px solid var(--primary); outline-offset: 2px; }
 
 /* 14. LISTAGEM DE GESTÃO DE EVENTOS (meus-eventos) --------------------------- */
 .evento-card {
@@ -621,6 +619,26 @@ footer.footer p,
 
 /* escolha em lista (curadoria etc.) */
 .choice + .choice { margin-top: 8px; }
+
+/* 15b. UTILITÁRIOS ------------------------------------------------------------
+   Substituem estilos inline repetidos. Usam !important para ter a mesma força
+   do style="" que substituíram. Escala de espaçamento = tokens --s1..--s5
+   (1 = 4px, 2 = 8px, 3 = 12px, 4 = 16px, 5 = 24px). ------------------------- */
+.text-danger { color: var(--danger) !important; }
+.text-primary { color: var(--primary-ink) !important; }
+.text-center { text-align: center !important; }
+.is-clickable { cursor: pointer; }
+.w-full { width: 100% !important; }
+.m-0 { margin: 0 !important; }
+.gap-2 { gap: var(--s2) !important; }
+.mt-1 { margin-top: var(--s1) !important; } .mt-2 { margin-top: var(--s2) !important; } .mt-3 { margin-top: var(--s3) !important; } .mt-4 { margin-top: var(--s4) !important; } .mt-5 { margin-top: var(--s5) !important; }
+.mb-1 { margin-bottom: var(--s1) !important; } .mb-2 { margin-bottom: var(--s2) !important; } .mb-3 { margin-bottom: var(--s3) !important; } .mb-4 { margin-bottom: var(--s4) !important; } .mb-5 { margin-bottom: var(--s5) !important; }
+.state-error { text-align: center !important; color: var(--danger) !important; padding: 32px 0 !important; }
+.state-center { display: grid !important; place-items: center !important; padding: 48px 24px !important; }
+.state-empty { text-align: center !important; color: var(--muted) !important; padding: 48px 0 !important; }
+.state-empty-sm { text-align: center !important; color: var(--muted) !important; padding: 32px 0 !important; }
+.empty-title { font-size: 18px !important; font-weight: 700 !important; color: var(--ink) !important; margin: 0 0 var(--s2) !important; }
+.empty-text { font-size: 14px !important; color: var(--muted) !important; margin: 0 !important; }
 
 /* 16. IMPRESSÃO ---------------------------------------------------------------
    Ingresso/comprovante: imprime só o conteúdo, sem navegação, rodapé ou fundo. */

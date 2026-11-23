@@ -51,23 +51,23 @@
             <!-- Mensagem de Alerta -->
             <div id="mensagem-alerta" style="display: none; margin-top: 16px;"></div>
 
-            <div class="stack lg" style="margin-top: 24px;">
+            <div class="stack lg mt-5">
                 <!-- Cards de Estatísticas / Filtros Rápidos -->
                 <div class="grid cols-4 gap-4">
-                    <div class="card stat" style="cursor: pointer;" id="card-stat-confirmadas">
-                        <div class="stat-n num" id="stat-confirmadas" style="color: var(--primary-ink);">0</div>
+                    <div class="card stat is-clickable" id="card-stat-confirmadas">
+                        <div class="stat-n num text-primary" id="stat-confirmadas">0</div>
                         <div class="stat-l">Confirmadas</div>
                     </div>
-                    <div class="card stat" style="cursor: pointer;" id="card-stat-pendentes">
+                    <div class="card stat is-clickable" id="card-stat-pendentes">
                         <div class="stat-n num" id="stat-pendentes" style="color: var(--warn-ink);">0</div>
                         <div class="stat-l">Pendentes</div>
                     </div>
-                    <div class="card stat" style="cursor: pointer;" id="card-stat-espera">
+                    <div class="card stat is-clickable" id="card-stat-espera">
                         <div class="stat-n num" id="stat-lista-espera" style="color: var(--info-ink);">0</div>
                         <div class="stat-l">Lista de espera</div>
                     </div>
-                    <div class="card stat" style="cursor: pointer;" id="card-stat-canceladas">
-                        <div class="stat-n num" id="stat-canceladas" style="color: var(--danger);">0</div>
+                    <div class="card stat is-clickable" id="card-stat-canceladas">
+                        <div class="stat-n num text-danger" id="stat-canceladas">0</div>
                         <div class="stat-l">Canceladas</div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
 
                     <p id="loading-spinner" class="muted" style="padding: 24px 0;">Carregando participantes...</p>
                     <div id="sem-participantes" class="muted" style="display: none; padding: 32px 0; text-align: center;">Nenhum participante encontrado.</div>
-                    <div id="lista-participantes" class="stack" style="gap: 8px;"></div>
+                    <div id="lista-participantes" class="stack gap-2"></div>
                 </section>
             </div>
         </div>

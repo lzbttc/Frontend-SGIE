@@ -75,8 +75,8 @@
                 <i class="ic ${escapeHTML(icone)}" style="width: 36px; height: 36px; color: var(--muted); margin-bottom: 8px;"></i>
                 <h3 class="h3">${escapeHTML(titulo)}</h3>
                 <p class="small muted" style="max-width: 360px;">${escapeHTML(mensagem)}</p>
-                ${acaoTexto && acaoHref ? `<a href="${escapeHTML(acaoHref)}" class="btn btn-secondary btn-sm" style="margin-top: 12px;">${escapeHTML(acaoTexto)}</a>` : ''}
-                ${acaoTexto && !acaoHref && acaoOnClick ? `<button type="button" class="btn btn-secondary btn-sm" style="margin-top: 12px;" data-empty-action>${escapeHTML(acaoTexto)}</button>` : ''}
+                ${acaoTexto && acaoHref ? `<a href="${escapeHTML(acaoHref)}" class="btn btn-secondary btn-sm mt-3">${escapeHTML(acaoTexto)}</a>` : ''}
+                ${acaoTexto && !acaoHref && acaoOnClick ? `<button type="button" class="btn btn-secondary btn-sm mt-3" data-empty-action>${escapeHTML(acaoTexto)}</button>` : ''}
             </div>
         `;
 
@@ -100,7 +100,7 @@
                 <i class="ic ic-alert" style="width: 22px; height: 22px; flex: none;"></i>
                 <div style="flex: 1;">
                     <b>${escapeHTML(titulo)}</b>
-                    <p class="small" style="margin-top: 4px;">${escapeHTML(mensagem)}</p>
+                    <p class="small mt-1">${escapeHTML(mensagem)}</p>
                     ${tentarNovamenteFn ? `<button type="button" class="btn btn-secondary btn-sm" style="margin-top: 10px;" data-retry-action>Tentar novamente</button>` : ''}
                 </div>
             </div>
@@ -201,9 +201,9 @@
             overlay.innerHTML = `
                 <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="${uid}-t" ${mensagem ? `aria-describedby="${uid}-m"` : ''}>
                     <h2 class="h2" id="${uid}-t">${escapeHTML(titulo)}</h2>
-                    ${mensagem ? `<p class="muted" id="${uid}-m" style="margin-top: 8px;">${escapeHTML(mensagem)}</p>` : ''}
+                    ${mensagem ? `<p class="muted mt-2" id="${uid}-m">${escapeHTML(mensagem)}</p>` : ''}
                     ${campo ? `
-                        <div class="field" style="margin-top: 16px;">
+                        <div class="field mt-4">
                             <label class="label" for="${uid}-c">${escapeHTML(campo.label || 'Informe o motivo')}</label>
                             <textarea class="textarea" id="${uid}-c" rows="3" ${campo.maxLength ? `maxlength="${Number(campo.maxLength)}"` : ''} placeholder="${escapeHTML(campo.placeholder || '')}"></textarea>
                             <span class="error-msg" id="${uid}-e" hidden></span>

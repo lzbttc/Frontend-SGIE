@@ -203,7 +203,7 @@ function renderizarParecer(sub) {
 
     if (sub.status === 'Correções solicitadas') {
         cardHtml += `
-            <div class="alert alert-warning" style="margin-bottom:16px;">
+            <div class="alert alert-warning mb-4">
                 <i class="ic ic-alert"></i>
                 <div>
                     <b>O avaliador solicitou correções neste trabalho.</b>
@@ -221,7 +221,7 @@ function renderizarParecer(sub) {
                 : '';
 
             cardHtml += `
-                <section class="card" style="margin-bottom:16px;">
+                <section class="card mb-4">
                     <div class="card-head">
                         <div>
                             <h2 class="h2">Parecer da Comissão Avaliadora</h2>

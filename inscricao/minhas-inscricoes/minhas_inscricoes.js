@@ -245,7 +245,7 @@ function renderizarInscricoes(inscricoes, busca = '', statusFiltro = '') {
                     <p class="small" style="margin: 0 0 4px 0;"><strong>Data da inscrição:</strong> ${formatarDataHora(insc.data_inscricao)}</p>
                     <p class="small" style="margin: 0 0 4px 0;"><strong>Valor:</strong> ${insc.evento_e_gratuito ? 'Gratuito' : formatarMoeda(insc.evento_preco)}</p>
                     <p class="small" style="margin: 0 0 4px 0;"><strong>Dados adicionais:</strong> ${formatarDadosAdicionais(insc.dados_adicionais)}</p>
-                    ${insc.comprovante ? `<p class="small" style="margin: 0;"><a href="${insc.comprovante}" target="_blank" rel="noopener noreferrer">Visualizar comprovante enviado</a></p>` : ''}
+                    ${insc.comprovante ? `<p class="small m-0"><a href="${insc.comprovante}" target="_blank" rel="noopener noreferrer">Visualizar comprovante enviado</a></p>` : ''}
                 </div>
             </div>
             <div class="row" style="gap: 8px; align-items: center;">
@@ -330,9 +330,9 @@ function abrirIngresso(id) {
 
     conteudo.innerHTML = `
         <div class="ticket-top">
-            <p class="eyebrow" style="color: var(--primary-ink);">Ingresso digital oficial</p>
+            <p class="eyebrow text-primary">Ingresso digital oficial</p>
             <h2 class="h3" style="margin-top: 6px;">${e(insc.evento_nome)}</h2>
-            <ul class="meta" style="margin-top: 12px;">
+            <ul class="meta mt-3">
                 <li><i class="ic ic-cal"></i>${formatarData(insc.evento_data)}, ${formatarHora(insc.evento_hora_inicio)}</li>
                 <li><i class="ic ic-pin"></i>${e(insc.evento_local || 'Local a confirmar')}</li>
             </ul>
@@ -342,7 +342,7 @@ function abrirIngresso(id) {
                 <img src="${qrUrl}" alt="QR Code do ingresso" style="width: 160px; height: 160px; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--line);">
             </div>
             <b class="num" style="font-size: 18px;">${e(insc.codigo_ingresso)}</b>
-            <p class="small muted" style="text-align: center;">${e(nomeParticipante)} · apresente na entrada do evento</p>
+            <p class="small muted text-center">${e(nomeParticipante)} · apresente na entrada do evento</p>
             <span class="badge badge-success"><i class="ic ic-check"></i>Confirmada</span>
             <div class="row no-print" style="gap: 12px; margin-top: 8px;">
                 <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="ic ic-download"></i>Imprimir</button>

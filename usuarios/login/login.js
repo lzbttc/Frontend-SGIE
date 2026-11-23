@@ -13,11 +13,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const redirect =
                 params.get("redirect");
 
-            const destino =
-                redirect &&
-                !/^(https?:)?\/\//i.test(redirect)
-                    ? redirect
-                    : "../../index.html";
+            // Aceita apenas caminhos internos: bloqueia esquemas (javascript:, data:),
+            // URLs absolutas, "//host" e "/\host" (tratados pelo navegador como externos).
+            const redirectSeguro = (valor) => {
+                if (!valor || /[\u0000-\u001f\\]/.test(valor)) return false;
+                if (/^[a-z][a-z0-9+.-]*:/i.test(valor) || valor.startsWith("//")) return false;
+                try {
+                    const resolvida = new URL(valor, window.location.href);
+                    return resolvida.origin === window.location.origin;
+                } catch {
+                    return false;
+                }
+            };
+
+            const destino = redirectSeguro(redirect)
+                ? redirect
+                : "../../index.html";
 
 
             /* ---------------------------------------------------------

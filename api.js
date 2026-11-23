@@ -324,73 +324,26 @@ function mascaraData(valor) {
 }
 
 function atualizarCabecalhoUsuario(activePage = '') {
+    // A navegação é montada por shared/layout.js (carregado em todas as páginas).
     if (window.SGIE_LAYOUT && typeof window.SGIE_LAYOUT.atualizarNavegacao === 'function') {
         window.SGIE_LAYOUT.atualizarNavegacao(activePage);
-        return;
-    }
-
-    const user = getUser();
-    const logado = Boolean(user && isAuthenticated());
-    const navLinksArea = document.querySelector('.nav-links');
-    const navUserArea = document.getElementById('nav-user-area');
-    const ativo = (pagina) => (activePage === pagina ? 'active' : '');
-
-    if (navLinksArea) {
-        let linksHtml = `
-            <li><a href="${resolveAppUrl('index.html')}" class="nav-link ${ativo('eventos')}">Explorar Eventos</a></li>
-        `;
-        if (logado) {
-            linksHtml += `
-                <li><a href="${resolveAppUrl('inscricao/minhas-inscricoes/index.html')}" class="nav-link ${ativo('minhas-inscricoes')}">Minhas Inscrições</a></li>
-            `;
-            // Seção 3.1: apenas organizador homologado ou staff vê atalho de cadastrar evento
-            const ehOrganizador = Boolean(
-                user.is_staff || user.is_superuser ||
-                (user.perfil_organizador && (user.perfil_organizador.status === 'aprovado' || user.perfil_organizador.status === 'homologado' || user.perfil_organizador.ativo)) ||
-                user.eh_organizador === true || user.tipo === 'organizador'
-            );
-            if (ehOrganizador) {
-                linksHtml += `
-                    <li><a href="${resolveAppUrl('eventos/cadastrar-evento/index.html')}" class="btn btn-sm btn-primary ${ativo('novo')}"><span class="icon icon-plus"></span>Cadastrar Evento</a></li>
-                `;
-            }
-        }
-        navLinksArea.innerHTML = linksHtml;
-    }
-
-    if (navUserArea) {
-        if (logado) {
-            const nomeBruto = user.nome_completo ? user.nome_completo.split(' ')[0] : user.email.split('@')[0];
-            const nomeExibicao = String(nomeBruto).replace(/[<>&"']/g, '');
-            navUserArea.innerHTML = `
-                <a href="${resolveAppUrl('usuarios/perfil/perfil.html')}" class="user-greeting ${ativo('perfil')}">Olá, ${nomeExibicao}<span class="icon icon-chevron-down"></span></a>
-                <button type="button" onclick="logout()" class="btn-logout"><span class="icon icon-logout"></span>Sair</button>
-            `;
-        } else {
-            navUserArea.innerHTML = `
-                <a href="${resolveAppUrl('usuarios/login/login.html')}" class="nav-link ${ativo('login')}">Entre</a>
-                <a href="${resolveAppUrl('usuarios/cadastro/cadastro.html')}" class="btn btn-sm btn-primary ${ativo('cadastro')}">Cadastre-se</a>
-            `;
-        }
     }
 }
 
 // Botão "olho" dos campos de senha.
-// HTML: <div class="input-wrap has-toggle"> ... <button type="button" class="input-toggle" data-toggle-senha><span class="icon icon-eye"></span></button></div>
+// HTML: <div class="input-icon"> <input type="password"> <button type="button" class="btn btn-ghost btn-sm toggle" data-toggle-senha aria-label="Mostrar senha"><i class="ic ic-eye"></i></button></div>
 function iniciarToggleSenha() {
     document.querySelectorAll('[data-toggle-senha]').forEach((btn) => {
-        const wrap = btn.closest('.input-icon') || btn.closest('.input-wrap');
+        const wrap = btn.closest('.input-icon');
         const input = wrap ? wrap.querySelector('input') : null;
         if (!input) return;
-        const icone = btn.querySelector('.icon') || btn.querySelector('.ic');
+        const icone = btn.querySelector('.ic');
         btn.addEventListener('click', () => {
             const mostrar = input.type === 'password';
             input.type = mostrar ? 'text' : 'password';
             if (icone) {
-                icone.classList.toggle('icon-eye', !mostrar);
-                icone.classList.toggle('icon-eye-off', mostrar);
                 icone.classList.toggle('ic-eye', !mostrar);
-                icone.classList.toggle('ic-lock', mostrar);
+                icone.classList.toggle('ic-eye-off', mostrar);
             }
             btn.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
         });

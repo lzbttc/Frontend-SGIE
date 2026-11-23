@@ -29,7 +29,7 @@ function mostrarErro(msg) {
     const alerta = document.getElementById('mensagem-alerta');
     if (alerta) {
         alerta.className = 'alert alert-danger';
-        alerta.innerHTML = `<strong>Atenção:</strong> ${msg} <br><br><a href="../../index.html" class="btn btn-secondary btn-sm" style="margin-top: 8px;">← Voltar para Eventos</a>`;
+        alerta.innerHTML = `<strong>Atenção:</strong> ${msg} <br><br><a href="../../index.html" class="btn btn-secondary btn-sm mt-2">← Voltar para Eventos</a>`;
         alerta.style.display = 'block';
     }
     const form = document.getElementById('form-editar-evento');

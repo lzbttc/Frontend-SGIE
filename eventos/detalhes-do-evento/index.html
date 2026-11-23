@@ -33,7 +33,7 @@
             <!-- Barra do Organizador (quando logado como organizador deste evento) -->
             <div class="card flat row between" id="painel-gestao-organizador" style="display: none; margin-top: 16px; padding: 14px 20px; flex-wrap: wrap; gap: 12px;">
                 <div class="row" style="gap: 10px;">
-                    <i class="ic ic-shield" style="color: var(--primary-ink);"></i>
+                    <i class="ic ic-shield text-primary"></i>
                     <div>
                         <b>Painel de Coordenação:</b>
                         <span class="muted" id="painel-vagas-descricao">Acompanhamento em tempo real da ocupação do evento.</span>
@@ -72,13 +72,13 @@
                 <div class="stack lg">
                     <!-- Sobre o evento -->
                     <section class="card">
-                        <h2 class="h2" style="margin-bottom: 12px;">Sobre o evento</h2>
+                        <h2 class="h2 mb-3">Sobre o evento</h2>
                         <p id="detalhe-descricao" style="max-width: 68ch; line-height: 1.6;">Carregando descrição...</p>
                     </section>
 
                     <!-- Programação -->
                     <section class="card">
-                        <h2 class="h2" style="margin-bottom: 16px;">Programação</h2>
+                        <h2 class="h2 mb-4">Programação</h2>
                         <div id="detalhe-programacao-container"></div>
                     </section>
 
@@ -90,7 +90,7 @@
                                 <p class="muted" id="submissao-prazo-info">Período de submissões aberto.</p>
                             </div>
                         </div>
-                        <p style="margin-bottom: 16px;">Envie seu resumo ou artigo para avaliação da comissão científica deste evento.</p>
+                        <p class="mb-4">Envie seu resumo ou artigo para avaliação da comissão científica deste evento.</p>
                         <a class="btn btn-primary" id="btn-submeter-trabalho-link" href="../../submissao/submeter-trabalho/index.html">
                             <i class="ic ic-upload"></i>Submeter trabalho
                         </a>
@@ -98,7 +98,7 @@
 
                     <!-- Equipe organizadora -->
                     <section class="card">
-                        <h2 class="h2" style="margin-bottom: 16px;">Equipe organizadora</h2>
+                        <h2 class="h2 mb-4">Equipe organizadora</h2>
                         <div id="lista-equipe-organizadora" class="stack"></div>
                     </section>
                 </div>
@@ -111,7 +111,7 @@
                             <p class="eyebrow">Inscrição</p>
                             <p class="price free" id="sidebar-preco-display" style="font-size: 28px; line-height: 1.2; margin-top: 4px;">Gratuito</p>
                         </div>
-                        <div class="stack" style="gap: 8px;">
+                        <div class="stack gap-2">
                             <div class="row between small">
                                 <span class="muted">Vagas preenchidas</span>
                                 <b class="num" id="sidebar-vagas-texto">0 / 0 (0%)</b>
@@ -132,7 +132,7 @@
 
                     <!-- Card Quando e onde -->
                     <section class="card">
-                        <h2 class="h3" style="margin-bottom: 12px;">Quando e onde</h2>
+                        <h2 class="h3 mb-3">Quando e onde</h2>
                         <ul class="meta">
                             <li><i class="ic ic-cal"></i><span id="sidebar-data">—</span></li>
                             <li><i class="ic ic-clock"></i><span id="sidebar-horario">—</span></li>
