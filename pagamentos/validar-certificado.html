@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validar certificado — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/img/sgie-simbolo.svg">
+    <link rel="stylesheet" href="../sgie.css">
+</head>
+<body class="app">
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../index.html" class="brand"><img class="brand-logo" src="../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Validar certificado</h1>
+                    <p>Informe o código de autenticação impresso no certificado para conferir se ele é verdadeiro.</p>
+                </div>
+            </header>
+
+            <div id="mensagem-alerta" hidden></div>
+
+            <div class="stack lg">
+
+                <section class="card">
+                    <form id="form-validar" class="stack" novalidate>
+                        <div class="field">
+                            <label class="label" for="campo-codigo">Código de autenticação <span class="text-danger">*</span></label>
+                            <input class="input" id="campo-codigo" name="codigo" type="text" autocomplete="off" spellcheck="false" placeholder="Cole aqui o código do certificado" required aria-describedby="ajuda-codigo">
+                            <span class="hint" id="ajuda-codigo">A consulta é pública: não é necessário entrar na conta.</span>
+                        </div>
+                        <div class="row">
+                            <button type="submit" class="btn btn-primary" id="btn-validar"><i class="ic ic-search"></i>Validar</button>
+                        </div>
+                    </form>
+                </section>
+
+                <div id="resultado-validacao" aria-live="polite"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </div>
+    </footer>
+
+    <script src="../config.js"></script>
+    <script src="../api.js"></script>
+    <script src="../shared/dom.js"></script>
+    <script src="../shared/formatters.js"></script>
+    <script src="../shared/mocks.js"></script>
+    <script src="../shared/roles.js"></script>
+    <script src="../shared/layout.js"></script>
+    <script src="validar_certificado.js"></script>
+</body>
+</html>

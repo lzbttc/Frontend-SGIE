@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (eventoSelecionadoId) {
                 history.replaceState(null, '', `?evento=${encodeURIComponent(eventoSelecionadoId)}`);
             }
+            if (window.SGIE_EVENTO_TABS) window.SGIE_EVENTO_TABS.atualizar(eventoSelecionadoId || '');
             carregarParticipantes();
         });
     }
@@ -158,6 +159,7 @@ async function carregarMeusEventos() {
                 `;
             }
         }
+        if (window.SGIE_EVENTO_TABS && select.value) window.SGIE_EVENTO_TABS.atualizar(select.value);
     } catch (error) {
         showAlert('mensagem-alerta', 'Erro de conexão com o servidor do SGIE.', 'danger');
     }

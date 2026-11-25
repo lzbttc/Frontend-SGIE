@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro do evento — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
+    <link rel="stylesheet" href="../../sgie.css">
+</head>
+<body class="app">
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <nav aria-label="Você está em" class="crumb">
+                <a href="../meus-eventos/index.html">Meus eventos</a>
+                <span aria-hidden="true">/</span>
+                <span id="crumb-evento-nome">Financeiro</span>
+            </nav>
+
+            <header class="page-head">
+                <div>
+                    <div class="row mb-2">
+                        <span class="badge badge-neutral" id="badge-status-evento">Evento</span>
+                    </div>
+                    <h1 class="h1" id="titulo-evento">Carregando evento...</h1>
+                </div>
+                <div class="row" id="acoes-topo-evento">
+                    
+                    <a class="btn btn-secondary" id="btn-editar-evento" href="#"><i class="ic ic-pencil"></i>Editar evento</a>
+                </div>
+            </header>
+
+            <nav aria-label="Seções do evento" class="tabs" id="tabs-evento" data-tab-ativa="financeiro"></nav>
+
+            <div id="mensagem-alerta" class="mt-4" hidden></div>
+
+            <div class="stack lg mt-5">
+
+                <div class="grid cols-4 gap-4">
+                    <div class="card stat">
+                        <div class="stat-n num text-primary" id="kpi-bruto">—</div>
+                        <div class="stat-l">Arrecadado (bruto)</div>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-n num text-danger" id="kpi-reembolsado">—</div>
+                        <div class="stat-l">Reembolsado</div>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-n num" id="kpi-liquido">—</div>
+                        <div class="stat-l">Total líquido</div>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-n num text-warn" id="kpi-pendente">—</div>
+                        <div class="stat-l">A receber (pendente)</div>
+                    </div>
+                </div>
+
+                <div class="grid cols-2 gap-4">
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Pagamentos por método</h2>
+                                <p class="muted">Considera apenas pagamentos aprovados.</p>
+                            </div>
+                        </div>
+                        <div id="bloco-metodos"></div>
+                    </section>
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Vendas por lote</h2>
+                                <p class="muted">Considera apenas cobranças pagas.</p>
+                            </div>
+                        </div>
+                        <div id="bloco-lotes"></div>
+                    </section>
+                </div>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="h2">Cobranças do evento</h2>
+                            <p class="muted">Conceda isenção total ou parcial a cobranças pendentes.</p>
+                        </div>
+                        <span class="badge badge-neutral" id="total-cobrancas">0</span>
+                    </div>
+                    <form class="filters mb-4" aria-label="Filtros de cobranças" onsubmit="return false">
+                        <div class="input-icon">
+                            <i class="ic ic-search"></i>
+                            <input type="search" id="filtro-cobranca-busca" class="input" placeholder="Buscar por participante" aria-label="Buscar cobranças por participante">
+                        </div>
+                        <select id="filtro-cobranca-status" class="select" aria-label="Status da cobrança">
+                            <option value="">Todos os status</option>
+                            <option value="PENDENTE">Pendente</option>
+                            <option value="PAGA">Paga</option>
+                            <option value="CANCELADA">Cancelada</option>
+                            <option value="EXPIRADA">Expirada</option>
+                        </select>
+                    </form>
+                    <div id="bloco-cobrancas"></div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="h2">Reembolsos do evento</h2>
+                            <p class="muted">Solicitações feitas pelos participantes. O processamento é feito pelo gateway de pagamento.</p>
+                        </div>
+                        <span class="badge badge-neutral" id="total-reembolsos">0</span>
+                    </div>
+                    <div id="bloco-reembolsos"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </div>
+    </footer>
+
+    <script src="../../config.js"></script>
+    <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/mocks.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/evento-tabs.js"></script>
+    <script src="../../shared/evento-gestao.js"></script>
+    <script src="../../shared/layout.js"></script>
+    <script src="financeiro.js"></script>
+</body>
+</html>

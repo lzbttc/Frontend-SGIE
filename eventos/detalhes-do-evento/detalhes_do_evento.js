@@ -232,6 +232,12 @@ function renderizarPaginaEvento(ev) {
             };
         }
 
+        document.querySelectorAll('[data-gestao]').forEach((btn) => {
+            btn.onclick = () => {
+                window.location.href = `../${btn.getAttribute('data-gestao')}/index.html?evento=${encodeURIComponent(ev.id)}`;
+            };
+        });
+
         const btnSubmissoes = document.getElementById('btn-submissoes-evento');
         if (btnSubmissoes) {
             btnSubmissoes.onclick = () => {
@@ -245,6 +251,8 @@ function renderizarPaginaEvento(ev) {
 
     // Card de Inscrição na sidebar SEMPRE visível e funcional
     if (cardInscricao) cardInscricao.style.display = 'flex';
+
+    aplicarStatusInscricoes(ev);
 
     // 1.2: Preço na sidebar
     const elSidePreco = document.getElementById('sidebar-preco-display');
@@ -489,4 +497,28 @@ async function confirmarCancelamento(id) {
     } catch {
         showAlert('mensagem-alerta', 'Erro de conexão ao cancelar o evento.', 'danger');
     }
+}
+
+
+/** Consulta GET /eventos/{id}/status-inscricoes/ e reflete o encerramento no cartão de inscrição. */
+async function aplicarStatusInscricoes(ev) {
+    try {
+        const resp = await window.apiFetch(`/eventos/${encodeURIComponent(ev.id)}/status-inscricoes/`);
+        if (!resp.ok) return;
+        const st = await resp.json();
+        const info = document.getElementById('sidebar-info-adicional');
+        const btn = document.getElementById('btn-realizar-inscricao');
+        const fmt = window.SGIE_FORMATTERS;
+        if (st.inscricoes_encerradas) {
+            if (info) info.textContent = `Inscrições encerradas${st.limite_encerramento ? ' em ' + fmt.formatarDataHora(st.limite_encerramento) : ''}.`;
+            if (btn) {
+                btn.textContent = 'Inscrições encerradas';
+                btn.classList.add('disabled');
+                btn.setAttribute('aria-disabled', 'true');
+                btn.removeAttribute('href');
+            }
+        } else if (st.limite_encerramento && info) {
+            info.textContent = `Inscrições abertas até ${fmt.formatarDataHora(st.limite_encerramento)}.`;
+        }
+    } catch { /* informação complementar: ignora falhas de rede */ }
 }

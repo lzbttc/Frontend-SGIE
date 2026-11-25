@@ -140,6 +140,18 @@
                         <a class="menu-item" href="${getAppUrl('usuarios/perfil/perfil.html')}">
                             <i class="ic ic-user"></i>Meu perfil
                         </a>
+                        <a class="menu-item" href="${getAppUrl('pagamentos/reembolsos.html')}">
+                            <i class="ic ic-ticket"></i>Meus reembolsos
+                        </a>
+                        <a class="menu-item" href="${getAppUrl('pagamentos/certificados.html')}">
+                            <i class="ic ic-check"></i>Meus certificados
+                        </a>
+                        <a class="menu-item" href="${getAppUrl('submissao/perfil-avaliador/index.html')}">
+                            <i class="ic ic-user"></i>Perfil de avaliador
+                        </a>
+                        <a class="menu-item" href="${getAppUrl('pagamentos/validar-certificado.html')}">
+                            <i class="ic ic-search"></i>Validar certificado
+                        </a>
                         <a class="menu-item danger" href="#" data-logout-action>
                             <i class="ic ic-out"></i>Sair
                         </a>

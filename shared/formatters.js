@@ -100,11 +100,35 @@
             paga: { label: 'Paga', badgeClass: 'badge-success' },
             recusado: { label: 'Recusado', badgeClass: 'badge-danger' },
             cancelado: { label: 'Cancelado', badgeClass: 'badge-danger' },
+            cancelada: { label: 'Cancelada', badgeClass: 'badge-danger' },
             expirada: { label: 'Expirada', badgeClass: 'badge-danger' },
             reembolsado: { label: 'Reembolsado', badgeClass: 'badge-neutral' },
         };
         const s = String(status || '').toLowerCase().trim();
         return mapa[s] || { label: status || 'Indefinido', badgeClass: 'badge-neutral' };
+    }
+
+    function formatarStatusReembolso(status) {
+        const mapa = {
+            solicitado: { label: 'Solicitado', badgeClass: 'badge-warning' },
+            processando: { label: 'Processando', badgeClass: 'badge-info' },
+            concluido: { label: 'Concluído', badgeClass: 'badge-success' },
+            'concluído': { label: 'Concluído', badgeClass: 'badge-success' },
+            recusado: { label: 'Recusado', badgeClass: 'badge-danger' },
+        };
+        const s = String(status || '').toLowerCase().trim();
+        return mapa[s] || { label: status || 'Indefinido', badgeClass: 'badge-neutral' };
+    }
+
+    function formatarMetodoPagamento(metodo) {
+        const mapa = {
+            pix: 'Pix',
+            cartao_credito: 'Cartão de crédito',
+            cartao_debito: 'Cartão de débito',
+            boleto: 'Boleto bancário',
+        };
+        const m = String(metodo || '').toLowerCase().trim();
+        return mapa[m] || metodo || '—';
     }
 
     function mascaraTelefone(valor) {
@@ -148,6 +172,8 @@
         formatarStatusInscricao,
         formatarStatusEvento,
         formatarStatusPagamento,
+        formatarStatusReembolso,
+        formatarMetodoPagamento,
         mascaraTelefone,
         mascaraCPF,
         mascaraData,

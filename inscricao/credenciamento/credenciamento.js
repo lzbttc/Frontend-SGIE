@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectEvento.value) {
                 history.replaceState(null, '', `?evento=${encodeURIComponent(selectEvento.value)}`);
             }
+            if (window.SGIE_EVENTO_TABS) window.SGIE_EVENTO_TABS.atualizar(selectEvento.value);
             const divResultado = document.getElementById('resultado-container');
             if (divResultado) divResultado.style.display = 'none';
             const listaSugestoes = document.getElementById('lista-sugestoes');
@@ -123,6 +124,7 @@ async function carregarEventos() {
         } else if (eventos.length === 1) {
             selectEvento.value = eventos[0].id;
         }
+        if (window.SGIE_EVENTO_TABS && selectEvento.value) window.SGIE_EVENTO_TABS.atualizar(selectEvento.value);
     } catch (error) {
         showAlert('mensagem-alerta', 'Erro de conexão ao carregar eventos.', 'danger');
     }

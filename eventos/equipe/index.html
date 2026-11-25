@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipe organizadora — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
+    <link rel="stylesheet" href="../../sgie.css">
+</head>
+<body class="app">
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <nav aria-label="Você está em" class="crumb">
+                <a href="../meus-eventos/index.html">Meus eventos</a>
+                <span aria-hidden="true">/</span>
+                <span id="crumb-evento-nome">Equipe</span>
+            </nav>
+
+            <header class="page-head">
+                <div>
+                    <div class="row mb-2">
+                        <span class="badge badge-neutral" id="badge-status-evento">Evento</span>
+                    </div>
+                    <h1 class="h1" id="titulo-evento">Carregando evento...</h1>
+                </div>
+                <div class="row" id="acoes-topo-evento">
+                    
+                    <a class="btn btn-secondary" id="btn-editar-evento" href="#"><i class="ic ic-pencil"></i>Editar evento</a>
+                </div>
+            </header>
+
+            <nav aria-label="Seções do evento" class="tabs" id="tabs-evento" data-tab-ativa="equipe"></nav>
+
+            <div id="mensagem-alerta" class="mt-4" hidden></div>
+
+            <div class="stack lg mt-5">
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="h2">Equipe organizadora</h2>
+                            <p class="muted">Contatos exibidos publicamente na página do evento.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btn-novo-integrante">
+                            <i class="ic ic-plus"></i>Adicionar integrante
+                        </button>
+                    </div>
+                    <div id="bloco-equipe"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </div>
+    </footer>
+
+    <script src="../../config.js"></script>
+    <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/mocks.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/evento-tabs.js"></script>
+    <script src="../../shared/evento-gestao.js"></script>
+    <script src="../../shared/layout.js"></script>
+    <script src="equipe.js"></script>
+</body>
+</html>

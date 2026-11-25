@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus reembolsos — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/img/sgie-simbolo.svg">
+    <link rel="stylesheet" href="../sgie.css">
+</head>
+<body class="app">
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../index.html" class="brand"><img class="brand-logo" src="../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Meus reembolsos</h1>
+                    <p>Solicite o reembolso de pagamentos aprovados e acompanhe cada solicitação.</p>
+                </div>
+            </header>
+
+            <div id="mensagem-alerta" hidden></div>
+
+            <div class="stack lg">
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="h2">Pagamentos aprovados</h2>
+                            <p class="muted">Pagamentos que ainda podem ser reembolsados.</p>
+                        </div>
+                    </div>
+                    <div id="bloco-pagamentos"></div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="h2">Solicitações de reembolso</h2>
+                            <p class="muted">Histórico e situação de cada pedido.</p>
+                        </div>
+                    </div>
+                    <div id="bloco-reembolsos"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </div>
+    </footer>
+
+    <script src="../config.js"></script>
+    <script src="../api.js"></script>
+    <script src="../shared/dom.js"></script>
+    <script src="../shared/formatters.js"></script>
+    <script src="../shared/mocks.js"></script>
+    <script src="../shared/roles.js"></script>
+    <script src="../shared/layout.js"></script>
+    <script src="reembolsos.js"></script>
+</body>
+</html>

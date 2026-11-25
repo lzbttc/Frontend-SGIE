@@ -658,3 +658,8 @@ main:focus { outline: none; }
 /* 18. MARCA (logotipo horizontal) --------------------------------------------- */
 .brand-logo { display: block; height: 38px; width: auto; }
 @media (max-width: 640px) { .brand-logo { height: 32px; } }
+
+/* 15c UTILITÁRIOS DAS TELAS DE GESTÃO */
+.text-warn { color: var(--warn-ink); }
+.text-info { color: var(--info-ink); }
+.fieldset-reset { border: 0; padding: 0; margin: 0; min-width: 0; }

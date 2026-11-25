@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de avaliador — SGIE</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/sgie-simbolo.svg">
+    <link rel="stylesheet" href="../../sgie.css">
+</head>
+<body class="app">
+    <header class="nav">
+        <div class="container nav-in">
+            <a href="../../index.html" class="brand"><img class="brand-logo" src="../../assets/img/sgie-logo-horizontal.svg" alt="SGIE"></a>
+            <nav aria-label="Principal" class="nav-links" id="nav-links"></nav>
+            <div class="nav-user" id="nav-user-area"></div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <header class="page-head">
+                <div>
+                    <h1 class="h1">Perfil de avaliador</h1>
+                    <p>Cadastre suas áreas de atuação e sua titulação para que organizadores possam vinculá-lo como avaliador de trabalhos.</p>
+                </div>
+                <span class="badge badge-neutral" id="badge-perfil-status">Carregando...</span>
+            </header>
+
+            <div id="mensagem-alerta" hidden></div>
+
+            <div class="stack lg">
+
+                <div id="carregando-perfil"></div>
+
+                <form id="form-avaliador" class="stack lg" novalidate hidden>
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Atuação acadêmica</h2>
+                                <p class="muted">Usadas para sugerir você em trabalhos da sua área.</p>
+                            </div>
+                        </div>
+                        <div class="stack">
+                            <fieldset class="field fieldset-reset" id="grupo-areas">
+                                <legend class="label">Áreas de atuação <span class="text-danger">*</span></legend>
+                                <div class="grid cols-2 gap-2" id="lista-areas"></div>
+                                <span class="error-msg" id="erro-areas" hidden></span>
+                            </fieldset>
+                            <div class="grid cols-2 gap-4">
+                                <div class="field">
+                                    <label class="label" for="campo-afiliacao">Afiliação institucional</label>
+                                    <input class="input" id="campo-afiliacao" name="afiliacao_institucional" type="text" maxlength="255" placeholder="Ex.: Universidade Federal de ...">
+                                </div>
+                                <div class="field">
+                                    <label class="label" for="campo-titulacao">Maior titulação</label>
+                                    <select class="select" id="campo-titulacao" name="maior_titulacao">
+                                        <option value="">Não informar</option>
+                                        <option value="Graduação">Graduação</option>
+                                        <option value="Especialização">Especialização</option>
+                                        <option value="Mestrado">Mestrado</option>
+                                        <option value="Doutorado">Doutorado</option>
+                                        <option value="Pós-doutorado">Pós-doutorado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2 class="h2">Perfis públicos</h2>
+                                <p class="muted">Ajudam o organizador a conhecer sua trajetória.</p>
+                            </div>
+                        </div>
+                        <div class="stack">
+                            <div class="grid cols-2 gap-4">
+                                <div class="field">
+                                    <label class="label" for="campo-lattes">Currículo Lattes</label>
+                                    <input class="input" id="campo-lattes" name="lattes_url" type="url" placeholder="https://lattes.cnpq.br/...">
+                                    <span class="error-msg" id="erro-lattes" hidden></span>
+                                </div>
+                                <div class="field">
+                                    <label class="label" for="campo-linkedin">LinkedIn</label>
+                                    <input class="input" id="campo-linkedin" name="linkedin_url" type="url" placeholder="https://www.linkedin.com/in/...">
+                                    <span class="error-msg" id="erro-linkedin" hidden></span>
+                                </div>
+                            </div>
+                            <label class="check" for="campo-ativo">
+                                <input type="checkbox" id="campo-ativo" name="ativo" checked>
+                                <div>
+                                    <b>Disponível para avaliar trabalhos</b>
+                                    <span>Desmarque para deixar de aparecer na lista de avaliadores dos organizadores.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
+
+                    <div class="row">
+                        <button type="submit" class="btn btn-primary" id="btn-salvar-avaliador"><i class="ic ic-check"></i>Salvar perfil</button>
+                        <a class="btn btn-ghost" href="../minhas-submissoes/index.html">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            SGIE — Sistema de Gestão de Inscrições e Eventos Universitários
+        </div>
+    </footer>
+
+    <script src="../../config.js"></script>
+    <script src="../../api.js"></script>
+    <script src="../../shared/dom.js"></script>
+    <script src="../../shared/formatters.js"></script>
+    <script src="../../shared/mocks.js"></script>
+    <script src="../../shared/roles.js"></script>
+    <script src="../../shared/layout.js"></script>
+    <script src="perfil_avaliador.js"></script>
+</body>
+</html>

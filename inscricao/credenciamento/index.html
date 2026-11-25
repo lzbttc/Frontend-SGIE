@@ -40,12 +40,7 @@
                 </div>
             </header>
 
-            <nav aria-label="Seções do evento" class="tabs">
-                <a class="tab" id="tab-link-visao-geral" href="../../eventos/detalhes-do-evento/index.html">Visão geral</a>
-                <a class="tab" id="tab-link-participantes" href="../consulta-de-participantes/index.html">Participantes</a>
-                <a class="tab" id="tab-link-submissoes" href="../../eventos/gestao-submissoes/index.html">Submissões</a>
-                <a class="tab is-active" href="#">Credenciamento</a>
-            </nav>
+            <nav aria-label="Seções do evento" class="tabs" id="tabs-evento" data-tab-ativa="credenciamento"></nav>
 
             <!-- Mensagem de Alerta -->
             <div id="mensagem-alerta" style="display: none; margin-top: 16px;"></div>
@@ -125,6 +120,7 @@
     <script src="../../shared/formatters.js"></script>
     <script src="../../shared/mocks.js"></script>
     <script src="../../shared/roles.js"></script>
+    <script src="../../shared/evento-tabs.js"></script>
     <script src="../../shared/layout.js"></script>
     <script src="credenciamento.js"></script>
 </body>

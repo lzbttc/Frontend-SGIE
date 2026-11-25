@@ -43,12 +43,7 @@
             </header>
 
             <!-- TABS DE NAVEGAÇÃO DA GESTÃO DO EVENTO -->
-            <nav aria-label="Seções do evento" class="tabs">
-                <a class="tab" id="tab-visao-geral" href="#">Visão geral</a>
-                <a class="tab" id="tab-participantes" href="#">Participantes</a>
-                <a class="tab is-active" id="tab-submissoes" href="#">Submissões <span class="count" id="count-total-tab">0</span></a>
-                <a class="tab" id="tab-credenciamento" href="#">Credenciamento</a>
-            </nav>
+            <nav aria-label="Seções do evento" class="tabs" id="tabs-evento" data-tab-ativa="submissoes"></nav>
 
             <div id="mensagem-alerta" style="display: none; margin-top: 20px;"></div>
 
@@ -221,6 +216,7 @@
     <script src="../../shared/formatters.js"></script>
     <script src="../../shared/mocks.js"></script>
     <script src="../../shared/roles.js"></script>
+    <script src="../../shared/evento-tabs.js"></script>
     <script src="../../shared/layout.js"></script>
     <script src="gestao_submissoes.js"></script>
 

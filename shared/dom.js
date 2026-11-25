@@ -269,7 +269,330 @@
         });
     }
 
+    /** Aceita resposta paginada do DRF ({results: []}) ou lista simples. */
+    function extrairLista(dados) {
+        if (Array.isArray(dados)) return dados;
+        if (dados && Array.isArray(dados.results)) return dados.results;
+        return [];
+    }
+
+    /** Só devolve a URL se for http(s); evita javascript: e data: em links vindos da API. */
+    function urlSegura(url) {
+        if (!url) return '';
+        try {
+            const u = new URL(String(url), window.location.href);
+            return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '';
+        } catch {
+            return '';
+        }
+    }
+
+    /** ISO (com fuso) -> valor de <input type="datetime-local"> no horário local. */
+    function isoParaInputLocal(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return '';
+        const p = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    /** Valor de <input type="datetime-local"> (horário local) -> ISO UTC. */
+    function inputLocalParaIso(valor) {
+        if (!valor) return '';
+        const d = new Date(valor);
+        return Number.isNaN(d.getTime()) ? '' : d.toISOString();
+    }
+
+    /**
+     * Modal de formulário no mesmo padrão visual de confirmar().
+     *
+     * campos: [{ name, label, tipo, obrigatorio, placeholder, ajuda, maxLength, min, max, step,
+     *            opcoes: [{ valor, rotulo }], colunas: 1|2 }]
+     *   tipo: text | textarea | number | email | url | date | datetime-local | select
+     *         | checkbox | multiselect (lista de caixas)
+     * valores: valores iniciais por name (datetime-local aceita ISO).
+     * onConfirmar(valores): async; devolva uma string para exibir o erro e manter o modal
+     *   aberto (ex.: erro da API); devolva qualquer outra coisa para fechar com sucesso.
+     *
+     * Resolve com o objeto de valores (datetime-local já em ISO; checkbox = boolean;
+     * multiselect = array) ou null se cancelado.
+     */
+    function formulario(options = {}) {
+        const {
+            titulo = 'Formulário',
+            mensagem = '',
+            confirmarTexto = 'Salvar',
+            cancelarTexto = 'Cancelar',
+            perigo = false,
+            campos = [],
+            valores = {},
+            largo = false,
+            onConfirmar = null,
+        } = options;
+
+        return new Promise((resolve) => {
+            const anterior = document.activeElement;
+            const uid = `frm-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            const idDe = (c) => `${uid}-${c.name}`;
+
+            function campoHTML(c) {
+                const id = idDe(c);
+                const v = valores[c.name];
+                const req = c.obrigatorio ? ' <span class="text-danger">*</span>' : '';
+                const ajuda = c.ajuda ? `<span class="hint" id="${id}-h">${escapeHTML(c.ajuda)}</span>` : '';
+                const descr = c.ajuda ? ` aria-describedby="${id}-h"` : '';
+                const comum = `id="${id}" name="${escapeHTML(c.name)}"${c.obrigatorio ? ' aria-required="true"' : ''}${descr}`;
+                let controle;
+
+                if (c.tipo === 'checkbox') {
+                    return `
+                        <div class="field">
+                            <label class="check" for="${id}">
+                                <input type="checkbox" ${comum}${v ? ' checked' : ''}>
+                                <div><b>${escapeHTML(c.label)}</b>${c.ajuda ? `<span>${escapeHTML(c.ajuda)}</span>` : ''}</div>
+                            </label>
+                        </div>`;
+                }
+                if (c.tipo === 'multiselect') {
+                    const marcados = new Set((Array.isArray(v) ? v : []).map(String));
+                    const itens = (c.opcoes || []).map((o, i) => `
+                        <label class="check">
+                            <input type="checkbox" data-multi="${escapeHTML(c.name)}" value="${escapeHTML(o.valor)}" id="${id}-${i}"${marcados.has(String(o.valor)) ? ' checked' : ''}>
+                            <div><b>${escapeHTML(o.rotulo)}</b></div>
+                        </label>`).join('');
+                    return `
+                        <fieldset class="field fieldset-reset" id="${id}">
+                            <legend class="label">${escapeHTML(c.label)}${req}</legend>
+                            <div class="stack">${itens || '<span class="hint">Nenhuma opção disponível.</span>'}</div>
+                            ${ajuda}
+                            <span class="error-msg" id="${id}-e" hidden></span>
+                        </fieldset>`;
+                }
+                if (c.tipo === 'textarea') {
+                    controle = `<textarea class="textarea" ${comum} rows="${c.linhas || 3}"${c.maxLength ? ` maxlength="${Number(c.maxLength)}"` : ''} placeholder="${escapeHTML(c.placeholder || '')}">${escapeHTML(v ?? '')}</textarea>`;
+                } else if (c.tipo === 'select') {
+                    const ops = (c.opcoes || []).map((o) =>
+                        `<option value="${escapeHTML(o.valor)}"${String(v ?? '') === String(o.valor) ? ' selected' : ''}>${escapeHTML(o.rotulo)}</option>`).join('');
+                    controle = `<select class="select" ${comum}>${ops}</select>`;
+                } else {
+                    const tipo = c.tipo || 'text';
+                    const val = tipo === 'datetime-local' ? isoParaInputLocal(v) : (v ?? '');
+                    const attrs = [
+                        c.maxLength ? `maxlength="${Number(c.maxLength)}"` : '',
+                        c.min !== undefined ? `min="${escapeHTML(c.min)}"` : '',
+                        c.max !== undefined ? `max="${escapeHTML(c.max)}"` : '',
+                        c.step !== undefined ? `step="${escapeHTML(c.step)}"` : '',
+                    ].filter(Boolean).join(' ');
+                    controle = `<input class="input" type="${tipo}" ${comum} ${attrs} value="${escapeHTML(val)}" placeholder="${escapeHTML(c.placeholder || '')}">`;
+                }
+                return `
+                    <div class="field">
+                        <label class="label" for="${id}">${escapeHTML(c.label)}${req}</label>
+                        ${controle}
+                        ${ajuda}
+                        <span class="error-msg" id="${id}-e" hidden></span>
+                    </div>`;
+            }
+
+            // Campos com colunas:2 consecutivos dividem a mesma linha.
+            let corpo = '';
+            for (let i = 0; i < campos.length; i += 1) {
+                const c = campos[i];
+                const prox = campos[i + 1];
+                if (c.colunas === 2 && prox && prox.colunas === 2) {
+                    corpo += `<div class="grid cols-2 gap-4">${campoHTML(c)}${campoHTML(prox)}</div>`;
+                    i += 1;
+                } else {
+                    corpo += campoHTML(c);
+                }
+            }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'modal';
+            overlay.innerHTML = `
+                <form class="modal-box${largo ? ' lg' : ''} stack" role="dialog" aria-modal="true" aria-labelledby="${uid}-t" novalidate>
+                    <div>
+                        <h2 class="h2" id="${uid}-t">${escapeHTML(titulo)}</h2>
+                        ${mensagem ? `<p class="muted mt-2">${escapeHTML(mensagem)}</p>` : ''}
+                    </div>
+                    ${corpo}
+                    <div class="alert alert-danger" role="alert" id="${uid}-geral" hidden></div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" data-frm-cancelar>${escapeHTML(cancelarTexto)}</button>
+                        <button type="submit" class="btn ${perigo ? 'btn-danger' : 'btn-primary'}" data-frm-ok>${escapeHTML(confirmarTexto)}</button>
+                    </div>
+                </form>`;
+            document.body.appendChild(overlay);
+
+            const form = overlay.querySelector('form');
+            const btnOk = overlay.querySelector('[data-frm-ok]');
+            const btnCancelar = overlay.querySelector('[data-frm-cancelar]');
+            const geral = overlay.querySelector(`#${uid}-geral`);
+            let enviando = false;
+
+            function fechar(resultado) {
+                document.removeEventListener('keydown', aoTeclar, true);
+                overlay.remove();
+                if (anterior && typeof anterior.focus === 'function') anterior.focus();
+                resolve(resultado);
+            }
+
+            function mostrarErroCampo(c, texto) {
+                const el = overlay.querySelector(`#${idDe(c)}-e`);
+                const ctl = overlay.querySelector(`#${idDe(c)}`);
+                if (el) { el.textContent = texto || ''; el.hidden = !texto; }
+                if (ctl && ctl.classList) ctl.classList.toggle('is-error', Boolean(texto));
+            }
+
+            function coletar() {
+                const out = {};
+                campos.forEach((c) => {
+                    const ctl = overlay.querySelector(`#${idDe(c)}`);
+                    if (c.tipo === 'checkbox') {
+                        out[c.name] = Boolean(ctl && ctl.checked);
+                    } else if (c.tipo === 'multiselect') {
+                        out[c.name] = Array.from(overlay.querySelectorAll(`[data-multi="${c.name}"]:checked`)).map((i) => i.value);
+                    } else if (c.tipo === 'datetime-local') {
+                        out[c.name] = inputLocalParaIso(ctl ? ctl.value : '');
+                    } else {
+                        out[c.name] = ctl ? ctl.value.trim() : '';
+                    }
+                });
+                return out;
+            }
+
+            function validar(vals) {
+                let primeiro = null;
+                campos.forEach((c) => {
+                    const v = vals[c.name];
+                    const vazio = c.tipo === 'checkbox' ? false : (Array.isArray(v) ? v.length === 0 : (v === '' || v === undefined));
+                    mostrarErroCampo(c, '');
+                    if (c.obrigatorio && vazio) {
+                        mostrarErroCampo(c, 'Este campo é obrigatório.');
+                        primeiro = primeiro || c;
+                        return;
+                    }
+                    const ctl = overlay.querySelector(`#${idDe(c)}`);
+                    if (!vazio && ctl && typeof ctl.checkValidity === 'function' && ['number', 'email', 'url'].includes(c.tipo) && !ctl.checkValidity()) {
+                        mostrarErroCampo(c, 'Valor inválido.');
+                        primeiro = primeiro || c;
+                    }
+                });
+                if (primeiro) {
+                    const ctl = overlay.querySelector(`#${idDe(primeiro)}`);
+                    if (ctl && typeof ctl.focus === 'function') ctl.focus();
+                }
+                return !primeiro;
+            }
+
+            async function aoEnviar(e) {
+                e.preventDefault();
+                if (enviando) return;
+                geral.hidden = true;
+                const vals = coletar();
+                if (!validar(vals)) return;
+
+                if (typeof onConfirmar !== 'function') return fechar(vals);
+
+                enviando = true;
+                btnOk.disabled = true;
+                const textoOriginal = btnOk.textContent;
+                btnOk.textContent = 'Salvando...';
+                try {
+                    const retorno = await onConfirmar(vals);
+                    if (typeof retorno === 'string' && retorno) {
+                        geral.textContent = retorno;
+                        geral.hidden = false;
+                        return;
+                    }
+                    fechar(vals);
+                } catch {
+                    geral.textContent = 'Erro de conexão com o servidor. Tente novamente.';
+                    geral.hidden = false;
+                } finally {
+                    enviando = false;
+                    if (document.body.contains(overlay)) {
+                        btnOk.disabled = false;
+                        btnOk.textContent = textoOriginal;
+                    }
+                }
+            }
+
+            function aoTeclar(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    if (!enviando) fechar(null);
+                } else if (e.key === 'Tab') {
+                    const focaveis = overlay.querySelectorAll('button:not([disabled]), textarea, input, select');
+                    if (!focaveis.length) return;
+                    const primeiro = focaveis[0];
+                    const ultimo = focaveis[focaveis.length - 1];
+                    if (e.shiftKey && document.activeElement === primeiro) {
+                        e.preventDefault();
+                        ultimo.focus();
+                    } else if (!e.shiftKey && document.activeElement === ultimo) {
+                        e.preventDefault();
+                        primeiro.focus();
+                    }
+                }
+            }
+
+            campos.forEach((c) => {
+                const ctl = overlay.querySelector(`#${idDe(c)}`);
+                if (!ctl) return;
+                const limpar = () => mostrarErroCampo(c, '');
+                ctl.addEventListener('input', limpar);
+                ctl.addEventListener('change', limpar);
+            });
+            form.addEventListener('submit', aoEnviar);
+            btnCancelar.addEventListener('click', () => { if (!enviando) fechar(null); });
+            overlay.addEventListener('mousedown', (e) => { if (e.target === overlay && !enviando) fechar(null); });
+            document.addEventListener('keydown', aoTeclar, true);
+
+            const primeiroCampo = overlay.querySelector('input:not([type="checkbox"]), textarea, select') || btnCancelar;
+            primeiroCampo.focus();
+        });
+    }
+
+    /**
+     * Chamada JSON à API. Nunca lança: devolve { ok, status, dados, erro }.
+     * `erro` já vem como mensagem legível.
+     */
+    async function chamar(caminho, metodo = 'GET', corpo = undefined) {
+        try {
+            const opts = { method: metodo };
+            if (corpo !== undefined) opts.body = JSON.stringify(corpo);
+            const resp = await window.apiFetch(caminho, opts);
+            const dados = resp.status === 204 ? null : await resp.json().catch(() => null);
+            return {
+                ok: resp.ok,
+                status: resp.status,
+                dados,
+                erro: resp.ok ? '' : extrairMensagemErro(dados || 'Não foi possível concluir a operação.'),
+            };
+        } catch {
+            return { ok: false, status: 0, dados: null, erro: 'Erro de conexão com o servidor do SGIE.' };
+        }
+    }
+
+    /**
+     * Monta uma tabela no padrão do SGIE. As células já devem estar escapadas (HTML).
+     * colunas: [{ titulo, acoes }]  linhas: [[html, html, ...]]
+     */
+    function tabela(colunas, linhas) {
+        const th = colunas.map((c) => `<th scope="col"${c.acoes ? ' class="actions"' : ''}>${escapeHTML(c.titulo)}</th>`).join('');
+        const tr = linhas.map((cels) => `<tr>${cels.map((h, i) => `<td${colunas[i] && colunas[i].acoes ? ' class="actions"' : ''}>${h}</td>`).join('')}</tr>`).join('');
+        return `<div class="table-wrap"><table class="table"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
+    }
+
     window.SGIE_DOM = {
+        chamar,
+        tabela,
+        extrairLista,
+        urlSegura,
+        isoParaInputLocal,
+        inputLocalParaIso,
+        formulario,
         escapeHTML,
         createElement,
         renderLoading,
